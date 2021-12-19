@@ -60,16 +60,18 @@ public class TestMQMT {
 
 
 
-/*-------------------------------------------
+/**
  * Classe Produit
- * ------------------------------------------
+ * 
+ * @author balou
+ *
  */
-
 class Product {
     private String name;
     private int numero;
     private int numProducteur;
     
+    // les constructeurs
     public Product(String name, int numero) {
         this.name = name;
         this.numero = numero;
@@ -81,6 +83,7 @@ class Product {
         this.numProducteur = numProducteur;
     }
     
+    // les méthodes de la classe
     public String getInfo() {
         return ("Nom du produit : " + this.name + " ayant le num�ro => " + this.numProducteur + "_" + this.numero);
     }
@@ -99,13 +102,14 @@ class Product {
 
 
 
-
-/*
+/**
  * ---------------------------
  * Classe du consommateur
  * ---------------------------
+ * 
+ * @author balou
+ *
  */
-
 class Consumer implements Runnable {
     private String consumerName;
     private final BlockingQueue<Product> queue;
@@ -135,10 +139,13 @@ class Consumer implements Runnable {
 
 
 
-/*
+/**
  * ----------------------------------------
- * Classe du producteur
+ * Classe du producteur : implemente Thread
  * ----------------------------------------
+ * 
+ * @author balou
+ *
  */
 class Producer implements Runnable {
     private int numeroProduit = 0;			// num�ro de produit
@@ -195,7 +202,3 @@ class Producer implements Runnable {
         return new Product("boulon ", numProducteur, numeroProduit);
     }
 }
-
-
-
-
