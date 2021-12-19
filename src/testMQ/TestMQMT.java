@@ -5,6 +5,7 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * programme de test des message queue bloquantes entre plusieurs thread
+ * 
  * @author balou
  *
  */
