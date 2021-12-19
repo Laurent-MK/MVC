@@ -3,7 +3,11 @@ package testMQ;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-
+/**
+ * ajouter sur GitHub
+ * @author balou
+ *
+ */
 
 public class TestMQMT {
     private static int delaiDeProductionP1 = 0;
