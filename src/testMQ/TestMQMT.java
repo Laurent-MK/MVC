@@ -3,7 +3,11 @@ package testMQ;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-
+/**
+ * programme de test des message queue bloquantes entre plusieurs thread
+ * @author balou
+ *
+ */
 
 public class TestMQMT {
     private static int delaiDeProductionP1 = 0;
