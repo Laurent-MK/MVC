@@ -3,9 +3,14 @@ package controler;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * imports des packages spécifiques de l'application
+ */
 import model.Consommateur;
 import model.Producteur;
 import model.Produit;
+
+
 
 /**
  * programme de test des messages queue bloquantes entre plusieurs threads
@@ -27,7 +32,7 @@ public class Controler {
     	//  CrÃ©ation de la message queue "bloquante"
         BlockingQueue<Produit> q = new ArrayBlockingQueue<Produit>(5);
         
-        // création des prodcuteurs
+        // création des producteurs
         Producteur producer1 = new Producteur("P1", 1, delaiDeProductionP1, nbProdP1, 3, q);
         Producteur producer2 = new Producteur("P2", 2, delaiDeProductionP2, nbProdP2, 8, q);
         Producteur producer3 = new Producteur("P3", 3, delaiDeProductionP2, nbProdP2, 6, q);
@@ -42,7 +47,7 @@ public class Controler {
         new Thread(producer1).start();
        
        	try {
-			Thread.sleep(0);
+			Thread.sleep(0);	// retard éventuel avant lancement des autres
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
