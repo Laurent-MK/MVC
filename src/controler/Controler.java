@@ -29,7 +29,7 @@ public class Controler {
     
     public static void main(String[] args) {
         
-    	//  CrÃ©ation de la message queue "bloquante"
+    	//  Création de la message queue "bloquante"
         BlockingQueue<Produit> q = new ArrayBlockingQueue<Produit>(5);
         
         // création des producteurs
@@ -41,7 +41,7 @@ public class Controler {
         Consommateur consumer1 = new Consommateur("Consommateur 01", 2, q);
         Consommateur consumer2 = new Consommateur("Consommateur 02", 1, q);
         Consommateur consumer3 = new Consommateur("Consommateur 03", 5, q);
-
+        
         
         // démarrage des threads des producteurs avec retard possible sur le 1er
         new Thread(producer1).start();
