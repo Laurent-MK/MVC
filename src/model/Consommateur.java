@@ -21,16 +21,23 @@ public class Consommateur implements Runnable {
         Thread.currentThread().setPriority(priority);
     }
     
-    @Override
+    /**
+     * méthode de lancement du thread
+     *     @Override
+     */
     public void run() {
         try {
             while (true) {
-                consume(queue.take()); // attente de l'arrivÃ©e d'un produit
+                consume(queue.take()); // attente de l'arrivÃ©e d'un produit dans la queue de message
             }
         } catch (InterruptedException ex) {
         }
     }
-    
+
+    /**
+     * consommation d'un produit arrivé dans la queue de message
+     * @param x
+     */
     private void consume(Produit x) {
     	System.out.println("--> " + this.consumerName + " >> Consomme : \n\t\t\t" + x.getName() + "" + x.getNumProducteur() + "_" + x.getNumero());
         //System.out.println(" --> " + this.consumerName + " >> Consomme : \n\t\t\t" + x.getInfo() + "\n");

@@ -19,17 +19,35 @@ public class Producteur implements Runnable {
     private int delay = 0;
     private int nbBoucles;
 
-    /*
-     * Liste des constructeurs possibles
-     */
-    public Producteur(String producerName, int numProd, int delay, int nbProductionARealiser, BlockingQueue<Produit> q) {
+     /**
+      * Liste des constructeurs possibles
+      */
+    
+    /**
+     * 
+      * @param producerName
+      * @param numProd
+      * @param delay
+      * @param nbProductionARealiser
+      * @param q
+      */
+     public Producteur(String producerName, int numProd, int delay, int nbProductionARealiser, BlockingQueue<Produit> q) {
         this.producerName = producerName;
         this.delay = delay;
         this.queue = q;
         this.nbBoucles = nbProductionARealiser;
         this.numProducteur = numProd;
     }
-    
+
+     /**
+      * 
+      * @param producerName
+      * @param numProd
+      * @param delay
+      * @param nbProductionARealiser
+      * @param priority
+      * @param q
+      */
     public Producteur(String producerName, int numProd, int delay, int nbProductionARealiser, int priority, BlockingQueue<Produit> q) {
         this.producerName = producerName;
         this.delay = delay;
@@ -41,7 +59,9 @@ public class Producteur implements Runnable {
     }
 
     
-    
+    /**
+     * méthode de lancement du thread
+     */
     @Override
     public void run() {
     	long i;

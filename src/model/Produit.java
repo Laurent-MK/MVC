@@ -24,7 +24,11 @@ public class Produit {
         this.numProducteur = numProducteur;
     }
     
-    // les méthodes de la classe
+    /**
+     *  les méthodes de la classe : les accesseurs
+     * @return
+     */
+    
     public String getInfo() {
         return ("Nom du produit : " + this.name + " ayant le num�ro => " + this.numProducteur + "_" + this.numero);
     }

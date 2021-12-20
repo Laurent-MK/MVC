@@ -24,21 +24,21 @@ public class Controler {
     
     public static void main(String[] args) {
         
-    	/**
-    	 *  CrÃ©ation de la message queue "bloquante
-    	 */
+    	//  CrÃ©ation de la message queue "bloquante"
         BlockingQueue<Produit> q = new ArrayBlockingQueue<Produit>(5);
         
+        // création des prodcuteurs
         Producteur producer1 = new Producteur("P1", 1, delaiDeProductionP1, nbProdP1, 3, q);
         Producteur producer2 = new Producteur("P2", 2, delaiDeProductionP2, nbProdP2, 8, q);
         Producteur producer3 = new Producteur("P3", 3, delaiDeProductionP2, nbProdP2, 6, q);
         
-        Consommateur consumer1 = new Consommateur("Consommateur 01", 2, q); // lancement des consommateurs
+        // création des consommateurs
+        Consommateur consumer1 = new Consommateur("Consommateur 01", 2, q);
         Consommateur consumer2 = new Consommateur("Consommateur 02", 1, q);
         Consommateur consumer3 = new Consommateur("Consommateur 03", 5, q);
 
         
-        // Starting the threads
+        // démarrage des threads des producteurs avec retard possible sur le 1er
         new Thread(producer1).start();
        
        	try {
@@ -46,10 +46,6 @@ public class Controler {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
-        /**
-         * lancement des producteurs
-         */
         new Thread(producer2).start();
         new Thread(producer3).start();
         
