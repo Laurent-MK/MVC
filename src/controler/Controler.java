@@ -14,7 +14,7 @@ import model.Produit;
  *
  */
 
-public class TestMQMT {
+public class Controler {
     private static int delaiDeProductionP1 = 0;
     private static int delaiDeProductionP2 = 0;
     private static int nbProdP1 = 4;
