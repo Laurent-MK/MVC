@@ -4,7 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * programme de test des message queue bloquantes entre plusieurs thread
+ * programme de test des messages queue bloquantes entre plusieurs threads
  * 
  * @author balou
  *
