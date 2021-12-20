@@ -25,7 +25,7 @@ class Consommateur implements Runnable {
     public void run() {
         try {
             while (true) {
-                consume(queue.take()); // attente de l'arrivée d'un objet
+                consume(queue.take()); // attente de l'arrivée d'un produit
             }
         } catch (InterruptedException ex) {
         }
