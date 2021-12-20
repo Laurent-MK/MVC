@@ -1,4 +1,4 @@
-package testMQ;
+package Modèle;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -10,7 +10,7 @@ import java.util.concurrent.BlockingQueue;
  * @author balou
  *
  */
-class Producteur implements Runnable {
+public class Producteur implements Runnable {
     private int numeroProduit = 0;			// numï¿½ro de produit
     private int numProducteur; 				// numï¿½ro de producteur
 
@@ -48,7 +48,7 @@ class Producteur implements Runnable {
     	
         try {
             while (--nbBoucles > 0) {
-                Thread.sleep(this.delay * 1000); // 'delay' second.
+                Thread.sleep(this.delay * 1000); // endormissement durant "delay" secondes.
                 for (i =0; i < 555000; i++) {
                 	;
                 }
@@ -58,6 +58,10 @@ class Producteur implements Runnable {
         }
     }
     
+    /**
+     * production d'un nouveau produit a envoyer aux consommateurs
+     * @return
+     */
     private Produit produce() {
     	//numeroProduit++;
     	

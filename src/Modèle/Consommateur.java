@@ -1,4 +1,4 @@
-package testMQ;
+package Modèle;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.BlockingQueue;
  * @author balou
  *
  */
-class Consommateur implements Runnable {
+public class Consommateur implements Runnable {
     private String consumerName;
     private final BlockingQueue<Produit> queue;
 

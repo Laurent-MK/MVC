@@ -1,4 +1,4 @@
-package testMQ;
+package Modèle;
 
 
 /**
@@ -7,7 +7,7 @@ package testMQ;
  * @author balou
  *
  */
-class Produit {
+public class Produit {
     private String name;
     private int numero;
     private int numProducteur;

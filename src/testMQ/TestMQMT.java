@@ -3,6 +3,10 @@ package testMQ;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import Modèle.Consommateur;
+import Modèle.Producteur;
+import Modèle.Produit;
+
 /**
  * programme de test des messages queue bloquantes entre plusieurs threads
  * 
