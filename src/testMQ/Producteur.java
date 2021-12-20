@@ -3,9 +3,9 @@ package testMQ;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * ----------------------------------------
+ * ------------------------------------------
  * Classe du producteur : implemente Thread
- * ----------------------------------------
+ * ------------------------------------------
  * 
  * @author balou
  *
