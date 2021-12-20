@@ -1,4 +1,4 @@
-package Modèle;
+package model;
 
 import java.util.concurrent.BlockingQueue;
 
