@@ -1,91 +1,19 @@
 package model;
 
-import java.util.concurrent.BlockingQueue;
+public interface Producteur {
 
-/**
- * ------------------------------------------
- * Classe du producteur : implemente Thread
- * ------------------------------------------
- * 
- * @author balou
- *
- */
-public class Producteur implements Runnable {
-    private int numeroProduit = 0;			// numï¿½ro de produit
-    private int numProducteur; 				// numï¿½ro de producteur
-
-    private String producerName = "";
-    private BlockingQueue<Produit> queue = null;
-    private int delay = 0;
-    private int nbBoucles;
-
-     /**
-      * Liste des constructeurs possibles
-      */
+	public final static int numeroProduit = 0;		// numéro de produit
+    public final static int numProducteur = 0; 		// numéro de producteur
+    public final static String producerName = "";	// nom du producteur
+	
     
     /**
-     * 
-      * @param producerName
-      * @param numProd
-      * @param delay
-      * @param nbProductionARealiser
-      * @param q
-      */
-     public Producteur(String producerName, int numProd, int delay, int nbProductionARealiser, BlockingQueue<Produit> q) {
-        this.producerName = producerName;
-        this.delay = delay;
-        this.queue = q;
-        this.nbBoucles = nbProductionARealiser;
-        this.numProducteur = numProd;
-    }
-
-     /**
-      * 
-      * @param producerName
-      * @param numProd
-      * @param delay
-      * @param nbProductionARealiser
-      * @param priority
-      * @param q
-      */
-    public Producteur(String producerName, int numProd, int delay, int nbProductionARealiser, int priority, BlockingQueue<Produit> q) {
-        this.producerName = producerName;
-        this.delay = delay;
-        this.queue = q;
-        this.nbBoucles = nbProductionARealiser;
-        this.numProducteur = numProd;
-        
-        Thread.currentThread().setPriority(priority);
-    }
-
-    
-    /**
-     * méthode de lancement du thread
+     * méthodes a redefinir
      */
-    @Override
-    public void run() {
-    	long i;
-    	
-        try {
-            while (--nbBoucles > 0) {
-                Thread.sleep(this.delay * 1000); // endormissement durant "delay" secondes.
-                for (i =0; i < 555000; i++) {
-                	;
-                }
-                this.queue.put(this.produce());
-            }
-        } catch (InterruptedException ex) {
-        }
-    }
-    
-    /**
-     * production d'un nouveau produit a envoyer aux consommateurs
-     * @return
-     */
-    private Produit produce() {
-    	//numeroProduit++;
-    	
-        System.out.println("#" + this.producerName + "_" + numProducteur + " >> Crï¿½ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
-        return new Produit("boulon ", numProducteur, numeroProduit);
-    }
+	public void run();
+	public Object produce();
+	public String getNom();
+	public int getNumProducteur();
+	
+
 }

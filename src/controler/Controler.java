@@ -6,20 +6,22 @@ import java.util.concurrent.BlockingQueue;
 /**
  * imports des packages spécifiques de l'application
  */
-import model.Consommateur;
-import model.Producteur;
-import model.Produit;
+import View.IHM;
+import model.ConsommateurMQ;
+import model.ProducteurMQ;
+import model.ProduitText;
 
 
 
 /**
- * programme de test des messages queue bloquantes entre plusieurs threads
+ * Classe controleur de l'application de test des messages queue bloquantes entre plusieurs threads
  * 
  * @author balou
  *
  */
 
 public class Controler {
+	IHM ihmApplication;
     private static int delaiDeProductionP1 = 0;
     private static int delaiDeProductionP2 = 0;
     private static int nbProdP1 = 4;
@@ -27,20 +29,23 @@ public class Controler {
     private static int prioriteP1 = 10;
     private static int prioriteP2= 1;
     
+    
     public static void main(String[] args) {
+    	
+    	new Controler(); // lancement du controleur
         
     	//  Création de la message queue "bloquante"
-        BlockingQueue<Produit> q = new ArrayBlockingQueue<Produit>(5);
+        BlockingQueue<ProduitText> q = new ArrayBlockingQueue<ProduitText>(5);
         
         // création des producteurs
-        Producteur producer1 = new Producteur("P1", 1, delaiDeProductionP1, nbProdP1, 3, q);
-        Producteur producer2 = new Producteur("P2", 2, delaiDeProductionP2, nbProdP2, 8, q);
-        Producteur producer3 = new Producteur("P3", 3, delaiDeProductionP2, nbProdP2, 6, q);
+        ProducteurMQ producer1 = new ProducteurMQ("P1", 1, delaiDeProductionP1, nbProdP1, 3, q);
+        ProducteurMQ producer2 = new ProducteurMQ("P2", 2, delaiDeProductionP2, nbProdP2, 8, q);
+        ProducteurMQ producer3 = new ProducteurMQ("P3", 3, delaiDeProductionP2, nbProdP2, 6, q);
         
         // création des consommateurs
-        Consommateur consumer1 = new Consommateur("Consommateur 01", 2, q);
-        Consommateur consumer2 = new Consommateur("Consommateur 02", 1, q);
-        Consommateur consumer3 = new Consommateur("Consommateur 03", 5, q);
+        ConsommateurMQ consumer1 = new ConsommateurMQ("Consommateur 01", 2, q);
+        ConsommateurMQ consumer2 = new ConsommateurMQ("Consommateur 02", 1, q);
+        ConsommateurMQ consumer3 = new ConsommateurMQ("Consommateur 03", 5, q);
         
         
         // démarrage des threads des producteurs avec retard possible sur le 1er
@@ -59,6 +64,15 @@ public class Controler {
         new Thread(consumer3).start();
         
         System.out.println("\t main() terminÃ© !!!\n");
+    }
+    
+
+    /*
+     * Constructeur : démarre l'IHM et envoi le controleur en paramètre
+     */
+    public Controler() {
+    	ihmApplication = new IHM(this); // l'IHM recoit le controleur en paramètre
+    	ihmApplication.setVisible(true); // affichage de l'IHM
     }
 }
 

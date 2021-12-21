@@ -7,18 +7,18 @@ package model;
  * @author balou
  *
  */
-public class Produit {
+public class ProduitText {
     private String name;
     private int numero;
     private int numProducteur;
     
     // les constructeurs
-    public Produit(String name, int numero) {
+    public ProduitText(String name, int numero) {
         this.name = name;
         this.numero = numero;
     }
     
-    public Produit(String name, int numProducteur, int numero) {
+    public ProduitText(String name, int numProducteur, int numero) {
         this.name = name;
         this.numero = numero;
         this.numProducteur = numProducteur;

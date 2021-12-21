@@ -11,11 +11,11 @@ import java.util.concurrent.BlockingQueue;
  * @author balou
  *
  */
-public class Consommateur implements Runnable {
+public class ConsommateurMQ implements Runnable {
     private String consumerName;
-    private final BlockingQueue<Produit> queue;
+    private final BlockingQueue<ProduitText> queue;
 
-    public Consommateur(String consumerName, int priority, BlockingQueue<Produit> q) {
+    public ConsommateurMQ(String consumerName, int priority, BlockingQueue<ProduitText> q) {
         this.consumerName = consumerName;
         this.queue = q;
         Thread.currentThread().setPriority(priority);
@@ -38,7 +38,7 @@ public class Consommateur implements Runnable {
      * consommation d'un produit arrivé dans la queue de message
      * @param x
      */
-    private void consume(Produit x) {
+    private void consume(ProduitText x) {
     	System.out.println("--> " + this.consumerName + " >> Consomme : \n\t\t\t" + x.getName() + "" + x.getNumProducteur() + "_" + x.getNumero());
         //System.out.println(" --> " + this.consumerName + " >> Consomme : \n\t\t\t" + x.getInfo() + "\n");
     }
