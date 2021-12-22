@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 
+import controler.Controler;
+
 
 /**
  * ---------------------------
@@ -17,9 +19,9 @@ public class ConsommateurMQ implements Runnable, Consommateur {
 	// propriétés
 	public String nomConsommateur = "nom inconnu";
     private final BlockingQueue<ProduitText> queue;
-    private ArrayList<String> msg;
-    
-    
+    private Controler controleur;
+
+        
     
     /**
      * Constructeur : recoit le nom du consommateur, sa priorité et la queue de messages qui va recevoir les produits
@@ -28,17 +30,22 @@ public class ConsommateurMQ implements Runnable, Consommateur {
      * @param priority
      * @param q
      */
-    public ConsommateurMQ(String consumerName, int priority, BlockingQueue<ProduitText> q, ArrayList<String> msg) {
+    public ConsommateurMQ(String consumerName,
+    		int priority,
+    		BlockingQueue<ProduitText> q,
+    		BlockingQueue<String> msgQ_Console,
+    		Controler controleur)
+    {
         setNom(consumerName);
         this.queue = q;
-        this.msg = msg;
+        this.controleur = controleur;
         
         Thread.currentThread().setPriority(priority);
     }
     
     /**
      * m�thode de lancement du thread consommateur
-     *     @Override
+     * @Override
      */
     public void run() {
         try {
@@ -56,9 +63,18 @@ public class ConsommateurMQ implements Runnable, Consommateur {
      * @param x
      */
 	public void consommer(Object x) {
-		msg.add("--> " + nomConsommateur + " >> Consomme (avec transtypage) : \n\t\t\t" + ((ProduitText)x).getName() + "" + ((ProduitText) x).getNumProducteur() + "_" + ((ProduitText)x).getNumero());
+		String msgAAfficher = "--> "
+				+ nomConsommateur
+				+ " + "
+				+ "Consomme : \n\t\t\t"
+				+ ((ProduitText)x).getName()
+				+ " "
+				+ ((ProduitText)x).getNumProducteur()
+				+ " "
+				+ ((ProduitText)x).getNumero();
+
 		
-    	//System.out.println("--> " + nomConsommateur + " >> Consomme (avec transtypage) : \n\t\t\t" + ((ProduitText)x).getName() + "" + ((ProduitText) x).getNumProducteur() + "_" + ((ProduitText)x).getNumero());	
+		controleur.dmdModelAffichageConsole(msgAAfficher);
 	}
 
 	@Override

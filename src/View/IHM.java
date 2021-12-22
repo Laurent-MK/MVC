@@ -20,6 +20,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
+import javax.swing.JTextArea;
 
 public class IHM extends JFrame {
 
@@ -40,8 +42,10 @@ public class IHM extends JFrame {
 	
 	private DefaultListModel contenuConsole = new DefaultListModel();
 	private static int nbMsg = 0;
-	
-	
+
+
+	private JList lstAffichageConsole;
+
 
 	/**
 	 * Launch the application.
@@ -79,19 +83,29 @@ public class IHM extends JFrame {
 	
 	
 	/**
-	 * affichage d'un message dans la liste
+	 * remplir la zone avec les messages dans la liste
 	 * @param message
 	 */
 	public void affichageConsole(ArrayList<String> messageConsole) {
 		//vider la liste
 		contenuConsole.clear();
 		
+/*		for (int i=0; i < messageConsole.size(); i++) {
+			contenuConsole.addElement(messageConsole);
+*/		
 		// boucle pour remplir la liste
 		for(String message : messageConsole) {
-			String ligne;
+			//String ligne;
 			
-			ligne = message;
-			contenuConsole.addElement("msg n° : " + ++nbMsg + " : " + ligne);
+			//ligne = message;
+//			contenuConsole.addElement(ligne);
+			contenuConsole.addElement(message);
+			
+			lstAffichageConsole.updateUI();
+			lstAffichageConsole.repaint();
+
+			
+			//System.out.println("size = " + contenuConsole.getSize());
 		}
 		
 		//lstAffichageConsole
@@ -114,7 +128,7 @@ public class IHM extends JFrame {
 		this.controleur = controleur;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 692, 583);
+		setBounds(100, 100, 1266, 583);
 		
 		contentPane = new JPanel();		// conteneur des objets graphiques
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -192,11 +206,14 @@ public class IHM extends JFrame {
 		scrollPane.setBounds(23, 175, 643, 320);
 		contentPane.add(scrollPane);
 		
-		JList lstAffichageConsole = new JList(contenuConsole);
+		lstAffichageConsole = new JList(contenuConsole);
+//		JList lstAffichageConsole = new JList(contenuConsole);
+//		scrollPane.add(lstAffichageConsole);
+//		scrollPane.setVisible(true);;
 		scrollPane.setViewportView(lstAffichageConsole);
-//		scrollPane.setColumnHeaderView(lstAffichageConsole);
+		
+		//		scrollPane.setColumnHeaderView(lstAffichageConsole);
 	
-
+		
 	}
-
 }

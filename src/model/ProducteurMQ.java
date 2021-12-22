@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import controler.Controler;
 
@@ -82,19 +83,37 @@ public class ProducteurMQ implements Runnable, Producteur {
     public void run() {
     	long i;
 
-//        msg.add("Producteur n° : " + numProducteur + " crée");
         controleur.dmdModelAffichageConsole("Producteur n° : " + numProducteur + " crée");
+
+        while(true) {
+        	// toutes les secondes un produit est envoyé dans la queue
+            try {
+				Thread.sleep(1000);
+				boolean queuePleine = this.queue.offer(this.produire(), 200, TimeUnit.MILLISECONDS);
+				
+				if (queuePleine) {
+					System.out.println("nouveu produit envoyé");
+				} else {
+					System.out.println("queue pleine");					
+				}
+			} catch (InterruptedException e) {
+				// TODO Bloc catch généré automatiquement
+				e.printStackTrace();
+			}
+        }
         
+        /*        
         try {
             while (--nbBoucles > 0) {
                 Thread.sleep(this.delay * 1000); // endormissement durant "delay" secondes.
                 for (i =0; i < 555000; i++) {
                 	;
-                }
+                	}            
                 this.queue.put(this.produire());
-            }
-        } catch (InterruptedException ex) {
+            	}
+        	} catch (InterruptedException ex) {
         }
+*/
     }
     
     /**
@@ -102,12 +121,17 @@ public class ProducteurMQ implements Runnable, Producteur {
      * @return
      */
     public ProduitText produire() {
-    	//numeroProduit++;
-        controleur.dmdModelAffichageConsole("#" + this.nomProducteur + "_" + this.numProducteur + " >> Cr�ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
+    	controleur.dmdModelAffichageConsole("#" +
+        			this.nomProducteur +
+        			"_" +
+        			this.numProducteur +
+        			" >> Creation d'un nouveau produit : " +
+        			"boulon " +
+        			numProducteur +
+        			"_" +
+        			++numeroProduit +
+        			"\n");
     	
-//    	msg.add("#" + this.nomProducteur + "_" + this.numProducteur + " >> Cr�ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
-    	
-        //System.out.println("#" + this.nomProducteur + "_" + this.numProducteur + " >> Cr�ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
         return new ProduitText("boulon ", numProducteur, numeroProduit);
     }
 
