@@ -11,36 +11,56 @@ import java.util.concurrent.BlockingQueue;
  * @author balou
  *
  */
-public class ConsommateurMQ implements Runnable {
-    private String consumerName;
+public class ConsommateurMQ implements Runnable, Consommateur {
+	public String nomConsommateur = "nom inconnu";
     private final BlockingQueue<ProduitText> queue;
 
+    /**
+     * Constructeur : recoit le om du consommateur, sa priorit√© et la queue de messages qui va recevoir les produits
+     * 
+     * @param consumerName
+     * @param priority
+     * @param q
+     */
     public ConsommateurMQ(String consumerName, int priority, BlockingQueue<ProduitText> q) {
-        this.consumerName = consumerName;
+        setNom(consumerName);
         this.queue = q;
         Thread.currentThread().setPriority(priority);
     }
     
     /**
-     * mÈthode de lancement du thread
+     * mÔøΩthode de lancement du thread consommateur
      *     @Override
      */
     public void run() {
         try {
             while (true) {
-                consume(queue.take()); // attente de l'arriv√©e d'un produit dans la queue de message
+                consommer(queue.take()); // attente de l'arriv√©e d'un produit dans la queue de message
             }
         } catch (InterruptedException ex) {
         }
     }
 
+
+	@Override
     /**
-     * consommation d'un produit arrivÈ dans la queue de message
+     * consommation d'un produit arrivÔøΩ dans la queue de message
      * @param x
      */
-    private void consume(ProduitText x) {
-    	System.out.println("--> " + this.consumerName + " >> Consomme : \n\t\t\t" + x.getName() + "" + x.getNumProducteur() + "_" + x.getNumero());
-        //System.out.println(" --> " + this.consumerName + " >> Consomme : \n\t\t\t" + x.getInfo() + "\n");
-    }
+	public void consommer(Object x) {
+    	System.out.println("--> " + nomConsommateur + " >> Consomme (avec transtypage) : \n\t\t\t" + ((ProduitText)x).getName() + "" + ((ProduitText) x).getNumProducteur() + "_" + ((ProduitText)x).getNumero());	
+	}
+
+	@Override
+	public String getNom() {
+		return this.nomConsommateur;
+	}
+
+	@Override
+	public void setNom(String nom) {
+		this.nomConsommateur = nom;
+	}
+
+	
 }
 

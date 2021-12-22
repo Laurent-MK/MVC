@@ -11,10 +11,9 @@ import java.util.concurrent.BlockingQueue;
  *
  */
 public class ProducteurMQ implements Runnable, Producteur {
-    private int numeroProduit = 0;			// numero de produit
+    private int numeroProduit;			// numero de produit
     private int numProducteur; 				// numero de producteur
-
-    private String producteurName = "";
+    private String nomProducteur = "nom inconnu";	// nom du producteur
     private BlockingQueue<ProduitText> queue = null;
     private int delay = 0;
     private int nbBoucles;
@@ -32,7 +31,7 @@ public class ProducteurMQ implements Runnable, Producteur {
       * @param q
       */
      public ProducteurMQ(String producerName, int numProd, int delay, int nbProductionARealiser, BlockingQueue<ProduitText> q) {
-        this.producteurName = producerName;
+        setNom(producerName);
         this.delay = delay;
         this.queue = q;
         this.nbBoucles = nbProductionARealiser;
@@ -49,7 +48,7 @@ public class ProducteurMQ implements Runnable, Producteur {
       * @param q
       */
     public ProducteurMQ(String producerName, int numProd, int delay, int nbProductionARealiser, int priority, BlockingQueue<ProduitText> q) {
-        this.producteurName = producerName;
+        this.nomProducteur = producerName;
         this.delay = delay;
         this.queue = q;
         this.nbBoucles = nbProductionARealiser;
@@ -60,7 +59,7 @@ public class ProducteurMQ implements Runnable, Producteur {
 
     
     /**
-     * méthode de lancement du thread
+     * mï¿½thode de lancement du thread
      */
     @Override
     public void run() {
@@ -72,7 +71,7 @@ public class ProducteurMQ implements Runnable, Producteur {
                 for (i =0; i < 555000; i++) {
                 	;
                 }
-                this.queue.put(this.produce());
+                this.queue.put(this.produire());
             }
         } catch (InterruptedException ex) {
         }
@@ -82,20 +81,30 @@ public class ProducteurMQ implements Runnable, Producteur {
      * production d'un nouveau produit a envoyer aux consommateurs
      * @return
      */
-    public ProduitText produce() {
+    public ProduitText produire() {
     	//numeroProduit++;
     	
-        System.out.println("#" + this.producerName + "_" + numProducteur + " >> Crï¿½ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
+        System.out.println("#" + this.nomProducteur + "_" + this.numProducteur + " >> Crï¿½ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
         return new ProduitText("boulon ", numProducteur, numeroProduit);
     }
 
+    
+    
+    
+    
 	@Override
 	public String getNom() {
-		return producerName;
+		return this.nomProducteur;
 	}
 
 	@Override
 	public int getNumProducteur() {
-		return numProducteur;
+		return this.numProducteur;
+	}
+
+	@Override
+	public void setNom(String nom) {
+		this.nomProducteur = nom;
+		
 	}
 }

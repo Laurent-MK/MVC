@@ -22,7 +22,7 @@ import javax.swing.JTextField;
 public class IHM extends JFrame {
 
 	/**
-	 * déclaration des propriétés de la classe
+	 * dï¿½claration des propriï¿½tï¿½s de la classe
 	 */
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPane;
@@ -44,8 +44,8 @@ public class IHM extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					IHM frame = new IHM(); 		// création de l'IHM par appel du constructeur
-					frame.setVisible(true);		// affichage de la fenêtre
+					IHM frame = new IHM(); 		// crï¿½ation de l'IHM par appel du constructeur
+					frame.setVisible(true);		// affichage de la fenï¿½tre
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -55,7 +55,7 @@ public class IHM extends JFrame {
 */
 	
 	/**
-	 * fct executée lors du clic sur le bouton
+	 * fct executï¿½e lors du clic sur le bouton
 	 * @param e
 	 */
 	private void btnTest_clic(ActionEvent e) {
@@ -75,7 +75,7 @@ public class IHM extends JFrame {
 		
 		contentPane = new JPanel();		// conteneur des objets graphiques
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);	// intégration du contentPane dans le conteneur
+		setContentPane(contentPane);	// intï¿½gration du contentPane dans le conteneur
 		contentPane.setLayout(null);
 		
 		/**
@@ -90,7 +90,7 @@ public class IHM extends JFrame {
 		 */
 		btnGo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// action exécutée lors du clic
+				// action exï¿½cutï¿½e lors du clic
 				btnTest_clic(e);
 			}
 		});
