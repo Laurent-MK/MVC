@@ -1,6 +1,9 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
+
+import controler.Controler;
 
 /**
  * ------------------------------------------
@@ -15,8 +18,11 @@ public class ProducteurMQ implements Runnable, Producteur {
     private int numProducteur; 				// numero de producteur
     private String nomProducteur = "nom inconnu";	// nom du producteur
     private BlockingQueue<ProduitText> queue = null;
-    private int delay = 0;
+    private int delay = 100;
     private int nbBoucles;
+	private Controler controleur = null;
+	
+    private ArrayList<String> msg;
 
      /**
       * Liste des constructeurs possibles
@@ -30,12 +36,13 @@ public class ProducteurMQ implements Runnable, Producteur {
       * @param nbProductionARealiser
       * @param q
       */
-     public ProducteurMQ(String producerName, int numProd, int delay, int nbProductionARealiser, BlockingQueue<ProduitText> q) {
+     public ProducteurMQ(String producerName, int numProd, int delay, int nbProductionARealiser, BlockingQueue<ProduitText> q, ArrayList<String> msg) {
         setNom(producerName);
         this.delay = delay;
         this.queue = q;
         this.nbBoucles = nbProductionARealiser;
         this.numProducteur = numProd;
+        this.msg = msg;
     }
 
      /**
@@ -47,13 +54,23 @@ public class ProducteurMQ implements Runnable, Producteur {
       * @param priority
       * @param q
       */
-    public ProducteurMQ(String producerName, int numProd, int delay, int nbProductionARealiser, int priority, BlockingQueue<ProduitText> q) {
+    public ProducteurMQ(String producerName,
+    		int numProd,
+    		int delay,
+    		int nbProductionARealiser,
+    		int priority,
+    		BlockingQueue<ProduitText> q,
+    		ArrayList<String> msg,
+    		Controler controleur)
+    {
         this.nomProducteur = producerName;
         this.delay = delay;
         this.queue = q;
         this.nbBoucles = nbProductionARealiser;
         this.numProducteur = numProd;
-        
+        this.msg = msg;
+        this.controleur = controleur;
+      
         Thread.currentThread().setPriority(priority);
     }
 
@@ -64,7 +81,10 @@ public class ProducteurMQ implements Runnable, Producteur {
     @Override
     public void run() {
     	long i;
-    	
+
+//        msg.add("Producteur n° : " + numProducteur + " crée");
+        controleur.dmdModelAffichageConsole("Producteur n° : " + numProducteur + " crée");
+        
         try {
             while (--nbBoucles > 0) {
                 Thread.sleep(this.delay * 1000); // endormissement durant "delay" secondes.
@@ -83,8 +103,11 @@ public class ProducteurMQ implements Runnable, Producteur {
      */
     public ProduitText produire() {
     	//numeroProduit++;
+        controleur.dmdModelAffichageConsole("#" + this.nomProducteur + "_" + this.numProducteur + " >> Cr�ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
     	
-        System.out.println("#" + this.nomProducteur + "_" + this.numProducteur + " >> Cr�ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
+//    	msg.add("#" + this.nomProducteur + "_" + this.numProducteur + " >> Cr�ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
+    	
+        //System.out.println("#" + this.nomProducteur + "_" + this.numProducteur + " >> Cr�ation d'un nouveau produit : " + "boulon " + numProducteur + "_" + ++numeroProduit + "\n");
         return new ProduitText("boulon ", numProducteur, numeroProduit);
     }
 

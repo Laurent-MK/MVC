@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 
 
@@ -12,19 +13,26 @@ import java.util.concurrent.BlockingQueue;
  *
  */
 public class ConsommateurMQ implements Runnable, Consommateur {
+	
+	// propriétés
 	public String nomConsommateur = "nom inconnu";
     private final BlockingQueue<ProduitText> queue;
-
+    private ArrayList<String> msg;
+    
+    
+    
     /**
-     * Constructeur : recoit le om du consommateur, sa priorité et la queue de messages qui va recevoir les produits
+     * Constructeur : recoit le nom du consommateur, sa priorité et la queue de messages qui va recevoir les produits
      * 
      * @param consumerName
      * @param priority
      * @param q
      */
-    public ConsommateurMQ(String consumerName, int priority, BlockingQueue<ProduitText> q) {
+    public ConsommateurMQ(String consumerName, int priority, BlockingQueue<ProduitText> q, ArrayList<String> msg) {
         setNom(consumerName);
         this.queue = q;
+        this.msg = msg;
+        
         Thread.currentThread().setPriority(priority);
     }
     
@@ -48,7 +56,9 @@ public class ConsommateurMQ implements Runnable, Consommateur {
      * @param x
      */
 	public void consommer(Object x) {
-    	System.out.println("--> " + nomConsommateur + " >> Consomme (avec transtypage) : \n\t\t\t" + ((ProduitText)x).getName() + "" + ((ProduitText) x).getNumProducteur() + "_" + ((ProduitText)x).getNumero());	
+		msg.add("--> " + nomConsommateur + " >> Consomme (avec transtypage) : \n\t\t\t" + ((ProduitText)x).getName() + "" + ((ProduitText) x).getNumProducteur() + "_" + ((ProduitText)x).getNumero());
+		
+    	//System.out.println("--> " + nomConsommateur + " >> Consomme (avec transtypage) : \n\t\t\t" + ((ProduitText)x).getName() + "" + ((ProduitText) x).getNumProducteur() + "_" + ((ProduitText)x).getNumero());	
 	}
 
 	@Override
