@@ -1,6 +1,10 @@
 package model;
 
+import java.io.Console;
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
+
+import controler.Controler;
 
 
 /**
@@ -12,25 +16,40 @@ import java.util.concurrent.BlockingQueue;
  *
  */
 public class ConsommateurMQ implements Runnable, Consommateur {
+	
+	// propriétés
 	public String nomConsommateur = "nom inconnu";
     private final BlockingQueue<ProduitText> queue;
+    private Controler controleur;
+    private ConsoleMK consoleMK;
 
+        
+    
     /**
-     * Constructeur : recoit le om du consommateur, sa priorité et la queue de messages qui va recevoir les produits
+     * Constructeur : recoit le nom du consommateur, sa priorité et la queue de messages qui va recevoir les produits
      * 
      * @param consumerName
      * @param priority
      * @param q
      */
-    public ConsommateurMQ(String consumerName, int priority, BlockingQueue<ProduitText> q) {
+    public ConsommateurMQ(String consumerName,
+    		int priority,
+    		BlockingQueue<ProduitText> q,
+    		BlockingQueue<String> msgQ_Console,
+    		Controler controleur,
+    		ConsoleMK consoleMK)
+    {
         setNom(consumerName);
         this.queue = q;
+        this.controleur = controleur;
+        this.consoleMK = consoleMK;
+        
         Thread.currentThread().setPriority(priority);
     }
     
     /**
      * m�thode de lancement du thread consommateur
-     *     @Override
+     * @Override
      */
     public void run() {
         try {
@@ -48,7 +67,20 @@ public class ConsommateurMQ implements Runnable, Consommateur {
      * @param x
      */
 	public void consommer(Object x) {
-    	System.out.println("--> " + nomConsommateur + " >> Consomme (avec transtypage) : \n\t\t\t" + ((ProduitText)x).getName() + "" + ((ProduitText) x).getNumProducteur() + "_" + ((ProduitText)x).getNumero());	
+		String msgAAfficher = "--> "
+				+ nomConsommateur
+				+ " + "
+				+ "Consomme : \n\t\t\t"
+				+ ((ProduitText)x).getName()
+				+ " "
+				+ ((ProduitText)x).getNumProducteur()
+				+ " "
+				+ ((ProduitText)x).getNumero();
+
+		consoleMK.sendMsgToConsole(msgAAfficher);
+
+		
+//		controleur.dmdModelAffichageConsole(msgAAfficher);
 	}
 
 	@Override
