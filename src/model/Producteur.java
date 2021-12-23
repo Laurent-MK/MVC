@@ -11,6 +11,6 @@ public interface Producteur {
 	public String getNom();
 	public void setNom(String nom);
 	
-	public int getNumProducteur();
+	public int getNumero();
 	
 }

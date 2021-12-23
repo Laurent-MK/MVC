@@ -1,9 +1,10 @@
-package model;
+package View;
 
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import View.IHM;
+import model.Consommateur;
 
 
 
@@ -17,10 +18,14 @@ import View.IHM;
  */
 public class ConsoleMK implements Runnable, Consommateur {
 
-	// propriétés
+	// proprietes
 	public String nomConsole = "nom inconnu";
-    private final BlockingQueue<String> queueMsg;
+//    private final BlockingQueue<String> queueMsg;
+
+    private final ArrayBlockingQueue<String> queueMsg;
+    
     private IHM ihmApplication;
+    private int numeroProducteur;
     
     private static int numMsg = 0;
     
@@ -34,11 +39,12 @@ public class ConsoleMK implements Runnable, Consommateur {
      * @param q
      * @param msg
      */
-    public ConsoleMK(String consumerName, int priority, BlockingQueue<String> msgQ, IHM ihmApplication)
+    public ConsoleMK(String consumerName, int numero, int priority, ArrayBlockingQueue<String> msgQ, IHM ihmApplication)
     {
         this.nomConsole = consumerName;
         this.queueMsg = msgQ;
         this.ihmApplication = ihmApplication;
+        this.numeroProducteur = numero;
        
         Thread.currentThread().setPriority(priority);
     }
@@ -62,7 +68,7 @@ public class ConsoleMK implements Runnable, Consommateur {
 	public void consommer(Object messageConsole) {
 		String msg;
 		
-		msg = "msg numero : " + ++numMsg + " " + (String) messageConsole + "\n";
+		msg = "msg[" + ++numMsg + "] :  " + (String) messageConsole + "\n";
 		
 		// on a receptionné un message => on doit le passer à l'IHM pour qu'elle l'affiche et l'afficher dans la console syst�me
 		message.add(msg);			// stockage de tous les messages dans une liste
@@ -70,14 +76,16 @@ public class ConsoleMK implements Runnable, Consommateur {
 		
 
 		// affichage dans la fenetre de l'IHM dediee aux messages de console
-//		ihmApplication.affichageConsole(message); // affichage dans la fenêtre de console
 		ihmApplication.affichageConsole(msg);
+//		ihmApplication.affichageConsole(message);
 	}
 
+	
+	
+	
 	@Override
 	public String getNom() {
-		// TODO Stub de la méthode généré automatiquement
-		return null;
+		return nomConsole;
 	}
 
 	@Override
@@ -90,11 +98,18 @@ public class ConsoleMK implements Runnable, Consommateur {
 	public void run() {
         try {
             while (true) {
-                consommer(queueMsg.take()); // attente de l'arrivée d'un produit dans la queue de message
+                consommer(queueMsg.take()); // attente de l'arrivee d'un produit dans la queue de message
             }
         } catch (InterruptedException ex) {
         }
 		
+	}
+
+
+
+	@Override
+	public int getNumero() {
+		return numeroProducteur;
 	}
 
 }

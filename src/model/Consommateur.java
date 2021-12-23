@@ -12,4 +12,5 @@ public interface Consommateur {
 	public String getNom();
 	public void setNom(String nom);
 	
+	public int getNumero();
 }

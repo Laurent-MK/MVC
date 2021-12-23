@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import controler.Controler;
+import model.Constantes;
 
 import javax.swing.JButton;
 import javax.swing.JTextPane;
@@ -23,15 +24,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.JTextArea;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-public class IHM extends JFrame {
+public class IHM extends JFrame implements Constantes {
 
 	/**
-	 * dï¿½claration des propriï¿½tï¿½s de la classe
+	 * declaration des proprietes de la classe
 	 */
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPane;
 	private final JButton btnGo = new JButton("Go");
+	private final JButton btnCreerThread = new JButton("Creer Threads");
 	private final JTextPane txtTest = new JTextPane();
 	private final JLabel lblNewLabel = new JLabel("");
 	private final String chemin = "image.jpg";
@@ -40,6 +44,9 @@ public class IHM extends JFrame {
 	private JTextField txtNbProducteur;
 	private JTextField txtNbConsommateur;
 	private Controler controleur = null;
+	
+	private static boolean isClicOnBtn_GO = false;
+	private static boolean isclicOnBtn_CreationThread = false;
 	
 	private DefaultListModel contenuLstAffichageConsole = new DefaultListModel();
 	private DefaultListModel contenulistThread = new DefaultListModel();
@@ -50,13 +57,40 @@ public class IHM extends JFrame {
 
 	
 	/**
-	 * fct executï¿½e lors du clic sur le bouton
+	 * fct executee lors du clic sur le bouton
 	 * @param e
 	 */
 	private void btnGo_clic(ActionEvent e) {
-		txtTest.setText("C'est parti !");
-		controleur.dmdIHMGo(Long.parseLong(txtNbConsommateur.getText()), Long.parseLong(txtNbProducteur.getText()));
+		
+		if (isclicOnBtn_CreationThread) {
+			if (isClicOnBtn_GO) {
+				JOptionPane.showMessageDialog(null, "Application déjà lancée");
+				return;
+			}
+				
+			txtTest.setText("C'est parti !");
+//			controleur.dmdIHMGo(Long.parseLong(txtNbConsommateur.getText()), Long.parseLong(txtNbProducteur.getText()));
+			controleur.dmdIHMGo();
+			isClicOnBtn_GO = true;
+			}
+		else {
+			JOptionPane.showMessageDialog(null, "cliquer d'abord sur le bouton de création des Threads");
+		}
 	}
+	
+	
+	private void btnCreerThread_clic(ActionEvent e) {
+		
+		if (isclicOnBtn_CreationThread) {
+			JOptionPane.showMessageDialog(null, "Threads déjà crées !");		
+		}
+		else {
+//			JOptionPane.showMessageDialog(null, "Création des threads : OK");
+			isclicOnBtn_CreationThread = true;
+			controleur.dmdIHMCreationThread();		
+		}
+	}
+	
 	
 	/**
 	 * fct exÃ©cutÃ©e lors du clic sur le bouton "Del"
@@ -67,14 +101,15 @@ public class IHM extends JFrame {
 	}
 	
 
-	public void affichageConsole(String msg) {
-		contenuLstAffichageConsole.addElement(msg);
-	}
-
-
 	/**
 	 * Remplir la zone d'affichage des threads presents
 	 */
+	public void affichageThreads(String msg) {
+
+		contenulistThread.clear();
+		contenulistThread.addElement(msg);
+	}
+	
 	public void affichageThreads(ArrayList<String> listeThreads) {
 	
 		contenulistThread.clear();
@@ -104,7 +139,14 @@ public class IHM extends JFrame {
 	}
 
 	
-	
+
+	/**
+	 * affichage d'un nouveau message dans la zone de console de l'IHM
+	 * @param msg
+	 */
+	public void affichageConsole(String msg) {
+		contenuLstAffichageConsole.addElement(msg);
+	}
 	
 	
 	/**
@@ -142,9 +184,8 @@ public class IHM extends JFrame {
 	 * pour initialiser Ã  des valeurs par defaut des champs de saisie de l'IHM
 	 */
 	private void initIHM() {
-		txtNbProducteur.setText("3"); // on fixe le mini a  1
-		txtNbConsommateur.setText("3"); // on fixe le mini a  2
-//		JOptionPane.showMessageDialog(null, "ok");
+		txtNbProducteur.setText(Integer.toString(DEFAULT_NB_THREAD_PROD)); 		// on fixe le mini
+		txtNbConsommateur.setText(Integer.toString(DEFAULT_NB_THREAD_CONS)); 	// on fixe le mini
 	}
 	
 	
@@ -156,7 +197,7 @@ public class IHM extends JFrame {
 		this.controleur = controleur;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1110, 583);
+		setBounds(100, 100, 1228, 583);
 		
 		contentPane = new JPanel();		// conteneur des objets graphiques
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -182,12 +223,28 @@ public class IHM extends JFrame {
 		btnGo.setBounds(205, 103, 58, 23);
 		contentPane.add(btnGo);
 		
+
+		/**
+		 * ajout du bouton de creation des threads
+		 */
+		btnCreerThread.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// action executee lors du clic
+				btnCreerThread_clic(e);
+			}
+		});
+		btnCreerThread.setBounds(338, 49, 155, 23);
+		contentPane.add(btnCreerThread);
+
+		
+		
+		
 		/**
 		 * ajout d'une image
 		 */
 		String ressource = getClass().getClassLoader().getResource(chemin).getPath();
 		lblNewLabel.setIcon(new ImageIcon(ressource));
-		lblNewLabel.setBounds(503, 30, 117, 61);
+		lblNewLabel.setBounds(967, 11, 117, 61);
 		contentPane.add(lblNewLabel);
 		lblZoneConsole.setBounds(23, 150, 355, 14);
 		
@@ -241,7 +298,7 @@ public class IHM extends JFrame {
 		scrollPaneConsole.setViewportView(lstAffichageConsole);
 		
 		JScrollPane scrollPaneThread = new JScrollPane();
-		scrollPaneThread.setBounds(695, 175, 376, 320);
+		scrollPaneThread.setBounds(695, 175, 507, 320);
 		contentPane.add(scrollPaneThread);
 		
 		JList listThread = new JList(contenulistThread);
@@ -250,6 +307,7 @@ public class IHM extends JFrame {
 		JLabel lblNewLabel_1 = new JLabel("Etat des threads  : true = en vie / false = mort");
 		lblNewLabel_1.setBounds(695, 150, 283, 14);
 		contentPane.add(lblNewLabel_1);
+		
 		
 		//		scrollPane.setColumnHeaderView(lstAffichageConsole);
 	

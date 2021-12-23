@@ -1,9 +1,8 @@
 package model;
 
-import java.io.Console;
-import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 
+import View.ConsoleMK;
 import controler.Controler;
 
 
@@ -17,11 +16,12 @@ import controler.Controler;
  */
 public class ConsommateurMQ implements Runnable, Consommateur {
 	
-	// propriétés
+	// proprietes
 	public String nomConsommateur = "nom inconnu";
     private final BlockingQueue<ProduitText> queue;
     private Controler controleur;
     private ConsoleMK consoleMK;
+    private int numero;
 
         
     
@@ -33,6 +33,7 @@ public class ConsommateurMQ implements Runnable, Consommateur {
      * @param q
      */
     public ConsommateurMQ(String consumerName,
+    		int num,
     		int priority,
     		BlockingQueue<ProduitText> q,
     		BlockingQueue<String> msgQ_Console,
@@ -43,29 +44,33 @@ public class ConsommateurMQ implements Runnable, Consommateur {
         this.queue = q;
         this.controleur = controleur;
         this.consoleMK = consoleMK;
+        this.numero = num;
         
         Thread.currentThread().setPriority(priority);
     }
     
+    
     /**
-     * m�thode de lancement du thread consommateur
+     * methode de lancement du thread consommateur
      * @Override
      */
     public void run() {
         try {
             while (true) {
-                consommer(queue.take()); // attente de l'arrivée d'un produit dans la queue de message
+                consommer(queue.take()); // attente de l'arrivee d'un produit dans la queue de message
+                Thread.sleep(500);
             }
         } catch (InterruptedException ex) {
         }
     }
 
 
-	@Override
+
     /**
-     * consommation d'un produit arriv� dans la queue de message
+     * consommation d'un produit arrivee dans la queue de message
      * @param x
      */
+	@Override
 	public void consommer(Object x) {
 		String msgAAfficher = "--> "
 				+ nomConsommateur
@@ -77,19 +82,26 @@ public class ConsommateurMQ implements Runnable, Consommateur {
 				+ ((ProduitText)x).getNumero();
 
 		consoleMK.sendMsgToConsole(msgAAfficher);
-
-		
-//		controleur.dmdModelAffichageConsole(msgAAfficher);
 	}
 
+	
+	
 	@Override
 	public String getNom() {
 		return this.nomConsommateur;
 	}
 
+	
+	
 	@Override
 	public void setNom(String nom) {
 		this.nomConsommateur = nom;
+	}
+
+
+	@Override
+	public int getNumero() {
+		return this.numero;
 	}
 
 	

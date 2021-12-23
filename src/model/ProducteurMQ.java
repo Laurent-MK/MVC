@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import View.ConsoleMK;
 import controler.Controler;
 
 /**
@@ -24,7 +25,7 @@ public class ProducteurMQ implements Runnable, Producteur {
 	private ConsoleMK console;
 	
      /**
-      * Liste des constructeurs possibles
+      * Liste des constructeurs
       */
     
       /**
@@ -57,7 +58,7 @@ public class ProducteurMQ implements Runnable, Producteur {
 
     
     /**
-     * m�thode de lancement du thread
+     * methode de lancement du thread
      */
     @Override
     public void run() {
@@ -65,21 +66,18 @@ public class ProducteurMQ implements Runnable, Producteur {
 
 		console.sendMsgToConsole("Producteur numero : " + numProducteur + " cree");
 
-//    	console.afficherMsgConsole("Producteur numero : " + numProducteur + " cree");
-//        controleur.dmdModelAffichageConsole("Producteur n° : " + numProducteur + " crée");
-
         while(true) {
-        	// toutes les secondes un produit est envoye dans la queue
+        	// toutes les secondes, un produit est envoye dans la queue
             try {
-				Thread.sleep(1000);
+				//Thread.sleep(1000);
+
+//            	this.queue.put(this.produire());
 				boolean queuePleine = this.queue.offer(this.produire(), 200, TimeUnit.MILLISECONDS);
-				
 				if (queuePleine) {
-					System.out.println("nouveau produit envoye");
-					console.sendMsgToConsole("Producteur numero : " + numProducteur + " => nouveau produit envoye");
+					//console.sendMsgToConsole("Producteur numero : " + numProducteur + " => nouveau produit envoye");
 				} else {
-					System.out.println("queue pleine");					
-			    	console.sendMsgToConsole("Producteur numero : " + numProducteur + " queue pleine");
+			    	console.sendMsgToConsole("Producteur numero : " + numProducteur + " QUEUE PLEINE");
+					Thread.sleep(5000);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -106,17 +104,6 @@ public class ProducteurMQ implements Runnable, Producteur {
     			++numeroProduit +
     			"\n");
     	
-    	/*controleur.dmdModelAffichageConsole("#" +
-        			this.nomProducteur +
-        			"_" +
-        			this.numProducteur +
-        			" >> Creation d'un nouveau produit : " +
-        			"boulon " +
-        			numProducteur +
-        			"_" +
-        			++numeroProduit +
-        			"\n");
-    	*/
         return new ProduitText("boulon ", numProducteur, numeroProduit);
     }
 
@@ -130,7 +117,7 @@ public class ProducteurMQ implements Runnable, Producteur {
 	}
 
 	@Override
-	public int getNumProducteur() {
+	public int getNumero() {
 		return this.numProducteur;
 	}
 

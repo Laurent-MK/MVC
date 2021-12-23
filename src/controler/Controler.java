@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import View.ConsoleMK;
 /**
- * imports des packages spï¿½cifiques de l'application
+ * imports des packages specifiques de l'application
  */
 import View.IHM;
-import model.ConsoleMK;
 import model.ConsommateurMQ;
+import model.Constantes;
 import model.ProducteurMQ;
 import model.ProduitText;
 
@@ -22,7 +23,7 @@ import model.ProduitText;
  *
  */
 
-public class Controler {
+public class Controler implements Constantes {
 	private static IHM ihmApplication;
     private static int delaiDeProductionP1 = 0;
     private static int delaiDeProductionP2 = 0;
@@ -36,36 +37,30 @@ public class Controler {
     /**
      * 
      */
-    private static BlockingQueue<ProduitText> msgQProduit = new ArrayBlockingQueue<ProduitText>(5);
-    private ProducteurMQ producer1;
-    private ProducteurMQ producer2;
-    private ProducteurMQ producer3;
-    private ConsommateurMQ consumer1;
-    private ConsommateurMQ consumer2;
-    private ConsommateurMQ consumer3;
+    private static BlockingQueue<ProduitText> msgQProduit = new ArrayBlockingQueue<ProduitText>(TAILLE_MESSAGE_Q_PC);
+
     
-    private Thread p1;
-    private Thread p2;
-    private Thread p3;
-    private Thread c1;
-    private Thread c2;
-    private Thread c3;
-    
-    private Thread listThreadP[];	// tableau des threads producteurs
-    private Thread listThreadC[];	// tableau des threads consommateurs
+    private Thread listThreadP[];					// tableau des threads producteurs
+    private ProducteurMQ listeProducteurMQ[];		// tableau des objets abritants les threads producteurs
+    private Thread listThreadC[];					// tableau des threads consommateurs
+    private ConsommateurMQ listeConsommateurMQ[];	// tableau des objets abritants les threads consommateurs
     
     private ArrayList<String> listeThreads = new ArrayList<>();
     
     
     
-    private static BlockingQueue<String> msgQ_Console;
+    private static ArrayBlockingQueue<String> msgQ_Console;
     
     
-    
+    /**
+     * Démarrage de l'application
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
     	
         // creation de la queue de messages pour afficher dans la console
-        msgQ_Console = new ArrayBlockingQueue<String>(100);
+        msgQ_Console = new ArrayBlockingQueue<String>(TAILLE_MSG_Q_CONSOLE);
         
     	new Controler(); // lancement du controleur
      	
@@ -73,138 +68,145 @@ public class Controler {
     }
 
  
-    
-    
-    
-    
-    public void dmdIHMGo(Object nbProducteur, Object nbCosommateur) {
-    	String msg;
-    	 	
-    	console.sendMsgToConsole("lancement des threads P et C");
-
-      	msg = "c1 : " + listThreadC[0].isAlive() + " - c2 : " + listThreadC[1].isAlive() + " - c3 : " + listThreadC[2].isAlive() +
-    			" - p1 : " + listThreadP[0].isAlive() + " - p2 : " + listThreadP[1].isAlive() + " - p3 : " + listThreadP[2].isAlive();
+    /**
+     * demande d'affichage de l'état des threads dans la zone prévue par l'IHM
+     */
+    public void afficheEtatThreads() {
+        String msg = "";	// pour la création du message
+        
+    	listeThreads.clear();	// effacement de la liste contenant l'état des threads
       	
-    	System.out.println(msg);
-    	
-/*    	msg = "c1 : " + c1.isAlive() + " - c2 : " + c2.isAlive() + " - c3 : " + c3.isAlive() +
-    			" - p1 : " + p1.isAlive() + " - p2 : " + p2.isAlive() + " - p3 : " + p3.isAlive();
-*/    	listeThreads.add(msg);
-    	this.ihmApplication.affichageThreads(listeThreads);
+    	/**
+    	 * construction du message indiquant l'etat de vie des threads
+    	 */
+       	listeThreads.add("====================================");
+       	listeThreads.add("Etat des threads Consommateur");
+       	listeThreads.add("\n");
 
-
-    	// lancement de threads
-    	for (int i =  0 ; i < listThreadP.length ; i++) {
-    		listThreadP[i].start() ;
-    	}
-
-    	// lancement de threads
-    	for (int i =  0 ; i < listThreadC.length ; i++) {
-    		listThreadC[i].start() ;
-    	}
-    	
-    	/*   	
-       	p1.start();
-      	p2.start();
-      	p3.start();
+    	/*
+         *  on commence par l'etat des threads "Consommateur"
+         */
+       	for (int i=0; i <listThreadC.length ; i++) {
+   		msg = "[" + this.listeConsommateurMQ[i].getNom() + "]." + listThreadC[i].getName() + " " + listThreadC[i].isAlive() + " ";
+       	listeThreads.add(msg);	// ajout du message dans la liste
+       	}
        	
-       	c1.start();
-      	c2.start();
-      	c3.start();
-*/
-      	msg = "c1 : " + listThreadC[0].isAlive() + " - c2 : " + listThreadC[1].isAlive() + " - c3 : " + listThreadC[2].isAlive() +
-    			" - p1 : " + listThreadP[0].isAlive() + " - p2 : " + listThreadP[1].isAlive() + " - p3 : " + listThreadP[2].isAlive();
+       	listeThreads.add("\n");
+       	listeThreads.add("\n");
+       	listeThreads.add("====================================");
+       	listeThreads.add("Etat des threads Producteur");       	
+       	listeThreads.add("\n");
 
-      	/*msg = "c1 : " + listThreadP[0].isAlive() + " - c2 : " + listThreadP[1].isAlive() + " - c3 : " + listThreadP[2].isAlive() +
-    			" - p1 : " + p1.isAlive() + " - p2 : " + p2.isAlive() + " - p3 : " + p3.isAlive();
-      	*/
-      	listeThreads.clear();
-      	listeThreads.add(msg);
-    	this.ihmApplication.affichageThreads(listeThreads);
-      	
-    	System.out.println(msg);
+        /*
+         *  on passe à l'etat des threads "Producteur"
+         */
+       	msg = "";		// raz du message
+    	for (int i=0; i <listThreadP.length ; i++) {
+    		msg = "[" + this.listeProducteurMQ[i].getNom() + "]." +  listThreadP[i].getName() + " " + listThreadP[i].isAlive() + " ";
+          	listeThreads.add(msg);	// ajout du message dans la liste
+    	}
+    
+    	// demande d'affichage dans l'IHM
+    	this.ihmApplication.affichageThreads(listeThreads);     	
     }
     
     
-     
     
-    /*
-     * Constructeur : dï¿½marre l'IHM et envoi le controleur en paramï¿½tre
+    
+    /**
+     * méthode appelee sur le clic du bouton "GO"
      */
-    public Controler() {
-        
-        ihmApplication = new IHM(this);		// l'IHM recoit le controleur en parametre
-    	ihmApplication.setVisible(true);	// affichage de l'IHM
+    public void dmdIHMGo() {
+    	String msg = "lancement des threads P et C";
+  
+    	console.sendMsgToConsole(msg);
+    	this.ihmApplication.affichageThreads(msg);
+
+    	// lancement des threads producteurs
+    	for (int i =  0 ; i < listThreadP.length ; i++) {
+    		listThreadP[i].setPriority(PRIORITE_PRODUCTEUR);
+    		listThreadP[i].start() ;
+    	}
+
+    	// lancement de threads consommateurs
+    	for (int i =  0 ; i < listThreadC.length ; i++) {
+    		listThreadC[i].setPriority(PRIORITE_CONSOMMATEUR);
+    		listThreadC[i].start() ;
+    	}
+    	
+    	afficheEtatThreads();
+    }
+    
+    
+    /**
+     *  methode appelee lors du clic sur le bouton de creation des threads faite par l'IHM
+     */
+    public void dmdIHMCreationThread() {
 
     	int nbProducteur = ihmApplication.getNbThreadP();
         int nbConsommateur = ihmApplication.getNbThreadC();
-    	
-        // lancement du thread de gestion de la console
-        console = new ConsoleMK("Console", 5, msgQ_Console, ihmApplication);
-        new Thread(console).start();
         
-        console.sendMsgToConsole("crÃ©ation des threads Producteur et consommateur");      
+        
+        console.sendMsgToConsole("creation des threads Producteur et consommateur");      
         console.sendMsgToConsole("lancement IHM");
-    	console.sendMsgToConsole("crÃ©ation du thread de console");
-
+ 
     	/**
     	 *  construction de la liste des producteurs
     	 */
     	listThreadP =  new Thread[nbProducteur];
+    	listeProducteurMQ = new ProducteurMQ[nbProducteur];
 
     	 // création des threads Producteurs
     	 for (int i =  0 ; i < listThreadP.length ; i++) {
-    		 listThreadP[i] =  new Thread(new ProducteurMQ("P0"+i+1, 1, delaiDeProductionP1, nbProdP1, 3, msgQProduit, console)) ;
+    		 listeProducteurMQ[i] = new ProducteurMQ("P"+(i+1), i+1, delaiDeProductionP1, nbProdP1, 3, msgQProduit, console);
+    		 listThreadP[i] =  new Thread(listeProducteurMQ[i]);
     	} 	
 
     	 /**
       	  *  construction de la liste des consommateurs
        	  */
      	listThreadC =  new Thread[nbConsommateur];
+    	listeConsommateurMQ = new ConsommateurMQ[nbConsommateur];
 
-     	 // création des threads Producteurs
+     	 // création des threads Consommateurs
      	 for (int i =  0 ; i < listThreadC.length ; i++) {
-     		 listThreadC[i] =  new Thread(new ConsommateurMQ("C0"+i+1, 2, msgQProduit, msgQ_Console, this, console));
-     	} 	
-    	
-/*    	
-        // crï¿½ation des producteurs
-        producer1 = new ProducteurMQ("P1", 1, delaiDeProductionP1, nbProdP1, 3, msgQProduit, console);
-        producer2 = new ProducteurMQ("P2", 2, delaiDeProductionP2, nbProdP2, 8, msgQProduit, console);
-        producer3 = new ProducteurMQ("P3", 3, delaiDeProductionP2, nbProdP2, 6, msgQProduit, console);
-        
-        // crï¿½ation des consommateurs
-        consumer1 = new ConsommateurMQ("C01", 2, msgQProduit, msgQ_Console, this, console);
-        consumer2 = new ConsommateurMQ("C02", 1, msgQProduit, msgQ_Console, this, console);
-        consumer3 = new ConsommateurMQ("C03", 5, msgQProduit, msgQ_Console, this, console);
-        
-        p1 = new Thread(producer1);
-        p2 = new Thread(producer2);
-        p3 = new Thread(producer3);
+    		 listeConsommateurMQ[i] = new ConsommateurMQ("C"+(i+1), i+1, 2, msgQProduit, msgQ_Console, this, console);
+     		 listThreadC[i] =  new Thread(listeConsommateurMQ[i]);
+     	}
+     	 
+     	afficheEtatThreads();
+    }
+    
+    
+    
+    /*
+     * Constructeur : demarre l'IHM et envoi le controleur en paramï¿½tre
+     */
+    public Controler() {
+         
+        ihmApplication = new IHM(this);		// l'IHM recoit le controleur en parametre
+    	ihmApplication.setVisible(true);	// affichage de l'IHM
 
-        c1 = new Thread(consumer1);
-        c2 = new Thread(consumer2);
-        c3 = new Thread(consumer3);
+
+    	// lancement du thread de gestion de la console
+        console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication);
+        new Thread(console).start();
         
-  */      
-        
-        
+    	console.sendMsgToConsole("creation et lancement du thread de console");
+
+
         /***
          * boucle de surveillance des threads et affichage de leur etat dans l'IHM
          */
         while(true) {
-        	try {
-				Thread.sleep(1000);				// on dort durant 1 seconde
+
+            try {
+				Thread.sleep(2000);				// on dort durant 1 seconde
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-        	
-          	String msg = "c1 : " + listThreadC[0].isAlive() + " - c2 : " + listThreadC[1].isAlive() + " - c3 : " + listThreadC[2].isAlive() +
-        			" - p1 : " + listThreadP[0].isAlive() + " - p2 : " + listThreadP[1].isAlive() + " - p3 : " + listThreadP[2].isAlive();
-          	
-          	listeThreads.clear();
-          	listeThreads.add(msg);
-        	this.ihmApplication.affichageThreads(listeThreads);
+            if (listeConsommateurMQ != null)
+            	afficheEtatThreads();      	
         }
         
     }

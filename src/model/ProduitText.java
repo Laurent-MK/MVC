@@ -2,12 +2,12 @@ package model;
 
 
 /**
- * Classe Produit
+ * Classe Produit : implemente la classe Produit
  * 
  * @author balou
  *
  */
-public class ProduitText {
+public class ProduitText implements Produit {
     private String name;
     private int numero;
     private int numProducteur;
@@ -25,12 +25,12 @@ public class ProduitText {
     }
     
     /**
-     *  les méthodes de la classe : les accesseurs
+     *  methodes de la classe
      * @return
      */
     
     public String getInfo() {
-        return ("Nom du produit : " + this.name + " ayant le num�ro => " + this.numProducteur + "_" + this.numero);
+        return ("Nom du produit : " + this.name + " ayant le numero => " + this.numProducteur + "_" + this.numero);
     }
     
     public String getName() {
