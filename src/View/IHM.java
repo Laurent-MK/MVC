@@ -87,6 +87,25 @@ public class IHM extends JFrame {
 		}
 	}
 	
+	/**
+	 * obtenir le nombre de threads Prodcuteurs a creer
+	 */
+	public int getNbThreadP() {
+	
+		return Integer.parseInt(txtNbProducteur.getText());
+	}
+
+	/**
+	 * obtenir le nombre de threads Consommateurs a creer
+	 */
+	public int getNbThreadC() {
+		
+		return Integer.parseInt(txtNbConsommateur.getText());
+	}
+
+	
+	
+	
 	
 	/**
 	 * remplir la zone avec les messages dans la liste
@@ -100,9 +119,6 @@ public class IHM extends JFrame {
 		contenuLstAffichageConsole.clear();
 //		contenuConsole.removeAllElements();
 
-		
-//		for (int i=0; i < messageConsole.size(); i++) {
-//			contenuConsole.addElement(messageConsole);
 		
 		// boucle pour remplir la liste
 		for(String message : messageConsole) {
@@ -120,15 +136,15 @@ public class IHM extends JFrame {
 			
 			//System.out.println("size = " + contenuConsole.getSize());
 		}
-//		JOptionPane.showMessageDialog(null, "ok");
 	}
 	
 	/**
-	 * pour initialiser Ã  des valerus par dÃ©faut des champs de saisie de l'IHM
+	 * pour initialiser Ã  des valeurs par defaut des champs de saisie de l'IHM
 	 */
 	private void initIHM() {
-		txtNbProducteur.setText("1"); // on fixe le mini a  1
-		txtNbConsommateur.setText("2"); // on fixe le mini a  2
+		txtNbProducteur.setText("3"); // on fixe le mini a  1
+		txtNbConsommateur.setText("3"); // on fixe le mini a  2
+//		JOptionPane.showMessageDialog(null, "ok");
 	}
 	
 	
@@ -144,7 +160,7 @@ public class IHM extends JFrame {
 		
 		contentPane = new JPanel();		// conteneur des objets graphiques
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);	// intï¿½gration du contentPane dans le conteneur
+		setContentPane(contentPane);	// integration du contentPane dans le conteneur
 		contentPane.setLayout(null);
 		
 		/**
@@ -159,7 +175,7 @@ public class IHM extends JFrame {
 		 */
 		btnGo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// action exï¿½cutï¿½e lors du clic
+				// action executee lors du clic
 				btnGo_clic(e);
 			}
 		});

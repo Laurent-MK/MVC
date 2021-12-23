@@ -69,8 +69,7 @@ public class ConsommateurMQ implements Runnable, Consommateur {
 	public void consommer(Object x) {
 		String msgAAfficher = "--> "
 				+ nomConsommateur
-				+ " + "
-				+ "Consomme : \n\t\t\t"
+				+ " => Consomme : \n\t\t\t"
 				+ ((ProduitText)x).getName()
 				+ " "
 				+ ((ProduitText)x).getNumProducteur()
