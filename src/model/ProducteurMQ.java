@@ -63,7 +63,9 @@ public class ProducteurMQ implements Runnable, Producteur {
     public void run() {
     	long i;
 
-    	console.afficherMsgConsole("Producteur numero : " + numProducteur + " cree");
+		console.sendMsgToConsole("Producteur numero : " + numProducteur + " cree");
+
+//    	console.afficherMsgConsole("Producteur numero : " + numProducteur + " cree");
 //        controleur.dmdModelAffichageConsole("Producteur n° : " + numProducteur + " crée");
 
         while(true) {
@@ -73,9 +75,11 @@ public class ProducteurMQ implements Runnable, Producteur {
 				boolean queuePleine = this.queue.offer(this.produire(), 200, TimeUnit.MILLISECONDS);
 				
 				if (queuePleine) {
-					System.out.println("nouveu produit envoyé");
+					System.out.println("nouveau produit envoye");
+					console.sendMsgToConsole("Producteur numero : " + numProducteur + " => nouveau produit envoye");
 				} else {
 					System.out.println("queue pleine");					
+			    	console.sendMsgToConsole("Producteur numero : " + numProducteur + " queue pleine");
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
