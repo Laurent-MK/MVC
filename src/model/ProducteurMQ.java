@@ -28,15 +28,17 @@ public class ProducteurMQ implements Runnable, Producteur {
       * Liste des constructeurs
       */
     
-      /**
-      * 
-      * @param producerName
-      * @param numProd
-      * @param delay
-      * @param nbProductionARealiser
-      * @param priority
-      * @param q
-      */
+
+	/**
+	 * 
+	 * @param producerName
+	 * @param numProd
+	 * @param delay
+	 * @param nbProductionARealiser
+	 * @param priority
+	 * @param q
+	 * @param console
+	 */
     public ProducteurMQ(
     		String producerName,
     		int numProd,
@@ -64,7 +66,12 @@ public class ProducteurMQ implements Runnable, Producteur {
     public void run() {
     	long i;
 
-		console.sendMsgToConsole("Producteur numero : " + numProducteur + " cree");
+		try {
+			console.sendMsgToConsole("Producteur numero : " + numProducteur + " cree");
+		} catch (InterruptedException e1) {
+			// TODO Bloc catch généré automatiquement
+			e1.printStackTrace();
+		}
 
         while(true) {
         	// toutes les secondes, un produit est envoye dans la queue
@@ -77,7 +84,7 @@ public class ProducteurMQ implements Runnable, Producteur {
 					//console.sendMsgToConsole("Producteur numero : " + numProducteur + " => nouveau produit envoye");
 				} else {
 			    	console.sendMsgToConsole("Producteur numero : " + numProducteur + " QUEUE PLEINE");
-					Thread.sleep(5000);
+					Thread.sleep(0);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

@@ -28,9 +28,14 @@ public class ConsommateurMQ implements Runnable, Consommateur {
     /**
      * Constructeur : recoit le nom du consommateur, sa priorité et la queue de messages qui va recevoir les produits
      * 
+     * 
      * @param consumerName
+     * @param num
      * @param priority
      * @param q
+     * @param msgQ_Console
+     * @param controleur
+     * @param consoleMK
      */
     public ConsommateurMQ(String consumerName,
     		int num,
@@ -58,7 +63,7 @@ public class ConsommateurMQ implements Runnable, Consommateur {
         try {
             while (true) {
                 consommer(queue.take()); // attente de l'arrivee d'un produit dans la queue de message
-                Thread.sleep(500);
+                Thread.sleep(0);
             }
         } catch (InterruptedException ex) {
         }
@@ -69,9 +74,10 @@ public class ConsommateurMQ implements Runnable, Consommateur {
     /**
      * consommation d'un produit arrivee dans la queue de message
      * @param x
+     * @throws InterruptedException 
      */
 	@Override
-	public void consommer(Object x) {
+	public void consommer(Object x) throws InterruptedException {
 		String msgAAfficher = "--> "
 				+ nomConsommateur
 				+ " => Consomme : \n\t\t\t"
