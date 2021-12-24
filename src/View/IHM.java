@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import UtilitairesMK.Mutex;
 import controler.Controler;
 import model.Constantes;
 
@@ -27,6 +28,12 @@ import javax.swing.ListModel;
 import javax.swing.JTextArea;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.JRadioButton;
+import javax.swing.JProgressBar;
 
 public class IHM extends JFrame implements Constantes {
 
@@ -34,7 +41,7 @@ public class IHM extends JFrame implements Constantes {
 	 * proprietes de la classe
 	 */
 
-	// propietes utilisees pour les widgets
+	// proprietes utilisees pour les widgets
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPane;
 	private final JButton btnGo = new JButton("Go");
@@ -46,20 +53,41 @@ public class IHM extends JFrame implements Constantes {
 	private final JButton btnDel = new JButton("Del");
 	private JTextField txtNbProducteur;
 	private JTextField txtNbConsommateur;
-	private JList lstAffichageConsole;
 
+	private JLabel lblEtatBuffer = new JLabel("0");
+	private JLabel lblMaxLigneConsole = new JLabel(Long.toString(MAX_MSG_CONSOLE));
+
+	
 
 	// proprietes utilisees pour la gestion de l'IHM
 	private static boolean isClicOnBtn_GO = false;
 	private static boolean isclicOnBtn_CreationThread = false;
+	private static boolean isClicOnBtnCreerSemaphore = false;
+	private static boolean isClicOnBtnCreerMutex = false;
+	
 	
 	private Controler controleur = null;
 	
-	private DefaultListModel contenuLstAffichageConsole = new DefaultListModel();
-	private DefaultListModel contenulistThread = new DefaultListModel();
+	
+	private JTextArea textAreaConsole = new JTextArea();
+	private JTextArea textAreaAffichageEtatThread = new JTextArea();
+	private JTextArea textAreaTestMutex = new JTextArea();
 
 
-	private Semaphore sem;
+	
+	private Mutex sem;
+	private JTextField txtNbJetons;
+	private JTextField txtNbrThreads;
+
+	private JTextArea textAreaTestSemaphore;
+	private JButton btnTstSemaphore = new JButton("Test Semaphore");
+	private JButton btnTstMutex = new JButton("Test Mutex");
+	
+	private JProgressBar progressBarConsole = new JProgressBar(0, MAX_MSG_CONSOLE);
+	private JTextField textFieldFreqProd = new JTextField();
+	private int freqProd;
+	private JTextField textFieldTailleConsole = new JTextField();
+	private int tailleConsole;
 
 
 	
@@ -77,6 +105,7 @@ public class IHM extends JFrame implements Constantes {
 			}
 				
 			txtTest.setText("C'est parti !");
+				
 			controleur.dmdIHMGo();
 			isClicOnBtn_GO = true;
 			}
@@ -98,7 +127,14 @@ public class IHM extends JFrame implements Constantes {
 		else {
 //			JOptionPane.showMessageDialog(null, "Creation des threads : OK");
 			isclicOnBtn_CreationThread = true;
-			controleur.dmdIHMCreationThread();		
+			
+			tailleConsole = Integer.parseInt(textFieldTailleConsole.getText());
+			freqProd = Integer.parseInt(textFieldFreqProd.getText());
+			
+			lblMaxLigneConsole.setText(Long.toString(tailleConsole));
+			
+			
+			controleur.dmdIHMCreationThread();
 		}
 	}
 	
@@ -113,25 +149,37 @@ public class IHM extends JFrame implements Constantes {
 	}
 	
 	
+	private void btnClicCreerSemaphore(ActionEvent e) {
+		isClicOnBtnCreerSemaphore = true;
+
+		textAreaTestSemaphore.append("1 semaphore demande\n");
+	}
+	
+	private void btnClicCreerMutex(ActionEvent e) {
+		isClicOnBtnCreerMutex = true;
+		
+		textAreaTestSemaphore.append("demande de creation d'un MUTEX\n");
+	}
+
+	
 
 	/**
 	 * Remplir la zone d'affichage des threads presents
 	 */
-	public void affichageThreads(String msg) {
-
-		contenulistThread.clear();
-		contenulistThread.addElement(msg);
+	public void affichageEtatThreads(String msg) {
+	
+		textAreaAffichageEtatThread.setText(msg);
 	}
 	
-	public void affichageThreads(ArrayList<String> listeThreads) {
 	
-		contenulistThread.clear();
+	
+	public void affichageEtatThreads(ArrayList<String> listeEtatThreads) {
 		
-		for (String msg : listeThreads) {
-			String ligne;
-			ligne = msg;
-			
-			contenulistThread.addElement(ligne);
+		textAreaAffichageEtatThread.removeAll();
+		textAreaAffichageEtatThread.setText("");
+		
+		for(String message : listeEtatThreads) {
+			textAreaAffichageEtatThread.append(message + "\n");
 		}
 	}
 	
@@ -153,6 +201,13 @@ public class IHM extends JFrame implements Constantes {
 		return Integer.parseInt(txtNbConsommateur.getText());
 	}
 
+	public int getTailleBufferConsole() {
+		return (tailleConsole);
+	}
+	
+	public int getFreqProd() {
+		return (freqProd);
+	}
 	
 
 	/**
@@ -160,7 +215,17 @@ public class IHM extends JFrame implements Constantes {
 	 * @param msg
 	 */
 	public void affichageConsole(String msg) {
-		contenuLstAffichageConsole.addElement(msg);
+		textAreaConsole.append(msg);
+		
+//		textAreaTestMutex.append("\n" + Long.toString(textAreaConsole.getLineCount()));
+		
+
+		lblEtatBuffer.setText(Long.toString(textAreaConsole.getLineCount()));
+		progressBarConsole.setValue(textAreaConsole.getLineCount());
+		
+		if (textAreaConsole.getLineCount() > this.tailleConsole) {
+			textAreaConsole.setText("");
+		}
 	}
 	
 	
@@ -168,36 +233,23 @@ public class IHM extends JFrame implements Constantes {
 	 * remplir la zone avec les messages dans la liste
 	 * @param message
 	 */
-	public void affichageConsole(ArrayList<String> messageConsole) throws InterruptedException {
+	public void affichageConsole(ArrayList<String> messageConsole) {
 
-		sem.acquire(); System.out.println("PRENDRE");
-		//Thread.sleep(100);
-		
-//		lstAffichageConsole.setVisible(false);
-		
-		//vider la liste
-		contenuLstAffichageConsole.clear();
-//		contenuConsole.removeAllElements();
-
-		
-		// boucle pour remplir la liste
 		for(String message : messageConsole) {
 			String ligne;
 			
-			ligne = message;
-			contenuLstAffichageConsole.addElement(ligne);
-
-//			lstAffichageConsole.setVisible(true);
-			 
-//			contenuConsole.addElement(message);
-//			lstAffichageConsole.updateUI();
-			lstAffichageConsole.repaint();
-			
-			//System.out.println("size = " + contenuConsole.getSize());
+			ligne = message + "\n";
 		}
-		sem.release();
-		System.out.println("RENDRE");
+		
+		textAreaTestMutex.append(Long.toString(textAreaConsole.getRows()));
+		
+		if (textAreaConsole.getLineCount() > this.tailleConsole) {
+			textAreaConsole.setText("");
+		}
 	}
+
+	
+	
 	
 	/**
 	 * pour initialiser à des valeurs par defaut des champs de saisie de l'IHM
@@ -205,6 +257,18 @@ public class IHM extends JFrame implements Constantes {
 	private void initIHM() {
 		txtNbProducteur.setText(Integer.toString(DEFAULT_NB_THREAD_PROD)); 		// on fixe le mini
 		txtNbConsommateur.setText(Integer.toString(DEFAULT_NB_THREAD_CONS)); 	// on fixe le mini
+		
+ /*   	msgQ_Console = new ArrayBlockingQueue<String>(ihmApplication.getTailleBufferConsole());
+
+    	
+    	// lancement du thread de gestion de la console
+        console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication, sem);
+        new Thread(console).start();
+       
+    	console.sendMsgToConsole("creation et lancement du thread de console");
+*/
+	
+		textAreaTestMutex.append("init. zone : textAreaTestMutex reussie !");
 	}
 	
 	
@@ -212,14 +276,14 @@ public class IHM extends JFrame implements Constantes {
 	 * Create the frame.
 	 * @param sem 
 	 */
-	public IHM(Controler controleur, Semaphore sem) {
+	public IHM(Controler controleur, Mutex sem) {
 		
 		this.controleur = controleur;
 		this.sem = sem;
 		
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1228, 583);
+		setBounds(100, 100, 1228, 892);
 		
 		contentPane = new JPanel();		// conteneur des objets graphiques
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -229,7 +293,7 @@ public class IHM extends JFrame implements Constantes {
 		/**
 		 * Ajout d'une zone de texte
 		 */
-		txtTest.setBounds(304, 103, 144, 23);
+		txtTest.setBounds(180, 222, 144, 23);
 		contentPane.add(txtTest);
 		
 		
@@ -247,7 +311,7 @@ public class IHM extends JFrame implements Constantes {
 				}
 			}
 		});
-		btnGo.setBounds(205, 103, 58, 23);
+		btnGo.setBounds(108, 222, 58, 23);
 		contentPane.add(btnGo);
 		
 
@@ -265,7 +329,7 @@ public class IHM extends JFrame implements Constantes {
 				}
 			}
 		});
-		btnCreerThread.setBounds(465, 49, 155, 23);
+		btnCreerThread.setBounds(425, 280, 155, 23);
 		contentPane.add(btnCreerThread);
 
 		
@@ -276,9 +340,9 @@ public class IHM extends JFrame implements Constantes {
 		 */
 		String ressource = getClass().getClassLoader().getResource(chemin).getPath();
 		lblNewLabel.setIcon(new ImageIcon(ressource));
-		lblNewLabel.setBounds(967, 11, 117, 61);
+		lblNewLabel.setBounds(596, 0, 117, 61);
 		contentPane.add(lblNewLabel);
-		lblZoneConsole.setBounds(23, 150, 355, 14);
+		lblZoneConsole.setBounds(23, 284, 355, 14);
 		
 		contentPane.add(lblZoneConsole); 		// description de la zone de texte
 		btnDel.addActionListener(new ActionListener() {
@@ -286,63 +350,170 @@ public class IHM extends JFrame implements Constantes {
 				btnDel_clic(e);
 			}
 		});
-		btnDel.setBounds(304, 510, 89, 23);
+		btnDel.setBounds(414, 68, 89, 23);
 
 		
 		txtNbProducteur = new JTextField();
-		txtNbProducteur.setBounds(253, 31, 86, 20);
+		txtNbProducteur.setBounds(225, 154, 86, 20);
 		contentPane.add(txtNbProducteur);
 		txtNbProducteur.setColumns(10);
 		
 		JLabel lblNewLabelProdcuteur = new JLabel("Nombre de producteurs");
-		lblNewLabelProdcuteur.setBounds(27, 33, 188, 14);
+		lblNewLabelProdcuteur.setBounds(22, 157, 188, 14);
 		contentPane.add(lblNewLabelProdcuteur);
 		
 		
 		
 		txtNbConsommateur = new JTextField();
-		txtNbConsommateur.setBounds(253, 63, 86, 20);
+		txtNbConsommateur.setBounds(225, 179, 86, 20);
 		contentPane.add(txtNbConsommateur);
 		txtNbConsommateur.setColumns(10);
 
 
 		JLabel lblNewLabelConsommateurs = new JLabel("Nombre de consommateurs");
-		lblNewLabelConsommateurs.setBounds(27, 64, 218, 14);
+		lblNewLabelConsommateurs.setBounds(23, 182, 218, 14);
 		contentPane.add(lblNewLabelConsommateurs);
 
 		/**
 		 * initialisation des variables de l'IHM
 		 */
-		initIHM();
+//		initIHM();
 				
 		// bouton "Del"
 		contentPane.add(btnDel);
 		
 		// zone d'afichage (avec un scroll) des messages venant de l'application
 		JScrollPane scrollPaneConsole = new JScrollPane();
-		scrollPaneConsole.setBounds(23, 175, 643, 320);
+		scrollPaneConsole.setBounds(25, 379, 374, 463);
 		contentPane.add(scrollPaneConsole);
 		
-		lstAffichageConsole = new JList(contenuLstAffichageConsole);
-//		JList lstAffichageConsole = new JList(contenuConsole);
-//		scrollPane.add(lstAffichageConsole);
-//		scrollPane.setVisible(true);;
-		scrollPaneConsole.setViewportView(lstAffichageConsole);
+//		JTextArea textAreaConsole = new JTextArea();
+		scrollPaneConsole.setViewportView(textAreaConsole);
 		
-		JScrollPane scrollPaneThread = new JScrollPane();
-		scrollPaneThread.setBounds(695, 175, 507, 320);
-		contentPane.add(scrollPaneThread);
+		JScrollPane scrollPaneEtatThread = new JScrollPane();
+		scrollPaneEtatThread.setBounds(426, 379, 258, 463);
+		contentPane.add(scrollPaneEtatThread);
 		
-		JList listThread = new JList(contenulistThread);
-		scrollPaneThread.setViewportView(listThread);
+		scrollPaneEtatThread.setViewportView(textAreaAffichageEtatThread);
 		
 		JLabel lblNewLabel_1 = new JLabel("Etat des threads  : true = en vie / false = mort");
-		lblNewLabel_1.setBounds(695, 150, 479, 14);
+		lblNewLabel_1.setBounds(426, 354, 272, 14);
 		contentPane.add(lblNewLabel_1);
 		
+		JSeparator separator = new JSeparator();
+		separator.setForeground(Color.BLUE);
+		separator.setOrientation(SwingConstants.VERTICAL);
+		separator.setBounds(723, 0, 2, 842);
+		contentPane.add(separator);
 		
-		//		scrollPane.setColumnHeaderView(lstAffichageConsole);
+
+		/*****************************/
+		btnTstSemaphore.setBounds(749, 222, 144, 23);
+		contentPane.add(btnTstSemaphore);
+		
+		btnTstMutex.setBounds(1005, 222, 127, 23);
+		contentPane.add(btnTstMutex);
+		
+		txtNbJetons = new JTextField();
+		txtNbJetons.setText("1");
+		txtNbJetons.setBounds(749, 87, 40, 20);
+		contentPane.add(txtNbJetons);
+		txtNbJetons.setColumns(10);
+		
+		JLabel lblNewLabel_2 = new JLabel("Nbr jetons dans le semaphore");
+		lblNewLabel_2.setBounds(749, 66, 242, 14);
+		contentPane.add(lblNewLabel_2);
+		
+		JLabel lblNewLabel_3 = new JLabel("TESTS DES SEMAPHORES ET MUTEX");
+		lblNewLabel_3.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblNewLabel_3.setBounds(794, 28, 367, 18);
+		contentPane.add(lblNewLabel_3);
+		
+		JLabel lblNewLabel_3_1 = new JLabel("Test du multithreading Producteur / Consommateur");
+		lblNewLabel_3_1.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblNewLabel_3_1.setBounds(44, 28, 640, 18);
+		contentPane.add(lblNewLabel_3_1);
+		
+		JButton btnCreerSemaphore = new JButton("Creer Semaphore");
+		btnCreerSemaphore.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnClicCreerSemaphore(e);
+			}
+		});
+		btnCreerSemaphore.setBounds(749, 178, 160, 23);
+		contentPane.add(btnCreerSemaphore);
+		
+		JButton btnCreerMutex = new JButton("Creer MUTEX");
+		btnCreerMutex.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnClicCreerMutex(e);
+			}
+		});
+		btnCreerMutex.setBounds(1005, 178, 117, 23);
+		contentPane.add(btnCreerMutex);
+		
+		JLabel lblNewLabel_4 = new JLabel("Nbr threads concurents");
+		lblNewLabel_4.setBounds(749, 122, 194, 14);
+		contentPane.add(lblNewLabel_4);
+		
+		txtNbrThreads = new JTextField();
+		txtNbrThreads.setText("2");
+		txtNbrThreads.setBounds(749, 137, 40, 20);
+		contentPane.add(txtNbrThreads);
+		txtNbrThreads.setColumns(10);
+		
+		JScrollPane scrollPaneConsoleSemaphore = new JScrollPane();
+		scrollPaneConsoleSemaphore.setBounds(735, 293, 218, 549);
+		contentPane.add(scrollPaneConsoleSemaphore);
+		
+		textAreaTestSemaphore = new JTextArea();
+		scrollPaneConsoleSemaphore.setViewportView(textAreaTestSemaphore);
+
+		JScrollPane scrollPaneConsoleMutex = new JScrollPane();
+		scrollPaneConsoleMutex.setBounds(974, 293, 214, 549);
+		contentPane.add(scrollPaneConsoleMutex);
+		
+		scrollPaneConsoleMutex.setViewportView(textAreaTestMutex);
+		
+		progressBarConsole.setBounds(23, 354, 288, 14);
+		contentPane.add(progressBarConsole);
+		
+		JLabel lblNewLabel_5 = new JLabel("Etat du buffer interne");
+		lblNewLabel_5.setBounds(25, 333, 160, 14);
+		contentPane.add(lblNewLabel_5);
+		
+
+		lblEtatBuffer.setBounds(154, 332, 46, 17);
+		contentPane.add(lblEtatBuffer);
+		
+		JLabel lblNewLabel_6 = new JLabel("/");
+		lblNewLabel_6.setBounds(194, 333, 27, 14);
+		contentPane.add(lblNewLabel_6);
+		
+		lblMaxLigneConsole.setBounds(210, 333, 46, 14);
+		contentPane.add(lblMaxLigneConsole);
+		
+		JLabel lblNewLabel_7 = new JLabel("Frequence de production (msec)");
+		lblNewLabel_7.setBounds(23, 90, 162, 14);
+		contentPane.add(lblNewLabel_7);
+		
+//		textFieldFreqProd = new JTextField();
+		textFieldFreqProd.setText("500");
+		textFieldFreqProd.setBounds(225, 87, 86, 20);
+		contentPane.add(textFieldFreqProd);
+		textFieldFreqProd.setColumns(10);
+		
+		JLabel lblNewLabel_8 = new JLabel("Taille de la console (nbr de lignes)");
+		lblNewLabel_8.setBounds(22, 122, 188, 14);
+		contentPane.add(lblNewLabel_8);
+		
+//		textFieldTailleConsole = new JTextField();
+		textFieldTailleConsole.setText("100");
+		textFieldTailleConsole.setBounds(225, 119, 86, 20);
+		contentPane.add(textFieldTailleConsole);
+		textFieldTailleConsole.setColumns(10);
 	
-		
+		initIHM();
+
 	}
 }

@@ -2,7 +2,7 @@ package model;
 
 import java.util.concurrent.BlockingQueue;
 
-import View.ConsoleMK;
+import UtilitairesMK.ConsoleMK;
 import controler.Controler;
 
 
@@ -22,7 +22,9 @@ public class ConsommateurMQ implements Runnable, Consommateur {
     private Controler controleur;
     private ConsoleMK consoleMK;
     private int numero;
+    private int nbConsoRealisees = 0;
 
+    private static long nbConsoTotale = 0;
         
     
     /**
@@ -63,7 +65,8 @@ public class ConsommateurMQ implements Runnable, Consommateur {
         try {
             while (true) {
                 consommer(queue.take()); // attente de l'arrivee d'un produit dans la queue de message
-                Thread.sleep(0);
+                nbConsoRealisees++;
+                nbConsoTotale++;
             }
         } catch (InterruptedException ex) {
         }
@@ -89,8 +92,15 @@ public class ConsommateurMQ implements Runnable, Consommateur {
 
 		consoleMK.sendMsgToConsole(msgAAfficher);
 	}
-
 	
+	
+	public int getNbConsoRealisees() {
+		return this.nbConsoRealisees;
+	}
+
+	public long getNbConsoTotale() {
+		return nbConsoTotale;
+	}
 	
 	@Override
 	public String getNom() {

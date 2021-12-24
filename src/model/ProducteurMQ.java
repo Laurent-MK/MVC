@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import View.ConsoleMK;
+import UtilitairesMK.ConsoleMK;
 import controler.Controler;
+
 
 /**
  * ------------------------------------------
@@ -15,7 +16,7 @@ import controler.Controler;
  * @author balou
  *
  */
-public class ProducteurMQ implements Runnable, Producteur {
+public class ProducteurMQ implements Runnable, Producteur, Constantes {
     private int numeroProduit;						// numero de produit
     private int numProducteur; 						// numero de producteur
     private String nomProducteur = "nom inconnu";	// nom du producteur
@@ -23,6 +24,9 @@ public class ProducteurMQ implements Runnable, Producteur {
     private int delay = 100;
     private int nbBoucles;
 	private ConsoleMK console;
+	private int nbProductionRealisee = 0;
+	private static long nbProdTotale = 0;
+	
 	
      /**
       * Liste des constructeurs
@@ -64,8 +68,7 @@ public class ProducteurMQ implements Runnable, Producteur {
      */
     @Override
     public void run() {
-    	long i;
-
+ 
 		try {
 			console.sendMsgToConsole("Producteur numero : " + numProducteur + " cree");
 		} catch (InterruptedException e1) {
@@ -74,21 +77,15 @@ public class ProducteurMQ implements Runnable, Producteur {
 		}
 
         while(true) {
-        	// toutes les secondes, un produit est envoye dans la queue
-            try {
-				//Thread.sleep(1000);
 
-//            	this.queue.put(this.produire());
-				boolean queuePleine = this.queue.offer(this.produire(), 200, TimeUnit.MILLISECONDS);
-				if (queuePleine) {
-					//console.sendMsgToConsole("Producteur numero : " + numProducteur + " => nouveau produit envoye");
-				} else {
-			    	console.sendMsgToConsole("Producteur numero : " + numProducteur + " QUEUE PLEINE");
-					Thread.sleep(0);
-				}
+        	try {
+				this.queue.put(this.produire());
+				nbProductionRealisee++;
+				Thread.sleep(this.delay);
 			} catch (InterruptedException e) {
+				// TODO Bloc catch généré automatiquement
 				e.printStackTrace();
-			}
+			}      	
         }
     }
     
@@ -111,12 +108,20 @@ public class ProducteurMQ implements Runnable, Producteur {
     			++numeroProduit +
     			"\n");
     	
+    	this.nbProdTotale++;
+    	
         return new ProduitText("boulon ", numProducteur, numeroProduit);
     }
 
     
-    
-    
+    public int getNbProdReal() {
+    	return nbProductionRealisee;
+    }
+
+    public long getNbProdTotale() {
+    	return nbProdTotale;
+    }
+
     
 	@Override
 	public String getNom() {

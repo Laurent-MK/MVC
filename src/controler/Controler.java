@@ -5,7 +5,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 
-import View.ConsoleMK;
+import UtilitairesMK.ConsoleMK;
+import UtilitairesMK.Mutex;
+import UtilitairesMK.SemaphoreMK;
 /**
  * imports des packages specifiques de l'application
  */
@@ -38,16 +40,15 @@ public class Controler implements Constantes {
     private ConsommateurMQ listeConsommateurMQ[];	// tableau des objets abritants les threads consommateurs
     private static BlockingQueue<ProduitText> msgQProduit = new ArrayBlockingQueue<ProduitText>(TAILLE_MESSAGE_Q_PC);	// queue de message utilisee par les threads producteurs et consommateurs
     
-    // liste utilisee pour afficher l'etat des threads dans l'IHM
-    private ArrayList<String> listeThreads = new ArrayList<>();
-
+    
+    
     /**
      *  proprietes pour la gestion des affichages dans la console
      */
     private ConsoleMK console;									// l'objet pour manipuler la console
     private static ArrayBlockingQueue<String> msgQ_Console;		// queue de message utilisee pour les envois de messages dans le console
     
-    private Semaphore sem;
+    private Mutex sem;
     
     
     
@@ -60,7 +61,7 @@ public class Controler implements Constantes {
     public static void main(String[] args) throws InterruptedException {
     	
         // creation de la queue de messages pour afficher dans la console
-        msgQ_Console = new ArrayBlockingQueue<String>(TAILLE_MSG_Q_CONSOLE);
+//        msgQ_Console = new ArrayBlockingQueue<String>(TAILLE_MSG_Q_CONSOLE);
         
     	new Controler(); // lancement du controleur
      	
@@ -73,41 +74,64 @@ public class Controler implements Constantes {
      */
     public void afficheEtatThreads() {
         String msg = "";	// pour la cr�ation du message
+
         
-    	listeThreads.clear();	// effacement de la liste contenant l'�tat des threads
+        // liste utilisee pour afficher l'etat des threads dans l'IHM
+        ArrayList<String> listeEtatThreads = new ArrayList<>();
+
+        
+    	listeEtatThreads.clear();	// effacement de la liste contenant l'�tat des threads
       	
     	/**
     	 * construction du message indiquant l'etat de vie des threads
     	 */
-       	listeThreads.add("====================================");
-       	listeThreads.add("Etat des threads Consommateur");
-       	listeThreads.add("\n");
+       	listeEtatThreads.add("====================================");
+       	listeEtatThreads.add("Threads Consommateur " + "nbConso = " + this.listeConsommateurMQ[0].getNbConsoTotale());
+       	listeEtatThreads.add("\n");
 
     	/*
          *  on commence par l'etat des threads "Consommateur"
          */
        	for (int i=0; i <listThreadC.length ; i++) {
-   		msg = "[" + this.listeConsommateurMQ[i].getNom() + "]." + listThreadC[i].getName() + " " + listThreadC[i].isAlive() + " ";
-       	listeThreads.add(msg);	// ajout du message dans la liste
+       		msg = "["
+       				+ this.listeConsommateurMQ[i].getNom() + "]."
+       				+ listThreadC[i].getName()
+       				+
+       				" "
+       				+ listThreadC[i].isAlive()
+       				+ " - nbConso : "
+       				+ this.listeConsommateurMQ[i].getNbConsoRealisees();
+       		
+       		listeEtatThreads.add(msg);	// ajout du message dans la liste
        	}
        	
-       	listeThreads.add("\n");
-       	listeThreads.add("\n");
-       	listeThreads.add("====================================");
-       	listeThreads.add("Etat des threads Producteur");       	
-       	listeThreads.add("\n");
+       	listeEtatThreads.add("\n");
+       	listeEtatThreads.add("\n");
+       	listeEtatThreads.add("====================================");
+       	listeEtatThreads.add("Threads Producteur " + "NbProd = " + this.listeProducteurMQ[0].getNbProdTotale());       	
+       	listeEtatThreads.add("\n");
 
         /*
-         *  on passe � l'etat des threads "Producteur"
+         *  on passe a l'etat des threads "Producteur"
          */
        	msg = "";		// raz du message
-    	for (int i=0; i <listThreadP.length ; i++) {
-    		msg = "[" + this.listeProducteurMQ[i].getNom() + "]." +  listThreadP[i].getName() + " " + listThreadP[i].isAlive() + " ";
-          	listeThreads.add(msg);	// ajout du message dans la liste
+		nbProd++;
+		
+		for (int i=0; i <listThreadP.length ; i++) {
+    		
+    		msg = "[" + this.listeProducteurMQ[i].getNom() + "]."
+    				+  listThreadP[i].getName()
+    				+ " "
+    				+ listThreadP[i].isAlive()
+    				+ " - nbProd :"
+    				+ listeProducteurMQ[i].getNbProdReal();
+          	
+    		listeEtatThreads.add(msg);	// ajout du message dans la liste
     	}
     
     	// demande d'affichage dans l'IHM
-    	this.ihmApplication.affichageThreads(listeThreads);     	
+    	this.ihmApplication.affichageEtatThreads(listeEtatThreads);     	
+    	
     }
     
     
@@ -121,7 +145,7 @@ public class Controler implements Constantes {
     	String msg = "lancement des threads P et C";
   
     	console.sendMsgToConsole(msg);
-    	this.ihmApplication.affichageThreads(msg);
+//    	this.ihmApplication.affichageEtatThreads(msg);
 
     	// lancement des threads producteurs
     	for (int i =  0 ; i < listThreadP.length ; i++) {
@@ -184,17 +208,19 @@ public class Controler implements Constantes {
      */
     public Controler() throws InterruptedException {
 
-    	sem = new Semaphore(1);
+    	sem = new Mutex();
          
         ihmApplication = new IHM(this, sem);		// l'IHM recoit le controleur en parametre
     	ihmApplication.setVisible(true);	// affichage de l'IHM
 
+        // creation de la queue de messages pour afficher dans la console
+    	msgQ_Console = new ArrayBlockingQueue<String>(100 /*ihmApplication.getTailleBufferConsole()*/);
 
     	
     	// lancement du thread de gestion de la console
         console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication, sem);
         new Thread(console).start();
-        
+       
     	console.sendMsgToConsole("creation et lancement du thread de console");
 
 
