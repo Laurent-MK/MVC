@@ -223,7 +223,7 @@ public class IHM extends JFrame implements Constantes {
 		lblEtatBuffer.setText(Long.toString(textAreaConsole.getLineCount()));
 		progressBarConsole.setValue(textAreaConsole.getLineCount());
 		
-		if (textAreaConsole.getLineCount() > this.tailleConsole) {
+		if (textAreaConsole.getLineCount() > TAILLE_MSG_Q_CONSOLE/*this.tailleConsole*/) {
 			textAreaConsole.setText("");
 		}
 	}
