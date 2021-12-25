@@ -1,4 +1,4 @@
-package UtilitairesMK;
+package utilitairesMK;
 
 import java.util.concurrent.Semaphore;
 

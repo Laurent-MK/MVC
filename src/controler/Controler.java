@@ -4,16 +4,13 @@ import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-/*
- * imports des packages specifiques de l'application
- */
-import UtilitairesMK.ConsoleMK;
-import UtilitairesMK.Mutex;
-import View.IHM;
 import model.ConsommateurMQ;
 import model.Constantes;
 import model.ProducteurMQ;
 import model.ProduitText;
+import utilitairesMK.ConsoleMK;
+import utilitairesMK.Mutex;
+import view.IHM;
 
 
 

@@ -1,13 +1,13 @@
-package View;
+package view;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import UtilitairesMK.Mutex;
 import controler.Controler;
 import model.Constantes;
 import model.TestSemaphore;
+import utilitairesMK.Mutex;
 
 import javax.swing.JButton;
 import javax.swing.JTextPane;
