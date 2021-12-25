@@ -1,17 +1,15 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import UtilitairesMK.ConsoleMK;
-import controler.Controler;
 
 
 /**
- * ------------------------------------------
- * Classe du producteur : implemente Thread
- * ------------------------------------------
+ * META KONSULTING
+ * 
+ * Classe du producteur. Le thread produit des objets et les envoit dans la queue de message destinee aux consommateurs
+ * A chque production, le thread informe l'IHM de cette nouvelle production
  * 
  * @author balou
  *
@@ -22,18 +20,14 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     private String nomProducteur = "nom inconnu";	// nom du producteur
     private BlockingQueue<ProduitText> queue = null;
     private int delay = 100;
-    private int nbBoucles;
 	private ConsoleMK console;
 	private int nbProductionRealisee = 0;
 	private static long nbProdTotale = 0;
 	
 	
-     /**
-      * Liste des constructeurs
-      */
-    
 
 	/**
+	 * Constructeur
 	 * 
 	 * @param producerName
 	 * @param numProd
@@ -47,15 +41,13 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     		String producerName,
     		int numProd,
     		int delay,
-    		int nbProductionARealiser,
     		int priority,
-    		BlockingQueue<ProduitText> q,
+    		BlockingQueue<ProduitText> msgQProduit,
     		ConsoleMK console)
     {
         this.nomProducteur = producerName;
         this.delay = delay;
-        this.queue = q;
-        this.nbBoucles = nbProductionARealiser;
+        this.queue = msgQProduit;
         this.numProducteur = numProd;
         this.console = console;
       
@@ -77,13 +69,14 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
 		}
 
         while(true) {
-
         	try {
-				this.queue.put(this.produire());
+				this.queue.put(this.produire());	// on produit un nouvel objet et on l'envoi dans la MQ
 				nbProductionRealisee++;
-				Thread.sleep(this.delay);
+		    	ProducteurMQ.nbProdTotale++;
+
+				Thread.sleep(this.delay);		// mise en sommeil
 			} catch (InterruptedException e) {
-				// TODO Bloc catch généré automatiquement
+				// TODO Bloc catch gï¿½nï¿½rï¿½ automatiquement
 				e.printStackTrace();
 			}      	
         }
@@ -93,24 +86,23 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     
     /**
      * production d'un nouveau produit a envoyer aux consommateurs
+     * 
      * @return
+     * @throws InterruptedException 
      */
-    public ProduitText produire() {
+    public ProduitText produire() throws InterruptedException {
     	
-    	console.afficherMsgConsole("#" +
+    	console.sendMsgToConsole("#" +
     			this.nomProducteur +
     			"_" +
     			this.numProducteur +
-    			" >> Creation d'un nouveau produit : " +
-    			"boulon " +
+    			" >> nouveau produit : Product " +
     			numProducteur +
     			"_" +
     			++numeroProduit +
     			"\n");
-    	
-    	this.nbProdTotale++;
-    	
-        return new ProduitText("boulon ", numProducteur, numeroProduit);
+    	    	
+        return (new ProduitText("Product ", numProducteur, numeroProduit));
     }
 
     

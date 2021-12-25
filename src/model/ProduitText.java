@@ -12,12 +12,13 @@ public class ProduitText implements Produit {
     private int numero;
     private int numProducteur;
     
-    // les constructeurs
-    public ProduitText(String name, int numero) {
-        this.name = name;
-        this.numero = numero;
-    }
-    
+  
+    /**
+     * 
+     * @param name
+     * @param numProducteur
+     * @param numero
+     */
     public ProduitText(String name, int numProducteur, int numero) {
         this.name = name;
         this.numero = numero;
@@ -30,7 +31,7 @@ public class ProduitText implements Produit {
      */
     
     public String getInfo() {
-        return ("Nom du produit : " + this.name + " ayant le numero => " + this.numProducteur + "_" + this.numero);
+        return ("Nom du produit : " + this.name + " numero => " + this.numProducteur + "_" + this.numero);
     }
     
     public String getName() {

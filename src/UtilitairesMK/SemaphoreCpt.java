@@ -5,7 +5,6 @@ import java.util.concurrent.Semaphore;
 class SemaphoreCpt implements SemaphoreMK {
 
 	private Semaphore sem;
-	private int nbJetons;
 	
 	
 	/**
@@ -14,9 +13,9 @@ class SemaphoreCpt implements SemaphoreMK {
 	 * @param nbJetons : nombre de jetons dans le semaphore
 	 * @return
 	 */
-	public Semaphore SemaphoreCpt(int nbJetons) {
+	public SemaphoreCpt(int nbJetons) {
+		this.sem = new Semaphore(nbJetons);
 				
-		return semCreate(nbJetons);
 	}
 
 
@@ -24,10 +23,10 @@ class SemaphoreCpt implements SemaphoreMK {
 	 * prendre le semaphore
 	 */
 	@Override
-	public void semGet() {
+	public void semGet(int nbJetons) {
 		
 		try {
-			sem.acquire();
+			sem.acquire(nbJetons);
 		} catch (InterruptedException e) {
 			System.out.println("ERREUR sur semGet()");
 
@@ -41,9 +40,9 @@ class SemaphoreCpt implements SemaphoreMK {
 	 * rendre le semaphore
 	 */
 	@Override
-	public void semRelease() {
+	public void semRelease(int nbJetons) {
 		
-		sem.release();
+		sem.release(nbJetons);
 	}
 
 	

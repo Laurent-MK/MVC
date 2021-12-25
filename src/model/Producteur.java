@@ -7,7 +7,7 @@ public interface Producteur {
      * m�thodes a redefinir
      */
 	public void run();
-	public Object produire();
+	public Object produire() throws InterruptedException ;
 	public String getNom();
 	public void setNom(String nom);
 	

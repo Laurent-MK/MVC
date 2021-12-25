@@ -3,14 +3,12 @@ package controler;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Semaphore;
 
-import UtilitairesMK.ConsoleMK;
-import UtilitairesMK.Mutex;
-import UtilitairesMK.SemaphoreMK;
-/**
+/*
  * imports des packages specifiques de l'application
  */
+import UtilitairesMK.ConsoleMK;
+import UtilitairesMK.Mutex;
 import View.IHM;
 import model.ConsommateurMQ;
 import model.Constantes;
@@ -20,6 +18,8 @@ import model.ProduitText;
 
 
 /**
+ * META KONSULTING
+ * 
  * Classe controleur de l'application de test des messages queue bloquantes entre plusieurs threads
  * 
  * @author balou
@@ -27,8 +27,7 @@ import model.ProduitText;
  */
 
 public class Controler implements Constantes {
-	private static IHM ihmApplication;
-    private static int nbProd = 4000000;
+	private IHM ihmApplication;
 
     
     /**
@@ -41,14 +40,13 @@ public class Controler implements Constantes {
     private static BlockingQueue<ProduitText> msgQProduit = new ArrayBlockingQueue<ProduitText>(TAILLE_MESSAGE_Q_PC);	// queue de message utilisee par les threads producteurs et consommateurs
     
     
-    
     /**
      *  proprietes pour la gestion des affichages dans la console
      */
     private ConsoleMK console;									// l'objet pour manipuler la console
     private static ArrayBlockingQueue<String> msgQ_Console;		// queue de message utilisee pour les envois de messages dans le console
     
-    private Mutex sem;
+    private Mutex mutexSynchroIHM_Controleur;	// Mutex de synchronistion du Controleur et de l'IHM lors du démarrage de l'appli
     
     
     
@@ -59,10 +57,7 @@ public class Controler implements Constantes {
      * @throws InterruptedException 
      */
     public static void main(String[] args) throws InterruptedException {
-    	
-        // creation de la queue de messages pour afficher dans la console
-//        msgQ_Console = new ArrayBlockingQueue<String>(TAILLE_MSG_Q_CONSOLE);
-        
+    	       
     	new Controler(); // lancement du controleur
      	
         System.out.println("main() termine !!!\n");
@@ -72,69 +67,63 @@ public class Controler implements Constantes {
     /**
      * demande d'affichage de l'etat des threads dans la zone prevue par l'IHM
      */
-    public void afficheEtatThreads() {
+    private void afficheEtatThreads() {
         String msg = "";	// pour la cr�ation du message
-
-        
         // liste utilisee pour afficher l'etat des threads dans l'IHM
         ArrayList<String> listeEtatThreads = new ArrayList<>();
-
-        
     	listeEtatThreads.clear();	// effacement de la liste contenant l'�tat des threads
-      	
+
+    	
     	/**
     	 * construction du message indiquant l'etat de vie des threads
     	 */
-       	listeEtatThreads.add("====================================");
-       	listeEtatThreads.add("Threads Consommateur " + "nbConso = " + this.listeConsommateurMQ[0].getNbConsoTotale());
-       	listeEtatThreads.add("\n");
+       	listeEtatThreads.add("=======================");
+       	listeEtatThreads.add("Threads Consommateur " + "\n ---> nbConso totale = " + this.listeConsommateurMQ[0].getNbConsoTotale() + "\n");
 
     	/*
          *  on commence par l'etat des threads "Consommateur"
          */
        	for (int i=0; i <listThreadC.length ; i++) {
-       		msg = "["
-       				+ this.listeConsommateurMQ[i].getNom() + "]."
+       		msg = this.listeConsommateurMQ[i].getNom()
+       				+ "."
        				+ listThreadC[i].getName()
-       				+
-       				" "
+       				+ "["
        				+ listThreadC[i].isAlive()
-       				+ " - nbConso : "
+       				+ "]"
+       				+ ".prio["
+       				+ listThreadC[i].getPriority()
+       				+ "].nbConso : "
        				+ this.listeConsommateurMQ[i].getNbConsoRealisees();
        		
        		listeEtatThreads.add(msg);	// ajout du message dans la liste
        	}
        	
        	listeEtatThreads.add("\n");
-       	listeEtatThreads.add("\n");
-       	listeEtatThreads.add("====================================");
-       	listeEtatThreads.add("Threads Producteur " + "NbProd = " + this.listeProducteurMQ[0].getNbProdTotale());       	
-       	listeEtatThreads.add("\n");
+       	listeEtatThreads.add("=======================");
+       	listeEtatThreads.add("Threads Producteur " + "\n ---> nbProd totale = "  + "NbProd = " + this.listeProducteurMQ[0].getNbProdTotale() + "\n");       	
 
         /*
          *  on passe a l'etat des threads "Producteur"
          */
        	msg = "";		// raz du message
-		nbProd++;
 		
 		for (int i=0; i <listThreadP.length ; i++) {
     		
-    		msg = "[" + this.listeProducteurMQ[i].getNom() + "]."
+    		msg = this.listeProducteurMQ[i].getNom()
+    				+ "."
     				+  listThreadP[i].getName()
-    				+ " "
+    				+ "["
     				+ listThreadP[i].isAlive()
-    				+ " - nbProd :"
+    				+ "]"
+    				+ ".nbProd : "
     				+ listeProducteurMQ[i].getNbProdReal();
           	
     		listeEtatThreads.add(msg);	// ajout du message dans la liste
     	}
     
     	// demande d'affichage dans l'IHM
-    	this.ihmApplication.affichageEtatThreads(listeEtatThreads);     	
-    	
+    	this.ihmApplication.affichageEtatThreads(listeEtatThreads);
     }
-    
-    
     
     
     /**
@@ -145,7 +134,6 @@ public class Controler implements Constantes {
     	String msg = "lancement des threads P et C";
   
     	console.sendMsgToConsole(msg);
-//    	this.ihmApplication.affichageEtatThreads(msg);
 
     	// lancement des threads producteurs
     	for (int i =  0 ; i < listThreadP.length ; i++) {
@@ -172,7 +160,7 @@ public class Controler implements Constantes {
         
         
         console.sendMsgToConsole("creation des threads Producteur et consommateur");      
-        console.sendMsgToConsole("lancement IHM");
+        console.sendMsgToConsole("lancement de l'IHM");
  
     	/**
     	 *  construction de la liste des producteurs
@@ -182,7 +170,7 @@ public class Controler implements Constantes {
 
     	 // creation des threads Producteurs
     	 for (int i =  0 ; i < listThreadP.length ; i++) {
-    		 listeProducteurMQ[i] = new ProducteurMQ("P"+(i+1), i+1, FREQ_PRODUCTION, nbProd, PRIORITE_PRODUCTEUR, msgQProduit, console);
+    		 listeProducteurMQ[i] = new ProducteurMQ("P"+(i+1), i+1, ihmApplication.getFreqProd(), PRIORITE_PRODUCTEUR, msgQProduit, console);
     		 listThreadP[i] =  new Thread(listeProducteurMQ[i]);
     	} 	
 
@@ -192,9 +180,11 @@ public class Controler implements Constantes {
      	listThreadC =  new Thread[nbConsommateur];
     	listeConsommateurMQ = new ConsommateurMQ[nbConsommateur];
 
-     	 // creation des threads Consommateurs
+     	 // creation des threads Consommateurs avec une priorite tiree au sort entre MIN et MAX
      	 for (int i =  0 ; i < listThreadC.length ; i++) {
-    		 listeConsommateurMQ[i] = new ConsommateurMQ("C"+(i+1), i+1, PRIORITE_CONSOMMATEUR, msgQProduit, msgQ_Console, this, console);
+     		 int priority = Thread.MIN_PRIORITY + (int) (Math.random() * ((PRIORITE_MAX_CONSOMMATEUR-PRIORITE_MIN_CONSOMMATEUR) + Thread.MIN_PRIORITY));   		 
+     		 
+    		 listeConsommateurMQ[i] = new ConsommateurMQ("C"+(i+1), i+1, priority, msgQProduit, console);
      		 listThreadC[i] =  new Thread(listeConsommateurMQ[i]);
      	}
      	 
@@ -204,24 +194,36 @@ public class Controler implements Constantes {
     
     
     /*
-     * Constructeur : demarre l'IHM et envoit le controleur en param�tre
+     * Constructeur : demarre l'IHM et envoit le controleur en parametre
      */
     public Controler() throws InterruptedException {
 
-    	sem = new Mutex();
+    	/*
+    	 *  creation du mutex de synchro entre l'IHM et le controleur
+    	 *  Ce MUTEX est cree bloque pour permettre de bloquer le thread lors du 1er appel a semGet()
+    	 */
+    	mutexSynchroIHM_Controleur = new Mutex(!MUTEX_CREE_LIBRE);
          
-        ihmApplication = new IHM(this, sem);		// l'IHM recoit le controleur en parametre
-    	ihmApplication.setVisible(true);	// affichage de l'IHM
+        ihmApplication = new IHM(this, mutexSynchroIHM_Controleur);	// l'IHM recoit le controleur et le Mutex de synchro en parametre
+    	ihmApplication.setVisible(true);							// affichage de l'IHM
 
-        // creation de la queue de messages pour afficher dans la console
-    	msgQ_Console = new ArrayBlockingQueue<String>(100 /*ihmApplication.getTailleBufferConsole()*/);
-
+    	/*
+    	 * on attend que l'IHM soit prête et que la saisie des valeurs de parametrage soit OK
+    	 * lorsque cela sera Ok, l'IHM va liberer le MUTEX de manière a permettre au controler de continuer son lancement
+    	 */
+    	mutexSynchroIHM_Controleur.mutexGet();
+   	
     	
-    	// lancement du thread de gestion de la console
-        console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication, sem);
-        new Thread(console).start();
-       
+    	/* lancement du thread de gestion de la console :
+         * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
+         */
+    	msgQ_Console = new ArrayBlockingQueue<String>(ihmApplication.getTailleBufferConsole());
+        console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication);
+        new Thread(console).start();    
     	console.sendMsgToConsole("creation et lancement du thread de console");
+
+    	// on debloque l'IHM une fois que le thread de gestion de la console est lance
+    	mutexSynchroIHM_Controleur.mutexRelease();
 
 
         /***
@@ -235,7 +237,7 @@ public class Controler implements Constantes {
 				e.printStackTrace();
 			}
             if (listeConsommateurMQ != null)
-            	afficheEtatThreads();     		// affiche dans l'IHM l'état des threads que si ils existent 	
+            	afficheEtatThreads();     		// n'affiche dans l'IHM l'état des threads que si ils existent 	
         }
         
     }
