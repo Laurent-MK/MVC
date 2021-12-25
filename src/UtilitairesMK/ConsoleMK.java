@@ -51,10 +51,15 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
      * @param msg
      * @throws InterruptedException
      */
-    public void sendMsgToConsole(String msg) throws InterruptedException {
+    public void sendMsgToConsole(String msg) {
     	if (queueMsg.remainingCapacity() > 1)
-    		this.queueMsg.put(msg);	// on place le message dans la queue du thread de console
-    	else {
+			try {
+				this.queueMsg.put(msg);
+			} catch (InterruptedException e) {
+				// TODO Bloc catch généré automatiquement
+				e.printStackTrace();
+			}
+		else {
     		System.out.println("queue de la console pleine => message perdu !!! : " + Thread.currentThread().getName());
     		
     	}

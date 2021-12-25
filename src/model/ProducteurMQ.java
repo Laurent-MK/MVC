@@ -61,12 +61,7 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     @Override
     public void run() {
  
-		try {
-			console.sendMsgToConsole("Producteur numero : " + numProducteur + " cree");
-		} catch (InterruptedException e1) {
-			// TODO Bloc catch généré automatiquement
-			e1.printStackTrace();
-		}
+		console.sendMsgToConsole("Producteur numero : " + numProducteur + " cree");
 
         while(true) {
         	try {

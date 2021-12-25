@@ -188,7 +188,10 @@ public class IHM extends JFrame implements Constantes {
 
 	private void btnClicTestSemaphore(ActionEvent e) {
 		try {
-			TestSemaphore tst = new TestSemaphore();
+			if (! isclicOnBtn_CreationThread)
+				btnCreerThread_clic(e);
+			
+			TestSemaphore tst = new TestSemaphore(this.controleur);
 			tst.Go();
 		} catch (InterruptedException e1) {
 			// TODO Bloc catch généré automatiquement
@@ -289,6 +292,7 @@ public class IHM extends JFrame implements Constantes {
 		textFieldMaxLigneConsole.setText(Integer.toString(MAX_MSG_CONSOLE));			// nombre max sauvegardes dans la console
 		textFieldTailleQueueConsole.setText(Integer.toString(TAILLE_MSG_Q_CONSOLE));	// taille de la MQ du thread de gestion de la console
 		progressBarConsole.setForeground(Color.GREEN);									// la progressBar est en gris au début
+		progressBarMQ.setBackground(Color.WHITE);
 		progressBarMQ.setForeground(Color.GREEN);
 		
 		textAreaTestMutex.append("init. zone : textAreaTestMutex OK !\n");

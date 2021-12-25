@@ -64,6 +64,11 @@ public class Controler implements Constantes {
     }
 
  
+    public ConsoleMK getConsole() {
+    	return console;
+    }
+    
+    
     /**
      * demande d'affichage de l'etat des threads dans la zone prevue par l'IHM
      */

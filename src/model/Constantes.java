@@ -7,7 +7,7 @@ public interface Constantes {
 	public static final boolean VERBOSE_ON = false;		// pour declencher les affichage dans la console systeme
 	
 	public static final int 	TAILLE_MESSAGE_Q_PC = 5;	// taille de la message queue entre producteurs et consommateurs
-	public static final int 	TAILLE_MSG_Q_CONSOLE = 10;	// taille de la message queue du thread de console IHM
+	public static final int 	TAILLE_MSG_Q_CONSOLE = 250;	// taille de la message queue du thread de console IHM
 	public static final int 	MAX_MSG_CONSOLE = 500;		// maximum de messages stockes dans la console
 	
 	public static final int 	NUMERO_CONSOLE = 1;			// numero du thread de console
