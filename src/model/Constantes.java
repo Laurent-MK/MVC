@@ -33,4 +33,5 @@ public interface Constantes {
 	public static final int 	DEFAULT_NB_THREAD_PROD = 3;		// nbr threads producteurs par defaut
 
 	public static final boolean MUTEX_CREE_LIBRE = true;		// si true, le Mutex est cree avec un jeton dispo. Si false, le Mutex est cree avec 0 jetons dedans
+	public static final int		NB_BOUCLE_EN_ZONE_CRITIQUE = 10;	// nbr de tour de boucle dans une zone critique
 }

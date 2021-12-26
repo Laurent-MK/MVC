@@ -3,7 +3,7 @@ package model;
 import controler.Controler;
 import utilitairesMK.Mutex;
 
-public class TestMutex implements Runnable {
+public class TestMutex implements Runnable, Constantes {
 	Mutex m;
 	Controler ctrl;
 	int numConsole;
@@ -36,7 +36,7 @@ public class TestMutex implements Runnable {
 		 */
 		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, "=>----Entree dans la ZONE CRITIQUE DE :\n\t------" + Thread.currentThread().getName() + "-----------"));
 		
-		for (int i=0; i<10; i++) {
+		for (int i=0; i<NB_BOUCLE_EN_ZONE_CRITIQUE; i++) {
 			ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, Thread.currentThread().getName() + " est dans la ZC."));
 
 			try {

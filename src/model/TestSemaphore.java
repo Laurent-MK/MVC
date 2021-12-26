@@ -44,7 +44,7 @@ public class TestSemaphore implements Runnable, Constantes {
 		 */
 		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, "=>----Entree dans la ZONE PROTEGEE DE :\n\t------" + Thread.currentThread().getName() + "-----------"));
 		
-		for (int i=0; i<10; i++) {
+		for (int i=0; i<NB_BOUCLE_EN_ZONE_CRITIQUE; i++) {
 			ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, Thread.currentThread().getName() + " est dans la zone protegee."));
 
 			try {
