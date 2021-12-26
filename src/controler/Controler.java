@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 
 import model.ConsommateurMQ;
 import model.Constantes;
+import model.MsgToConsole;
 import model.ProducteurMQ;
 import model.ProduitText;
 import utilitairesMK.ConsoleMK;
@@ -41,7 +42,7 @@ public class Controler implements Constantes {
      *  proprietes pour la gestion des affichages dans la console
      */
     private ConsoleMK console;									// l'objet pour manipuler la console
-    private static ArrayBlockingQueue<String> msgQ_Console;		// queue de message utilisee pour les envois de messages dans le console
+    private static ArrayBlockingQueue<String> msgQ_Console;		// queue de message utilisee pour les envois de messages dans la console
     
     private Mutex mutexSynchroIHM_Controleur;	// Mutex de synchronistion du Controleur et de l'IHM lors du démarrage de l'appli
     
@@ -54,7 +55,16 @@ public class Controler implements Constantes {
      * @throws InterruptedException 
      */
     public static void main(String[] args) throws InterruptedException {
-    	       
+
+    	/*
+    	String msgAModifier = "test";
+    	MsgToConsole msg = new MsgToConsole(1, msgAModifier);
+    	msgAModifier = "effacer";
+    	msgAModifier = null;
+    	System.out.println("msg = " + msg.getMsg());
+    	System.out.println("msg = " + msgAModifier);
+    	*/
+    	
     	new Controler(); // lancement du controleur
      	
         System.out.println("main() termine !!!\n");
@@ -221,6 +231,7 @@ public class Controler implements Constantes {
          */
     	msgQ_Console = new ArrayBlockingQueue<String>(ihmApplication.getTailleBufferConsole());
         console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication);
+        
         new Thread(console).start();    
     	console.sendMsgToConsole("creation et lancement du thread de console");
 

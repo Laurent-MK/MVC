@@ -6,7 +6,7 @@ import javax.swing.border.EmptyBorder;
 
 import controler.Controler;
 import model.Constantes;
-import model.TestSemaphore;
+import model.TestPoolThread;
 import utilitairesMK.Mutex;
 
 import javax.swing.JButton;
@@ -185,19 +185,29 @@ public class IHM extends JFrame implements Constantes {
 			textAreaTestMutex.append("creation d'un MUTEX\n");
 		}
 	}
-
-	private void btnClicTestSemaphore(ActionEvent e) {
+	
+	private void btnClicTestPoolThread(ActionEvent e) {
+		if (! isclicOnBtn_CreationThread) {
+			try {
+				btnCreerThread_clic(e); // on commence par initialiser l'IHM
+			} catch (InterruptedException e1) {
+				// TODO Bloc catch généré automatiquement
+				e1.printStackTrace();
+				}
+			}
+		
+		TestPoolThread tst;
 		try {
-			if (! isclicOnBtn_CreationThread)
-				btnCreerThread_clic(e);
-			
-			TestSemaphore tst = new TestSemaphore(this.controleur);
+			tst = new TestPoolThread(this.controleur);	// creation d'un pool de threads
 			tst.Go();
 		} catch (InterruptedException e1) {
 			// TODO Bloc catch généré automatiquement
 			e1.printStackTrace();
 		}
-		
+	}
+
+	private void btnClicTestSemaphore(ActionEvent e) {
+
 	}
 	
 	private void btnClicTestMutex(ActionEvent e) {
@@ -243,14 +253,17 @@ public class IHM extends JFrame implements Constantes {
 	 * @param msg
 	 */
 	public void affichageConsole(String msg) {
+		
+		// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
 		textAreaConsole.append(msg);
 		
+		// gestion du bargraphe de progression du remplissage de la zone d'affichage
 		lblEtatBuffer.setText(Long.toString(textAreaConsole.getLineCount()));
 		progressBarConsole.setValue(textAreaConsole.getLineCount());
 		if (progressBarConsole.getPercentComplete() > SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE)
-			progressBarConsole.setForeground(Color.RED);
+			progressBarConsole.setForeground(Color.RED);	// on passe le baregraphe en rouge
 
-		
+		// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
 		if (textAreaConsole.getLineCount() > this.tailleConsole) {
 			textAreaConsole.setText("");
 			progressBarConsole.setForeground(Color.GREEN);
@@ -360,8 +373,14 @@ public class IHM extends JFrame implements Constantes {
 		/**
 		 * Ajout d'une zone de texte
 		 */
-		txtTest.setBounds(178, 246, 144, 23);
+		txtTest.setBounds(138, 246, 144, 23);
 		contentPane.add(txtTest);
+		
+		
+		/**
+		 * ------------------------------------------------------------------------------
+		 * Gestion des clics sur les différents boutons de l'IHM
+		 */
 		
 		// ajout d'un bouton "Go" et d'une fonction sur le clic du bouton
 		JButton btnGo = new JButton("Go");
@@ -376,7 +395,7 @@ public class IHM extends JFrame implements Constantes {
 				}
 			}
 		});
-		btnGo.setBounds(108, 246, 58, 23);
+		btnGo.setBounds(55, 246, 58, 23);
 		contentPane.add(btnGo);
 		
 
@@ -393,17 +412,17 @@ public class IHM extends JFrame implements Constantes {
 				}
 			}
 		});
-		btnCreerThread.setBounds(468, 345, 155, 23);
+		btnCreerThread.setBounds(468, 367, 155, 23);
 		contentPane.add(btnCreerThread);
 
 		// ajout du bouton "Del" et d'une fonction sur le clic du bouton
-		JButton btnDel = new JButton("Del");
+		JButton btnDel = new JButton("STOP");
 		btnDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnDel_clic(e);
 			}
 		});
-		btnDel.setBounds(414, 118, 89, 23);
+		btnDel.setBounds(302, 246, 89, 23);
 
 		// ajout du bouton "Creer Semaphore" et d'une fonction sur le clic du bouton
 		JButton btnCreerSemaphore = new JButton("Creer Semaphore");
@@ -443,6 +462,17 @@ public class IHM extends JFrame implements Constantes {
 			}
 		});
 		
+		// ajout d'un bouton de lancement du test de creation d'un pool de threads
+		JButton btnTestPoolThread = new JButton("Test pool de Threads");
+		btnTestPoolThread.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnClicTestPoolThread(e);
+			}
+		});
+		btnTestPoolThread.setBounds(454, 80, 188, 25);
+		contentPane.add(btnTestPoolThread);
+		
+		
 		
 		//ajout du logo
 		String ressource = getClass().getClassLoader().getResource(logo).getPath();
@@ -475,20 +505,20 @@ public class IHM extends JFrame implements Constantes {
 		
 		// zone d'afichage (avec un scroll) des messages venant de l'application
 		JScrollPane scrollPaneConsole = new JScrollPane();
-		scrollPaneConsole.setBounds(27, 445, 374, 463);
+		scrollPaneConsole.setBounds(27, 428, 374, 506);
 		contentPane.add(scrollPaneConsole);
 		
 		scrollPaneConsole.setViewportView(textAreaConsole);
 		
 		JScrollPane scrollPaneEtatThread = new JScrollPane();
-		scrollPaneEtatThread.setBounds(414, 445, 297, 463);
+		scrollPaneEtatThread.setBounds(414, 428, 297, 506);
 		contentPane.add(scrollPaneEtatThread);
 		
 		scrollPaneEtatThread.setViewportView(textAreaAffichageEtatThread);
 		
 		JLabel lblNewLabel_1 = new JLabel("Etat des threads  : true = en vie / false = mort");
 		lblNewLabel_1.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblNewLabel_1.setBounds(426, 391, 272, 14);
+		lblNewLabel_1.setBounds(420, 402, 272, 14);
 		contentPane.add(lblNewLabel_1);
 		
 		JSeparator separator = new JSeparator();
@@ -542,7 +572,7 @@ public class IHM extends JFrame implements Constantes {
 		scrollPaneConsoleSemaphore.setViewportView(textAreaTestSemaphore);
 
 		JScrollPane scrollPaneConsoleMutex = new JScrollPane();
-		scrollPaneConsoleMutex.setBounds(1066, 257, 272, 605);
+		scrollPaneConsoleMutex.setBounds(1066, 257, 272, 619);
 		contentPane.add(scrollPaneConsoleMutex);
 		
 		scrollPaneConsoleMutex.setViewportView(textAreaTestMutex);
@@ -613,6 +643,15 @@ public class IHM extends JFrame implements Constantes {
 		
 		lblTailleMQConsole.setBounds(265, 380, 57, 15);
 		contentPane.add(lblTailleMQConsole);
+		
+		JScrollPane scrollPaneTestPoolThread = new JScrollPane();
+		scrollPaneTestPoolThread.setBounds(414, 121, 278, 227);
+		contentPane.add(scrollPaneTestPoolThread);
+		
+		JTextArea textAreaTestPool = new JTextArea();
+		scrollPaneTestPoolThread.setViewportView(textAreaTestPool);
+		
+
 	
 		/**
 		 * initialisation des variables de l'IHM

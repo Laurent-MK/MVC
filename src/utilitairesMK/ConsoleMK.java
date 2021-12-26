@@ -21,7 +21,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 
 	// proprietes
 	private String nomConsole = "nom inconnu";
-    private final ArrayBlockingQueue<String> queueMsg; 
+    private final ArrayBlockingQueue<String> queueMsg;
     private IHM ihmApplication;
     private int numeroProducteur;
     private static int numMsg = 0;
@@ -46,7 +46,8 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 	
     
     /**
-     * Pour envoyer un message vers la console situee dans l'IHM
+     * Pour envoyer un message vers la console situee dans l'IHM.
+     * Le message a afficher est place dans la MQ du thread de console.
      *   
      * @param msg
      * @throws InterruptedException
@@ -76,7 +77,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 		msg = "msg[" + ++numMsg + "] :  " + (String) messageConsole + "\n";
 		
 		
-		// on a receptionné un message => on doit le passer à l'IHM pour qu'elle l'affiche dans la console syst�me
+		// on a receptionné un message => on doit le passer à l'IHM pour qu'elle l'affiche dans la console systeme
 
 		/**
 		 * si le mode verbeux est active, on affiche égalezment les messages dans la console système
@@ -95,6 +96,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 	
 	/**
 	 * le "main" du thread de console
+	 * Des l'arrivee d'un message, celui-ci est depile puis afficher dans la console
 	 */
 	@Override
 	public void run() {

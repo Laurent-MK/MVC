@@ -6,25 +6,30 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import controler.Controler;
-import model.Constantes;
 import utilitairesMK.ConsoleMK;
 
 
 
-public class TestSemaphore implements Constantes {
+public class TestPoolThread implements Constantes {
 
-	private Controler controleur;
 	private ConsoleMK console;
-	private boolean modeVerbose = false;
 	
-	
-    public TestSemaphore(Controler controleur) throws InterruptedException {
-    	this.controleur = controleur;
+	/**
+	 * Constructeur
+	 * 
+	 * @param controleur
+	 * @throws InterruptedException
+	 */
+    public TestPoolThread(Controler controleur) throws InterruptedException {
     	this.console = controleur.getConsole();
     }
     
     
-    
+    /**
+     * methode de lancement du pool de threads
+     * 
+     * @throws InterruptedException
+     */
     public void Go() throws InterruptedException {
         ExecutorService executorService = new ThreadPoolExecutor(10, 40, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
@@ -53,6 +58,7 @@ public class TestSemaphore implements Constantes {
         console.sendMsgToConsole("Autre traitement\n");
 		if (VERBOSE_ON)
 			System.out.println("Autre traitement");
+		
         executorService.shutdown();
         executorService.awaitTermination(300, TimeUnit.SECONDS);
 
