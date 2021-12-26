@@ -25,26 +25,26 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
     private int nbConsoRealisees = 0;
     private int numConsole = NUM_CONSOLE_CONSOLE;
 
-    public static long nbConsoTotale = 0;
+    public static long nbConsoTotale = 0;	// consommation totale de tous les consommateurs instancies
         
     
     /**
      * Constructeur : recoit le nom du consommateur, sa priorité, la queue de messages qui va recevoir les produits
      * 
-     * @param consumerName
+     * @param nom
      * @param num
      * @param priority
      * @param q
      * @param consoleMK
      */
-    public ConsommateurMQ(String consumerName,
+    public ConsommateurMQ(String nom,
     		int num,
     		int priority,
     		BlockingQueue<ProduitText> q,
     		ConsoleMK consoleMK,
     		int numConsole)
     {
-        setNom(consumerName);
+        setNom(nom);
         this.queue = q;
         this.consoleMK = consoleMK;
         this.numero = num;
@@ -63,7 +63,7 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
             while (true) {
                 consommer(queue.take()); // attente de l'arrivee d'un produit dans la queue de message
                 nbConsoRealisees++;
-                ConsommateurMQ.nbConsoTotale++;
+                ConsommateurMQ.nbConsoTotale++;	// consommation de cette instance
             }
         } catch (InterruptedException ex) {
         }
@@ -78,6 +78,7 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
      */
 	@Override
 	public void consommer(Object x) throws InterruptedException {
+		
 		String msgAAfficher = "--> "
 				+ nomConsommateur
 				+ " => Consomme : "

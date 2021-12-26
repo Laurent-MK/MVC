@@ -63,7 +63,6 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 			}
 		else {
     		System.out.println("queue de la console pleine => message perdu !!! : " + Thread.currentThread().getName());
-    		
     	}
     }
     
@@ -105,7 +104,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
         try {
             while (true) {
                 consommer(queueMsg.take()); // attente de l'arrivee d'un produit dans la queue de message
-                Thread.sleep(0);
+//                Thread.sleep(0); // Pour debug : freiner les consommations des messages
             }
         } catch (InterruptedException ex) {
         }

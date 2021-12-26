@@ -7,7 +7,6 @@ import javax.swing.border.EmptyBorder;
 import controler.Controler;
 import model.Constantes;
 import model.MsgToConsole;
-import model.TestSemaphore;
 import utilitairesMK.Mutex;
 
 import javax.swing.JButton;
@@ -69,6 +68,8 @@ public class IHM extends JFrame implements Constantes {
 	private final JTextField textFieldFreqProd = new JTextField();
 	private final JTextField textFieldMaxLigneConsole = new JTextField();
 	private final JTextField textFieldTailleQueueConsole = new JTextField();
+	private final JTextField textFieldNbTestMutex = new JTextField();
+	private final JTextField textFieldNbTestSem = new JTextField();
 
 	private final JProgressBar progressBarConsole = new JProgressBar(0, MAX_MSG_CONSOLE);
 	private final JProgressBar progressBarMQ = new JProgressBar(0, TAILLE_MSG_Q_CONSOLE);
@@ -76,15 +77,14 @@ public class IHM extends JFrame implements Constantes {
 	// proprietes utilisees pour la gestion de l'IHM
 	private boolean isClicOnBtnGO = false;
 	private boolean isclicOnBtnInitAppli = false;
-	private boolean isClicOnBtnCreerSemaphore = false;
-	private boolean isClicOnBtnCreerMutex = false;
 	private Mutex mutexSynchroIHM_Controler;
 	private JTextField txtNbJetons;
-	private JTextField txtNbrThreads;
+	private JTextField txtNbrThreadsTestSem;
 	private Controler controleur;
 	private int freqProd;
 	private int tailleConsole;
 	private int tailleMqConsole;
+	private JTextField txtNbrThreadTestMutex;
 	
 	
 	
@@ -177,30 +177,6 @@ public class IHM extends JFrame implements Constantes {
 		// A FAIRE !!!
 	}
 	
-	// clic sur bouton de creation de l'environnement de test des semaphores
-	private void btnClicCreerSemaphore(ActionEvent e) {
-		if (isClicOnBtnCreerSemaphore) {
-			JOptionPane.showMessageDialog(null, "Semaphores deja crees !");		
-			textAreaTestSemaphore.append("creation d'un semaphore\n");
-		}
-		else {
-			isClicOnBtnCreerSemaphore = true;
-			textAreaTestSemaphore.append("creation d'un semaphore\n");
-		}
-	}
-	
-	// clic sur bouton de creation de l'environnement de test des MUTEX
-	private void btnClicCreerMutex(ActionEvent e) {
-		if (isClicOnBtnCreerMutex) {
-			JOptionPane.showMessageDialog(null, "Semaphores deja crees !");		
-			textAreaTestMutex.append("creation d'un MUTEX\n");
-		}
-		else {
-			isClicOnBtnCreerMutex = true;
-			textAreaTestMutex.append("creation d'un MUTEX\n");
-		}
-	}
-	
 	// clic sur bouton de lancement du test des pools de thread
 	private void btnClicTestPoolThread(ActionEvent e) {
 		initAppli(e);		// initialisation de l'application
@@ -212,13 +188,27 @@ public class IHM extends JFrame implements Constantes {
 	private void btnClicTestSemaphore(ActionEvent e) {
 		initAppli(e);		// initialisation de l'application
 
-		controleur.dmdIHMLanceTestSem();
+		controleur.dmdIHMLanceTestSem(Integer.parseInt(txtNbJetons.getText()), Integer.parseInt(this.txtNbrThreadsTestSem.getText()), Integer.parseInt(textFieldNbTestSem.getText()));
+	}
+	
+	// clic sur bouton de RAZ de la zone d'affichage du test des semaphores
+	private void btnClicRAZTestSemaphore(ActionEvent e) {
+		this.textAreaTestSemaphore.setText("");
 	}
 	
 	// clic sur bouton de lancement du test des MUTEX
 	private void btnClicTestMutex(ActionEvent e) {
+		initAppli(e);		// initialisation de l'application
 		
+		controleur.dmdIHMLanceTestMutex(Integer.parseInt(textFieldNbTestMutex.getText()), Integer.parseInt(txtNbrThreadTestMutex.getText()));
 	}
+	
+	// clic sur bouton de RAZ de la zone d'affichage du test des semaphores
+	private void btnClicRAZTestMutex(ActionEvent e) {
+		this.textAreaTestMutex.setText("");
+	}
+	
+	
 	//------------------------------------------------------------------------------------------------------------
 
 	
@@ -341,12 +331,15 @@ public class IHM extends JFrame implements Constantes {
 		progressBarConsole.setForeground(Color.GREEN);									// la progressBar est en gris au début
 		progressBarMQ.setBackground(Color.WHITE);
 		progressBarMQ.setForeground(Color.GREEN);
+		textAreaTestMutex.setFont(new Font("Dialog", Font.PLAIN, 10));
 		
 		textAreaTestMutex.append("init. zone : textAreaTestMutex OK !\n");
 		textAreaTestSemaphore.setFont(new Font("Dialog", Font.PLAIN, 10));
 		textAreaTestSemaphore.append("init. zone : textAreaSemaphore OK !\n");
+		textAreaConsole.setFont(new Font("Dialog", Font.PLAIN, 10));
 		textAreaConsole.append("init. zone : textAreaConsole OK !\n");
 		textAreaTestPool.append("init. zone : textAreaTestPool OK !\n");
+		textAreaAffichageEtatThread.setFont(new Font("Dialog", Font.PLAIN, 10));
 		textAreaAffichageEtatThread.append("init. zone : textAreaEtatThread OK !\n");
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
@@ -460,26 +453,6 @@ public class IHM extends JFrame implements Constantes {
 		});
 		btnDel.setBounds(302, 246, 89, 23);
 
-		// ajout du bouton "Creer Semaphore" et d'une fonction sur le clic du bouton
-		JButton btnCreerSemaphore = new JButton("Creer Semaphore");
-		btnCreerSemaphore.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				btnClicCreerSemaphore(e);
-			}
-		});
-		btnCreerSemaphore.setBounds(749, 178, 160, 23);
-		contentPane.add(btnCreerSemaphore);
-		
-		// ajout du bouton "Creer MUTEX" et d'une fonction sur le clic du bouton
-		JButton btnCreerMutex = new JButton("Creer MUTEX");
-		btnCreerMutex.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				btnClicCreerMutex(e);
-			}
-		});
-		btnCreerMutex.setBounds(1141, 178, 127, 23);
-		contentPane.add(btnCreerMutex);
-
 		// ajout d'un bouton "Test Semaphore" et d'une fonction sur le clic du bouton
 		JButton btnTstSemaphore = new JButton("Test Semaphore");
 		btnTstSemaphore.addActionListener(new ActionListener() {
@@ -489,7 +462,7 @@ public class IHM extends JFrame implements Constantes {
 		});
 
 		// ajout du bouton "Test Mutex" et d'une fonction sur le clic du bouton
-		btnTstSemaphore.setBounds(749, 222, 160, 23);
+		btnTstSemaphore.setBounds(814, 222, 160, 23);
 		contentPane.add(btnTstSemaphore);
 		JButton btnTstMutex = new JButton("Test Mutex");	
 		btnTstMutex.addActionListener(new ActionListener() {
@@ -508,12 +481,33 @@ public class IHM extends JFrame implements Constantes {
 		btnTestPoolThread.setBounds(454, 80, 188, 25);
 		contentPane.add(btnTestPoolThread);
 		
+
+		// ajout d'un bouton de RAZ de la zone d'affichage des tests de semaphore
+		JButton btnRazZoneTestSem = new JButton("RAZ");
+		btnRazZoneTestSem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnClicRAZTestSemaphore(e);
+			}
+		});
+		btnRazZoneTestSem.setBounds(842, 925, 86, 25);
+		contentPane.add(btnRazZoneTestSem);
+		
+		// ajout d'un bouton de RAZ de la zone d'affichage des tests des MUTEX
+		JButton btnRazZoneTestMutex = new JButton("RAZ");
+		btnRazZoneTestMutex.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnClicRAZTestMutex(e);
+			}
+		});
+		btnRazZoneTestMutex.setBounds(1161, 925, 76, 25);
+		contentPane.add(btnRazZoneTestMutex);
+
 		
 		
 		//ajout du logo
 		String ressource = getClass().getClassLoader().getResource(logo).getPath();
 		lblNewLabel.setIcon(new ImageIcon(ressource));
-		lblNewLabel.setBounds(1221, 80, 117, 61);
+		lblNewLabel.setBounds(666, -7, 117, 61);
 		contentPane.add(lblNewLabel);
 		lblZoneConsole.setBounds(23, 302, 355, 14);
 		
@@ -567,11 +561,11 @@ public class IHM extends JFrame implements Constantes {
 		/*****************************/
 
 		
-		btnTstMutex.setBounds(1141, 222, 127, 23);
+		btnTstMutex.setBounds(1124, 222, 127, 23);
 		contentPane.add(btnTstMutex);
 		
 		txtNbJetons = new JTextField();
-		txtNbJetons.setText("1");
+		txtNbJetons.setText("2");
 		txtNbJetons.setBounds(749, 87, 40, 20);
 		contentPane.add(txtNbJetons);
 		txtNbJetons.setColumns(10);
@@ -591,24 +585,24 @@ public class IHM extends JFrame implements Constantes {
 		contentPane.add(lblNewLabel_3_1);
 		
 	
-		JLabel lblNewLabel_4 = new JLabel("Nbr threads concurents");
-		lblNewLabel_4.setBounds(749, 122, 194, 14);
+		JLabel lblNewLabel_4 = new JLabel("Nbr threads concurrents");
+		lblNewLabel_4.setBounds(749, 127, 194, 14);
 		contentPane.add(lblNewLabel_4);
 		
-		txtNbrThreads = new JTextField();
-		txtNbrThreads.setText("2");
-		txtNbrThreads.setBounds(749, 137, 40, 20);
-		contentPane.add(txtNbrThreads);
-		txtNbrThreads.setColumns(10);
+		txtNbrThreadsTestSem = new JTextField();
+		txtNbrThreadsTestSem.setText("4");
+		txtNbrThreadsTestSem.setBounds(749, 146, 40, 20);
+		contentPane.add(txtNbrThreadsTestSem);
+		txtNbrThreadsTestSem.setColumns(10);
 		
 		JScrollPane scrollPaneConsoleSemaphore = new JScrollPane();
-		scrollPaneConsoleSemaphore.setBounds(749, 257, 293, 619);
+		scrollPaneConsoleSemaphore.setBounds(749, 257, 293, 656);
 		contentPane.add(scrollPaneConsoleSemaphore);
 		
 		scrollPaneConsoleSemaphore.setViewportView(textAreaTestSemaphore);
 
 		JScrollPane scrollPaneConsoleMutex = new JScrollPane();
-		scrollPaneConsoleMutex.setBounds(1066, 257, 272, 619);
+		scrollPaneConsoleMutex.setBounds(1066, 257, 272, 656);
 		contentPane.add(scrollPaneConsoleMutex);
 		
 		scrollPaneConsoleMutex.setViewportView(textAreaTestMutex);
@@ -660,7 +654,7 @@ public class IHM extends JFrame implements Constantes {
 		
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setOrientation(SwingConstants.VERTICAL);
-		separator_1.setBounds(1051, 82, 17, 813);
+		separator_1.setBounds(1051, 82, 17, 852);
 		contentPane.add(separator_1);
 		
 		progressBarMQ.setBounds(23, 404, 285, 14);
@@ -687,7 +681,35 @@ public class IHM extends JFrame implements Constantes {
 		
 		scrollPaneTestPoolThread.setViewportView(textAreaTestPool);
 		
-
+		JLabel lblNbrThreadsConcurrents = new JLabel("Nbr threads concurrents");
+		lblNbrThreadsConcurrents.setBounds(1063, 85, 188, 15);
+		contentPane.add(lblNbrThreadsConcurrents);
+		
+		txtNbrThreadTestMutex = new JTextField();
+		txtNbrThreadTestMutex.setText("2");
+		txtNbrThreadTestMutex.setBounds(1066, 102, 40, 19);
+		contentPane.add(txtNbrThreadTestMutex);
+		txtNbrThreadTestMutex.setColumns(10);
+		
+		JLabel lblNbrCyclesDacces = new JLabel("Nbr cycles d'acces");
+		lblNbrCyclesDacces.setBounds(749, 180, 188, 15);
+		contentPane.add(lblNbrCyclesDacces);
+		
+		JLabel lblNbrCyclesDacces_1 = new JLabel("Nbr cycles d'acces");
+		lblNbrCyclesDacces_1.setBounds(1063, 148, 188, 15);
+		contentPane.add(lblNbrCyclesDacces_1);
+		
+		textFieldNbTestMutex.setText("1");
+		textFieldNbTestMutex.setBounds(1066, 175, 86, 19);
+		contentPane.add(textFieldNbTestMutex);
+		textFieldNbTestMutex.setColumns(10);
+		
+		textFieldNbTestSem.setText("1");
+		textFieldNbTestSem.setBounds(941, 178, 86, 19);
+		contentPane.add(textFieldNbTestSem);
+		textFieldNbTestSem.setColumns(10);
+		
+		
 	
 		/**
 		 * initialisation des variables de l'IHM

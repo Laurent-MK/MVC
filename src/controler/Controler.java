@@ -9,6 +9,7 @@ import model.Constantes;
 import model.MsgToConsole;
 import model.ProducteurMQ;
 import model.ProduitText;
+import model.TestMutex;
 import model.TestPoolThread;
 import model.TestSemaphore;
 import utilitairesMK.ConsoleMK;
@@ -39,6 +40,10 @@ public class Controler implements Constantes {
     private Thread listThreadC[];					// tableau des threads consommateurs
     private ConsommateurMQ listeConsommateurMQ[];	// tableau des objets abritants les threads consommateurs
     private static BlockingQueue<ProduitText> msgQProduit = new ArrayBlockingQueue<ProduitText>(TAILLE_MESSAGE_Q_PC);	// queue de message utilisee par les threads producteurs et consommateurs
+    
+    private TestSemaphore listeTestSemaphore[];		// tableau des objets abritants les threads de test des semaphores
+    private Thread listThreadTestSem[];					// tableau des threads recevant les objets de test des semaphores
+
     
     
     /**
@@ -79,7 +84,6 @@ public class Controler implements Constantes {
         ArrayList<String> listeEtatThreads = new ArrayList<>();
     	listeEtatThreads.clear();	// effacement de la liste contenant l'�tat des threads
 
-    	
     	/**
     	 * construction du message indiquant l'etat de vie des threads
     	 */
@@ -158,24 +162,67 @@ public class Controler implements Constantes {
     
     
     /**
+     * porcedure de test des semaphores
+     * On lance autant de threads que demande dans l'IHM puis chacun d'eux va tenter de rentrer
+     * dans la zone protegee. C'est le nbr de jetons qui donnera le nbr de thread a acceder
+     * en meme temps a la ressource protegee
+     */
+    public void dmdIHMLanceTestSem(int nbrJetons, int nbrThread, int nbCycles) {
+    	
+    	SemaphoreCpt sem = new SemaphoreCpt(nbrJetons);	// création du semaphore avec le nbr de jetons passe en parametre
+    	
+    	listeTestSemaphore =  new TestSemaphore[nbrThread];	// tableau des objets de test
+    	listThreadTestSem = new Thread[nbrThread];			// tableau des threads d'execution
+
+    	for (int j=0; j<nbCycles; j++) {
+
+    		for (int i=0; i < nbrThread; i++) {
+    			listeTestSemaphore[i] = new TestSemaphore(NUM_CONSOLE_TEST_SEMAPHORE, this, sem); // creation de l'objet de test des semaphores
+    			listThreadTestSem[i] = new Thread(listeTestSemaphore[i]);	// création du thread d'acceuil des objets de test des semaphores
+    		}
+
+    		/**
+        	 * lancement des threads concurrents sur l'acces à la ressource protegee par le semaphore
+        	 */
+        	for (int i=0; i<nbrThread; i++) {
+        		listThreadTestSem[i].start();
+        	}    		
+    	} // fin sur nbCycles   	
+    }
+   
+    /**
+     * porcedure de test des Mutex
+     * On lance autant de threads que demande dans l'IHM puis chacun d'eux va tenter de rentrer
+     * dans la zone critique. A tout instant, un seul thread sera present dans la zone critique.
      * 
      */
-    public void dmdIHMLanceTestSem() {
-    	SemaphoreCpt sem = new SemaphoreCpt(1);
-		Thread threadTstSem1;
-		TestSemaphore tstSem1 = new TestSemaphore(NUM_CONSOLE_TEST_SEMAPHORE, this, sem);
-		Thread threadTstSem2;
-		TestSemaphore tstSem2 = new TestSemaphore(NUM_CONSOLE_TEST_SEMAPHORE, this, sem);
-	
-		threadTstSem1 = new Thread(tstSem1); // creation du thread d'execution du test
-		threadTstSem2 = new Thread(tstSem2); // creation du thread d'execution du test
+    public void dmdIHMLanceTestMutex(int nbCycles, int nbrThread) {
 
-		threadTstSem1.start();		// lancement du thread qui habrite l'objet de test des semaphores
-		threadTstSem2.start();		// lancement du thread qui habrite l'objet de test des semaphores		
+    	Mutex mutexDeTest= new Mutex(MUTEX_CREE_LIBRE);
+    	TestMutex listeTstMutex[] = new TestMutex[nbrThread];	// tableau des objets de test du mutex
+    	Thread threadTestMutex[] = new Thread[nbrThread];		// tableau des threads d'execution des objets de test
+
+    	for (int j=0; j<nbCycles; j++) {	// on executera le test autant de fois que demande
+
+    		for (int i=0; i < nbrThread ; i++) {
+    			listeTstMutex[i] = new TestMutex(NUM_CONSOLE_TEST_MUTEX, this, mutexDeTest);	// creation de l'objet de test d'acces a un mutex
+    			threadTestMutex[i] = new Thread(listeTstMutex[i]);	// creation du thread d'execution de l'objet de test
+    		}
+   	   	
+    		/**
+    	 	* lancement des threads concurrents sur l'acces à la zone critique
+    	 	*/
+    		for (int i=0; i < nbrThread ; i++) {
+    			threadTestMutex[i].start();
+    		}
+    	} // fin sur nbCycles
     }
+ 
+    
+    
     
     /**
-     * methode de creation d'un thread de test des pool de threads
+     * methode de creation d'un thread de test des pools de threads
      * on cree un objet de type TestPoolThread que l'on associe a un thread.
      * Cela empeche de bloquer l'IHM pendant le test du pool de thread
      * Une fois le thread cree, on le lance.

@@ -36,18 +36,16 @@ public class TestSemaphore implements Runnable, Constantes {
 	@Override
 	public void run()  {
 
-		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, Thread.currentThread().getName() + " -> Lancement Thread."));
-		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, Thread.currentThread().getName() + "-> Attente d'entrer dans la ZC"));
+		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, Thread.currentThread().getName() + " -> Lancement Thread.\n-> Attente d'entrer dans la ZC"));
 
 		sem.semGet(1);	// on prend le semaphore si il est disponible, sinon le thread est mis en sommeil
 		/*
-		 * ------------- debut de la ZONE CRITIQUE protegee par le semaphore
+		 * ------------- debut de l'acces a la zone protegee par le semaphore
 		 */
-		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, "--------ZONE CRITIQUE DE : " + Thread.currentThread().getName() + "-----------"));
-		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, "=> Entree dans la ZC - " + Thread.currentThread().getName()));
+		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, "=>----Entree dans la ZONE PROTEGEE DE :\n\t------" + Thread.currentThread().getName() + "-----------"));
 		
 		for (int i=0; i<10; i++) {
-			ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, Thread.currentThread().getName() + " est dans la ZC."));
+			ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, Thread.currentThread().getName() + " est dans la zone protegee."));
 
 			try {
 				Thread.sleep(100);
@@ -58,10 +56,10 @@ public class TestSemaphore implements Runnable, Constantes {
 			
 		}
 		/*
-		 * ------------- fin de la ZONE CRITIQUE protegee par le semaphore
+		 * ------------- fin de l'acces à la zone protegee par le semaphore
 		 */		
+		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, "<==----SORTIE DE ZONE ZONE PROTEGEE DE : " + Thread.currentThread().getName() + "-------"));
 		sem.semRelease(1);	// on relache le semaphore
-		ctrl.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, Thread.currentThread().getName() + "=> Sortie de la ZC - " + "\n"));
 	}
 	
 	

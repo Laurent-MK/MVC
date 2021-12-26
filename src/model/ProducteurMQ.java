@@ -72,7 +72,7 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
 				nbProductionRealisee++;
 		    	ProducteurMQ.nbProdTotale++;
 
-				Thread.sleep(this.delay);		// mise en sommeil
+				Thread.sleep(this.delay);		// mise en sommeil eventuelle pour freiner la production (fixe par l'IHM)
 			} catch (InterruptedException e) {
 				// TODO Bloc catch g�n�r� automatiquement
 				e.printStackTrace();
@@ -90,7 +90,7 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
      */
     public ProduitText produire() throws InterruptedException {
     	
-    	console.sendMsgToConsole(new MsgToConsole(0,
+    	console.sendMsgToConsole(new MsgToConsole(numConsole,
     			"#" +
     			this.nomProducteur +
     			"_" +
