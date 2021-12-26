@@ -23,6 +23,7 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
 	private ConsoleMK console;
 	private int nbProductionRealisee = 0;
 	private static long nbProdTotale = 0;
+	private int numConsole = NUM_CONSOLE_CONSOLE;
 	
 	
 
@@ -32,10 +33,10 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
 	 * @param producerName
 	 * @param numProd
 	 * @param delay
-	 * @param nbProductionARealiser
 	 * @param priority
-	 * @param q
+	 * @param msgQProduit
 	 * @param console
+	 * @param numConsole
 	 */
     public ProducteurMQ(
     		String producerName,
@@ -43,13 +44,15 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     		int delay,
     		int priority,
     		BlockingQueue<ProduitText> msgQProduit,
-    		ConsoleMK console)
+    		ConsoleMK console,
+    		int numConsole)
     {
         this.nomProducteur = producerName;
         this.delay = delay;
         this.queue = msgQProduit;
         this.numProducteur = numProd;
         this.console = console;
+        this.numConsole = numConsole;
       
         Thread.currentThread().setPriority(priority);
     }
@@ -61,7 +64,7 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     @Override
     public void run() {
  
-		console.sendMsgToConsole("Producteur numero : " + numProducteur + " cree");
+		console.sendMsgToConsole(new MsgToConsole(numConsole, "Producteur numero : " + numProducteur + " cree"));
 
         while(true) {
         	try {
@@ -87,7 +90,8 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
      */
     public ProduitText produire() throws InterruptedException {
     	
-    	console.sendMsgToConsole("#" +
+    	console.sendMsgToConsole(new MsgToConsole(0,
+    			"#" +
     			this.nomProducteur +
     			"_" +
     			this.numProducteur +
@@ -95,7 +99,7 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     			numProducteur +
     			"_" +
     			++numeroProduit +
-    			"\n");
+    			"\n"));
     	    	
         return (new ProduitText("Product ", numProducteur, numeroProduit));
     }

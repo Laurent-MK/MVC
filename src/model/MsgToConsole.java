@@ -11,7 +11,8 @@ public class MsgToConsole {
 	public MsgToConsole(int numConsole, String msg) {
 		
 		this.numConsoleDest = numConsole;
-		this.msg = msg;
+//		this.msg = msg;
+		this.msg = String.copyValueOf(msg.toCharArray());
 	}
 	
 	
@@ -24,6 +25,10 @@ public class MsgToConsole {
 		return msg;
 	}
 	
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+
 	
 	public int getNumConsoleDest() {
 		return numConsoleDest;

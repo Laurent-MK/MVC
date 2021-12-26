@@ -15,7 +15,7 @@ import utilitairesMK.ConsoleMK;
  * @author balou
  *
  */
-public class ConsommateurMQ implements Runnable, Consommateur {
+public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
 	
 	// proprietes
 	private String nomConsommateur = "nom inconnu";
@@ -23,6 +23,7 @@ public class ConsommateurMQ implements Runnable, Consommateur {
     private ConsoleMK consoleMK;
     private int numero;
     private int nbConsoRealisees = 0;
+    private int numConsole = NUM_CONSOLE_CONSOLE;
 
     public static long nbConsoTotale = 0;
         
@@ -40,12 +41,14 @@ public class ConsommateurMQ implements Runnable, Consommateur {
     		int num,
     		int priority,
     		BlockingQueue<ProduitText> q,
-    		ConsoleMK consoleMK)
+    		ConsoleMK consoleMK,
+    		int numConsole)
     {
         setNom(consumerName);
         this.queue = q;
         this.consoleMK = consoleMK;
         this.numero = num;
+        this.numConsole = numConsole;
         
         Thread.currentThread().setPriority(priority);
     }
@@ -84,7 +87,7 @@ public class ConsommateurMQ implements Runnable, Consommateur {
 				+ "_"
 				+ ((ProduitText)x).getNumero();
 
-		consoleMK.sendMsgToConsole(msgAAfficher);
+		consoleMK.sendMsgToConsole(new MsgToConsole(numConsole, msgAAfficher));
 	}
 	
 	

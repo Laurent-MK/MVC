@@ -2,7 +2,7 @@ package utilitairesMK;
 
 import java.util.concurrent.Semaphore;
 
-class SemaphoreCpt implements SemaphoreMK {
+public class SemaphoreCpt implements SemaphoreMK {
 
 	private Semaphore sem;
 	

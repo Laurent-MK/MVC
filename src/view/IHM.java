@@ -6,7 +6,8 @@ import javax.swing.border.EmptyBorder;
 
 import controler.Controler;
 import model.Constantes;
-import model.TestPoolThread;
+import model.MsgToConsole;
+import model.TestSemaphore;
 import utilitairesMK.Mutex;
 
 import javax.swing.JButton;
@@ -57,12 +58,11 @@ public class IHM extends JFrame implements Constantes {
 	private final JLabel lblTailleMQConsole = new JLabel(Long.toString(TAILLE_MSG_Q_CONSOLE));
 	private final JLabel lblEtatMQ = new JLabel("0");
 
-
-
 	private final JTextArea textAreaConsole = new JTextArea();
 	private final JTextArea textAreaAffichageEtatThread = new JTextArea();
 	private final JTextArea textAreaTestMutex = new JTextArea();
 	private final JTextArea textAreaTestSemaphore = new JTextArea();
+	private final JTextArea textAreaTestPool = new JTextArea();
 	
 	private final JTextField textFieldNbProducteur = new JTextField();
 	private final JTextField textFieldNbConsommateur = new JTextField();
@@ -73,11 +73,9 @@ public class IHM extends JFrame implements Constantes {
 	private final JProgressBar progressBarConsole = new JProgressBar(0, MAX_MSG_CONSOLE);
 	private final JProgressBar progressBarMQ = new JProgressBar(0, TAILLE_MSG_Q_CONSOLE);
 
-
-
 	// proprietes utilisees pour la gestion de l'IHM
-	private boolean isClicOnBtn_GO = false;
-	private boolean isclicOnBtn_CreationThread = false;
+	private boolean isClicOnBtnGO = false;
+	private boolean isclicOnBtnInitAppli = false;
 	private boolean isClicOnBtnCreerSemaphore = false;
 	private boolean isClicOnBtnCreerMutex = false;
 	private Mutex mutexSynchroIHM_Controler;
@@ -96,41 +94,58 @@ public class IHM extends JFrame implements Constantes {
 	 */
 	
 	/**
+	 * methode d'initialisation des threads de tests Producteurs / Consommateurs
+	 * et du thread de la console 
+	 */
+	private void initAppli(ActionEvent e) {
+		
+		if (! isclicOnBtnInitAppli) {
+			try {
+				btnInitAppli(e); // on commence par initialiser l'IHM
+			} catch (InterruptedException e1) {
+				// TODO Bloc catch généré automatiquement
+				e1.printStackTrace();
+				}
+			}
+	}
+	
+	/**
 	 * fct executee lors du clic sur le bouton "GO"
 	 * @param e
 	 * @throws InterruptedException 
 	 */
 	private void btnGo_clic(ActionEvent e) throws InterruptedException {
 		
-		if (isclicOnBtn_CreationThread) {
-			if (isClicOnBtn_GO) {
+		if (isclicOnBtnInitAppli) {
+			if (isClicOnBtnGO) {
 				JOptionPane.showMessageDialog(null, "Application deja lancee");
 				return;
-			}
-				
-			txtTest.setText("C'est parti !");
-				
-			controleur.dmdIHMGo();
-			isClicOnBtn_GO = true;
-			}
-		else {
-			JOptionPane.showMessageDialog(null, "cliquer d'abord sur le bouton de creation des Threads");
+				}
 		}
-	}
+
+		txtTest.setText("C'est parti !");
+		initAppli(e);	// initialisation de l'application
+		
+		controleur.dmdIHMGo();
+		isClicOnBtnGO = true;
+//			JOptionPane.showMessageDialog(null, "cliquer d'abord sur le bouton de creation des Threads");
+		}
+
+	
 	
 	/**
 	 * methode applee lors du clic sur le bouton "Creer Threads"
 	 * @param e
 	 * @throws InterruptedException 
 	 */
-	private void btnCreerThread_clic(ActionEvent e) throws InterruptedException {
+	private void btnInitAppli(ActionEvent e) throws InterruptedException {
 		
-		if (isclicOnBtn_CreationThread) {
+		if (isclicOnBtnInitAppli) {
 			JOptionPane.showMessageDialog(null, "Threads deja crees !");		
 		}
 		else {
 //			JOptionPane.showMessageDialog(null, "Creation des threads : OK");
-			isclicOnBtn_CreationThread = true;
+			isclicOnBtnInitAppli = true;
 			
 			tailleConsole = Integer.parseInt(textFieldMaxLigneConsole.getText());
 			freqProd = Integer.parseInt(textFieldFreqProd.getText());
@@ -144,26 +159,25 @@ public class IHM extends JFrame implements Constantes {
 			
 			mutexSynchroIHM_Controler.mutexRelease(); 	// liberation du mutex de synchro de l'IHM et du controleur
 			
-			Thread.yield();
-			Thread.sleep(10);
+			Thread.yield();		// relache le processeur
+			Thread.sleep(10);	// pour laisser le temps au thread controleur de s'initialiser
 		
 			mutexSynchroIHM_Controler.mutexGet();
-			
-			
+
 			controleur.dmdIHMCreationThread();
 		}
 	}
 		
 	
 	/**
-	 * fct exécutée lors du clic sur le bouton "Del"
+	 * fct exécutée lors du clic sur le bouton "STOP"
 	 * @param e
 	 */
-	private void btnDel_clic(ActionEvent e) {
+	private void btnClicStop(ActionEvent e) {
 		// A FAIRE !!!
 	}
 	
-	
+	// clic sur bouton de creation de l'environnement de test des semaphores
 	private void btnClicCreerSemaphore(ActionEvent e) {
 		if (isClicOnBtnCreerSemaphore) {
 			JOptionPane.showMessageDialog(null, "Semaphores deja crees !");		
@@ -175,6 +189,7 @@ public class IHM extends JFrame implements Constantes {
 		}
 	}
 	
+	// clic sur bouton de creation de l'environnement de test des MUTEX
 	private void btnClicCreerMutex(ActionEvent e) {
 		if (isClicOnBtnCreerMutex) {
 			JOptionPane.showMessageDialog(null, "Semaphores deja crees !");		
@@ -186,30 +201,21 @@ public class IHM extends JFrame implements Constantes {
 		}
 	}
 	
+	// clic sur bouton de lancement du test des pools de thread
 	private void btnClicTestPoolThread(ActionEvent e) {
-		if (! isclicOnBtn_CreationThread) {
-			try {
-				btnCreerThread_clic(e); // on commence par initialiser l'IHM
-			} catch (InterruptedException e1) {
-				// TODO Bloc catch généré automatiquement
-				e1.printStackTrace();
-				}
-			}
-		
-		TestPoolThread tst;
-		try {
-			tst = new TestPoolThread(this.controleur);	// creation d'un pool de threads
-			tst.Go();
-		} catch (InterruptedException e1) {
-			// TODO Bloc catch généré automatiquement
-			e1.printStackTrace();
-		}
+		initAppli(e);		// initialisation de l'application
+		controleur.dmdIHMLanceTestPool();
 	}
 
+	
+	// clic sur bouton de lancement du test des semaphores
 	private void btnClicTestSemaphore(ActionEvent e) {
+		initAppli(e);		// initialisation de l'application
 
+		controleur.dmdIHMLanceTestSem();
 	}
 	
+	// clic sur bouton de lancement du test des MUTEX
 	private void btnClicTestMutex(ActionEvent e) {
 		
 	}
@@ -252,23 +258,51 @@ public class IHM extends JFrame implements Constantes {
 	 * 
 	 * @param msg
 	 */
-	public void affichageConsole(String msg) {
-		
-		// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
-		textAreaConsole.append(msg);
-		
-		// gestion du bargraphe de progression du remplissage de la zone d'affichage
-		lblEtatBuffer.setText(Long.toString(textAreaConsole.getLineCount()));
-		progressBarConsole.setValue(textAreaConsole.getLineCount());
-		if (progressBarConsole.getPercentComplete() > SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE)
-			progressBarConsole.setForeground(Color.RED);	// on passe le baregraphe en rouge
+	public void affichageConsole(MsgToConsole msg) {
+			
+		if (msg.getNumConsoleDest() == NUM_CONSOLE_CONSOLE) {
 
-		// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
-		if (textAreaConsole.getLineCount() > this.tailleConsole) {
-			textAreaConsole.setText("");
-			progressBarConsole.setForeground(Color.GREEN);
+			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
+			textAreaConsole.append(msg.getMsg());
+			
+			// gestion du bargraphe de progression du remplissage de la zone d'affichage
+			lblEtatBuffer.setText(Long.toString(textAreaConsole.getLineCount()));
+			progressBarConsole.setValue(textAreaConsole.getLineCount());
+			if (progressBarConsole.getPercentComplete() > SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE)
+				progressBarConsole.setForeground(Color.RED);	// on passe le baregraphe en rouge
+
+			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
+			if (textAreaConsole.getLineCount() > this.tailleConsole) {
+				textAreaConsole.setText("");
+				progressBarConsole.setForeground(Color.GREEN);
+			}			
 		}
-	}
+		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_SEMAPHORE) {
+			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
+			textAreaTestSemaphore.append(msg.getMsg());
+
+			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
+			if (textAreaTestSemaphore.getLineCount() > this.tailleConsole)
+				textAreaTestSemaphore.setText("");	
+		}
+		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_MUTEX) {
+			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
+			textAreaTestMutex.append(msg.getMsg());
+
+			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
+			if (textAreaTestMutex.getLineCount() > this.tailleConsole)
+				textAreaTestMutex.setText("");
+		}
+		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_POOL) {
+			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
+			textAreaTestPool.append(msg.getMsg());
+
+			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
+			if (textAreaTestPool.getLineCount() > this.tailleConsole)
+				textAreaTestPool.setText("");
+		}
+		
+		}
 	
 	
 	/**
@@ -279,7 +313,7 @@ public class IHM extends JFrame implements Constantes {
 	public void affichageConsole(ArrayList<String> messageConsole) {
 
 		for(String message : messageConsole) {
-			affichageConsole(message);
+			affichageConsole(new MsgToConsole(0, message));
 		}
 	}
 	
@@ -309,8 +343,10 @@ public class IHM extends JFrame implements Constantes {
 		progressBarMQ.setForeground(Color.GREEN);
 		
 		textAreaTestMutex.append("init. zone : textAreaTestMutex OK !\n");
+		textAreaTestSemaphore.setFont(new Font("Dialog", Font.PLAIN, 10));
 		textAreaTestSemaphore.append("init. zone : textAreaSemaphore OK !\n");
 		textAreaConsole.append("init. zone : textAreaConsole OK !\n");
+		textAreaTestPool.append("init. zone : textAreaTestPool OK !\n");
 		textAreaAffichageEtatThread.append("init. zone : textAreaEtatThread OK !\n");
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
@@ -400,26 +436,26 @@ public class IHM extends JFrame implements Constantes {
 		
 
 		// ajout d'un bouton "Creer Thread" et d'une fonction sur le clic du bouton
-		JButton btnCreerThread = new JButton("Creer Threads");
-		btnCreerThread.addActionListener(new ActionListener() {
+		JButton btnInitAppli = new JButton("Init Appli");
+		btnInitAppli.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// action executee lors du clic
 				try {
-					btnCreerThread_clic(e);
+					btnInitAppli(e);
 				} catch (InterruptedException e1) {
 					// TODO Bloc catch généré automatiquement
 					e1.printStackTrace();
 				}
 			}
 		});
-		btnCreerThread.setBounds(468, 367, 155, 23);
-		contentPane.add(btnCreerThread);
+		btnInitAppli.setBounds(513, 367, 108, 23);
+		contentPane.add(btnInitAppli);
 
 		// ajout du bouton "Del" et d'une fonction sur le clic du bouton
 		JButton btnDel = new JButton("STOP");
 		btnDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				btnDel_clic(e);
+				btnClicStop(e);
 			}
 		});
 		btnDel.setBounds(302, 246, 89, 23);
@@ -647,8 +683,8 @@ public class IHM extends JFrame implements Constantes {
 		JScrollPane scrollPaneTestPoolThread = new JScrollPane();
 		scrollPaneTestPoolThread.setBounds(414, 121, 278, 227);
 		contentPane.add(scrollPaneTestPoolThread);
+		textAreaTestPool.setFont(new Font("Dialog", Font.PLAIN, 10));
 		
-		JTextArea textAreaTestPool = new JTextArea();
 		scrollPaneTestPoolThread.setViewportView(textAreaTestPool);
 		
 

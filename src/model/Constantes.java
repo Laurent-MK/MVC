@@ -10,6 +10,11 @@ public interface Constantes {
 	public static final int 	NB_CONSOLE = 5;				// taille de la message queue entre producteurs et consommateurs
 	public static final int 	TAILLE_MSG_Q_CONSOLE = 250;	// taille de la message queue du thread de console IHM
 	public static final int 	MAX_MSG_CONSOLE = 500;		// maximum de messages stockes dans la console
+
+	public static final int 	NUM_CONSOLE_CONSOLE = 0;		// numero de la console d'affichage
+	public static final int 	NUM_CONSOLE_TEST_SEMAPHORE = 1;		// numero de la console d'affichage
+	public static final int 	NUM_CONSOLE_TEST_MUTEX = 2;		// numero de la console d'affichage
+	public static final int 	NUM_CONSOLE_TEST_POOL = 3;		// numero de la console d'affichage
 	
 	public static final int 	NUMERO_CONSOLE = 1;			// numero du thread de console
 

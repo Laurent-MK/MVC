@@ -4,6 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import model.Consommateur;
 import model.Constantes;
+import model.MsgToConsole;
 import view.IHM;
 
 
@@ -21,7 +22,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 
 	// proprietes
 	private String nomConsole = "nom inconnu";
-    private final ArrayBlockingQueue<String> queueMsg;
+    private final ArrayBlockingQueue<MsgToConsole> queueMsg;
     private IHM ihmApplication;
     private int numeroProducteur;
     private static int numMsg = 0;
@@ -30,11 +31,12 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
      * Constructeur
      * 
      * @param consumerName
+     * @param numero
      * @param priority
-     * @param q
-     * @param msg
+     * @param msgQ
+     * @param ihmApplication
      */
-    public ConsoleMK(String consumerName, int numero, int priority, ArrayBlockingQueue<String> msgQ, IHM ihmApplication)
+    public ConsoleMK(String consumerName, int numero, int priority, ArrayBlockingQueue<MsgToConsole> msgQ, IHM ihmApplication)
     {
         this.nomConsole = consumerName;
         this.queueMsg = msgQ;
@@ -48,11 +50,10 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
     /**
      * Pour envoyer un message vers la console situee dans l'IHM.
      * Le message a afficher est place dans la MQ du thread de console.
-     *   
+     * 
      * @param msg
-     * @throws InterruptedException
      */
-    public void sendMsgToConsole(String msg) {
+    public void sendMsgToConsole(MsgToConsole msg) {
     	if (queueMsg.remainingCapacity() > 1)
 			try {
 				this.queueMsg.put(msg);
@@ -71,10 +72,11 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
      * Retirer un message present dans la queue du thread de console
      */
 	@Override
-	public void consommer(Object messageConsole) throws InterruptedException {
+	public void consommer(Object msgConsole) throws InterruptedException {
 		String msg;
 
-		msg = "msg[" + ++numMsg + "] :  " + (String) messageConsole + "\n";
+		msg = "msg[" + ++numMsg + "] :  " + ((MsgToConsole)msgConsole).getMsg() + "\n";
+		((MsgToConsole)msgConsole).setMsg(msg);
 		
 		
 		// on a receptionné un message => on doit le passer à l'IHM pour qu'elle l'affiche dans la console systeme
@@ -84,10 +86,10 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 		 * Dans le cas contraire, les messages de debug sont tous envoyés vers l'IHM
 		 */
 		if (VERBOSE_ON)
-			System.out.println((String)messageConsole);
+			System.out.println(((MsgToConsole)msgConsole).getMsg());
 
 		// affichage dans la fenetre de l'IHM dediee aux messages de console
-		ihmApplication.affichageConsole(msg);
+		ihmApplication.affichageConsole((MsgToConsole)msgConsole);
 		// affichage dans l'IHM du remplissage de la MQ de la console
 		ihmApplication.affichageRemplissageMQ_Console(queueMsg.size());
 	}
