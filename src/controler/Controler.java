@@ -169,7 +169,7 @@ public class Controler implements Constantes {
      */
     public void dmdIHMLanceTestSem(int nbrJetons, int nbrThread, int nbCycles) {
     	
-    	SemaphoreCpt sem = new SemaphoreCpt(nbrJetons);	// création du semaphore avec le nbr de jetons passe en parametre
+    	SemaphoreCpt sem = new SemaphoreCpt(nbrJetons);	// creation du semaphore avec le nbr de jetons passe en parametre
     	
     	listeTestSemaphore =  new TestSemaphore[nbrThread];	// tableau des objets de test
     	listThreadTestSem = new Thread[nbrThread];			// tableau des threads d'execution
@@ -178,7 +178,7 @@ public class Controler implements Constantes {
 
     		for (int i=0; i < nbrThread; i++) {
     			listeTestSemaphore[i] = new TestSemaphore(NUM_CONSOLE_TEST_SEMAPHORE, this, sem); // creation de l'objet de test des semaphores
-    			listThreadTestSem[i] = new Thread(listeTestSemaphore[i]);	// création du thread d'acceuil des objets de test des semaphores
+    			listThreadTestSem[i] = new Thread(listeTestSemaphore[i]);	// creation du thread d'acceuil des objets de test des semaphores
     		}
 
     		/**
