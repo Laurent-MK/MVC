@@ -8,5 +8,5 @@ public interface Produit {
     
     public String getNumero();
     
-    public String getNumProducteur ();
+    public String getNumProducteur();
 }

@@ -1,12 +1,12 @@
 package model;
 
-import controler.Controler;
+import controler.ControlerTestThread;
 import utilitairesMK.Mutex;
 import utilitairesMK.MsgToConsole;
 
 public class TestMutex implements Runnable, Constantes {
 	Mutex m;
-	Controler ctrl;
+	ControlerTestThread ctrl;
 	int numConsole;
 	
 	
@@ -17,7 +17,7 @@ public class TestMutex implements Runnable, Constantes {
 	 * @param ctrl
 	 * @param mutex
 	 */
-	public TestMutex(int numConsole, Controler ctrl, Mutex mutex) {
+	public TestMutex(int numConsole, ControlerTestThread ctrl, Mutex mutex) {
 		this.m = mutex;
 		this.ctrl = ctrl;
 		this.numConsole = numConsole;

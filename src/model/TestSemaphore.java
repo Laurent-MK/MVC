@@ -1,6 +1,6 @@
 package model;
 
-import controler.Controler;
+import controler.ControlerTestThread;
 import utilitairesMK.SemaphoreMK;
 import utilitairesMK.MsgToConsole;
 
@@ -14,7 +14,7 @@ import utilitairesMK.MsgToConsole;
 public class TestSemaphore implements Runnable, Constantes {
 
 	private int numConsole;
-	private Controler ctrl;
+	private ControlerTestThread ctrl;
 	private SemaphoreMK sem;
 
 	
@@ -23,7 +23,7 @@ public class TestSemaphore implements Runnable, Constantes {
 	 * Constructeur
 	 * 
 	 */
-	public TestSemaphore(int numConsole, Controler ctrl, SemaphoreMK sem) {
+	public TestSemaphore(int numConsole, ControlerTestThread ctrl, SemaphoreMK sem) {
 		
 		this.sem = sem;
 		this.numConsole = numConsole;

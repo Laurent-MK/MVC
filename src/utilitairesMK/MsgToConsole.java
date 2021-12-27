@@ -1,5 +1,11 @@
 package utilitairesMK;
 
+/**
+ * Classe permettant de construire des messages a destination de la console système
+ * 
+ * @author Balou
+ *
+ */
 public class MsgToConsole {
 	
 	private int numConsoleDest;

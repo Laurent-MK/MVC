@@ -5,7 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import controler.Controler;
+import controler.ControlerTestThread;
 import utilitairesMK.ConsoleMK;
 import utilitairesMK.MsgToConsole;
 
@@ -22,7 +22,7 @@ public class TestPoolThread implements Constantes, Runnable {
 	 * @param controleur
 	 * @throws InterruptedException
 	 */
-    public TestPoolThread(Controler controleur, int numConsole) throws InterruptedException {
+    public TestPoolThread(ControlerTestThread controleur, int numConsole) throws InterruptedException {
     	this.console = controleur.getConsole();
     	this.numConsole = numConsole;
     }

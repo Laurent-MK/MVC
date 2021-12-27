@@ -4,7 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import model.Consommateur;
 import model.Constantes;
-import view.IHM;
+import view.IHM_Test_Thread;
 
 
 
@@ -22,7 +22,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 	// proprietes
 	private String nomConsole = "nom inconnu";
     private final ArrayBlockingQueue<MsgToConsole> queueMsg;
-    private IHM ihmApplication;
+    private IHM_Test_Thread ihmApplication;
     private int numeroProducteur;
     private static int numMsg = 0;
 	
@@ -35,7 +35,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
      * @param msgQ
      * @param ihmApplication
      */
-    public ConsoleMK(String consumerName, int numero, int priority, ArrayBlockingQueue<MsgToConsole> msgQ, IHM ihmApplication)
+    public ConsoleMK(String consumerName, int numero, int priority, ArrayBlockingQueue<MsgToConsole> msgQ, IHM_Test_Thread ihmApplication)
     {
         this.nomConsole = consumerName;
         this.queueMsg = msgQ;
