@@ -1,4 +1,4 @@
-package model;
+package utilitairesMK;
 
 public class MsgToConsole {
 	

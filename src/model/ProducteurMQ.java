@@ -3,6 +3,7 @@ package model;
 import java.util.concurrent.BlockingQueue;
 
 import utilitairesMK.ConsoleMK;
+import utilitairesMK.MsgToConsole;
 
 
 /**

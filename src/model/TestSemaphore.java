@@ -2,6 +2,7 @@ package model;
 
 import controler.Controler;
 import utilitairesMK.SemaphoreMK;
+import utilitairesMK.MsgToConsole;
 
 
 /**

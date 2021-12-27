@@ -6,8 +6,8 @@ import javax.swing.border.EmptyBorder;
 
 import controler.Controler;
 import model.Constantes;
-import model.MsgToConsole;
 import utilitairesMK.Mutex;
+import utilitairesMK.MsgToConsole;
 
 import javax.swing.JButton;
 import javax.swing.JTextPane;
@@ -303,7 +303,7 @@ public class IHM extends JFrame implements Constantes {
 	public void affichageConsole(ArrayList<String> messageConsole) {
 
 		for(String message : messageConsole) {
-			affichageConsole(new MsgToConsole(0, message));
+			affichageConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, message));
 		}
 	}
 	

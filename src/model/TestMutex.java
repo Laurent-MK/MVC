@@ -2,6 +2,7 @@ package model;
 
 import controler.Controler;
 import utilitairesMK.Mutex;
+import utilitairesMK.MsgToConsole;
 
 public class TestMutex implements Runnable, Constantes {
 	Mutex m;

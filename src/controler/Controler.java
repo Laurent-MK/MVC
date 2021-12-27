@@ -6,7 +6,6 @@ import java.util.concurrent.BlockingQueue;
 
 import model.ConsommateurMQ;
 import model.Constantes;
-import model.MsgToConsole;
 import model.ProducteurMQ;
 import model.ProduitText;
 import model.TestMutex;
@@ -16,6 +15,7 @@ import utilitairesMK.ConsoleMK;
 import utilitairesMK.Mutex;
 import view.IHM;
 import utilitairesMK.SemaphoreCpt;
+import utilitairesMK.MsgToConsole;
 
 
 

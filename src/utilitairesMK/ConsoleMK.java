@@ -4,7 +4,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import model.Consommateur;
 import model.Constantes;
-import model.MsgToConsole;
 import view.IHM;
 
 
