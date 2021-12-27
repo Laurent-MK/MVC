@@ -162,7 +162,7 @@ public class Controler implements Constantes {
     
     
     /**
-     * porcedure de test des semaphores
+     * procedure de test des semaphores
      * On lance autant de threads que demande dans l'IHM puis chacun d'eux va tenter de rentrer
      * dans la zone protegee. C'est le nbr de jetons qui donnera le nbr de thread a acceder
      * en meme temps a la ressource protegee
