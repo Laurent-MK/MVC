@@ -45,7 +45,6 @@ public class ControlerTestThread implements Constantes, Controler {
     private Thread listThreadTestSem[];					// tableau des threads recevant les objets de test des semaphores
 
     
-    
     /**
      *  proprietes pour la gestion des affichages dans la console
      */
