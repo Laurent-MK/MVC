@@ -39,11 +39,15 @@ import javax.swing.JProgressBar;
 public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7783961162733122279L;
+
+	/**
 	 * proprietes de la classe
 	 */
 
 	// proprietes utilisees pour la création de l'IHM (bouton, labels, zone d'affichage ...
-	private static final long serialVersionUID = 1L;
 	private final JPanel contentPane;
 
 	private final String logo = "image.jpg";
