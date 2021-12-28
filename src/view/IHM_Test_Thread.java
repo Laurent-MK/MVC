@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import controler.ControlerTestThread;
+import model.ClientSocket;
 import model.Constantes;
 import utilitairesMK.Mutex;
 import utilitairesMK.MsgToConsole;
@@ -12,6 +13,8 @@ import utilitairesMK.MsgToConsole;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
@@ -74,6 +77,9 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	private final JTextField textFieldTailleQueueConsole = new JTextField();
 	private final JTextField textFieldNbTestMutex = new JTextField();
 	private final JTextField textFieldNbTestSem = new JTextField();
+	private final JTextField textFieldAdresseIP = new JTextField();
+	
+
 
 	private final JProgressBar progressBarConsole = new JProgressBar(0, MAX_MSG_CONSOLE);
 	private final JProgressBar progressBarMQ = new JProgressBar(0, TAILLE_MSG_Q_CONSOLE);
@@ -89,6 +95,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	private int tailleConsole;
 	private int tailleMqConsole;
 	private JTextField txtNbrThreadTestMutex;
+	private JTextField textField;
 	
 	
 	
@@ -193,7 +200,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		initAppli(e);		// initialisation de l'application
 
 		controleur.dmdIHMLanceTestSem(Integer.parseInt(txtNbJetons.getText()), Integer.parseInt(this.txtNbrThreadsTestSem.getText()), Integer.parseInt(textFieldNbTestSem.getText()));
-	}
+		}
 	
 	// clic sur bouton de RAZ de la zone d'affichage du test des semaphores
 	private void btnClicRAZTestSemaphore(ActionEvent e) {
@@ -208,8 +215,11 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	}
 	
 	// clic sur bouton de RAZ de la zone d'affichage du test des semaphores
-	private void btnClicRAZTestMutex(ActionEvent e) {
+	private void btnClicRAZTestMutex(ActionEvent e) throws UnknownHostException, ClassNotFoundException, IOException  {
 		this.textAreaTestMutex.setText("");
+		
+		initAppli(e);
+		ClientSocket client = new ClientSocket(/*"localhost"*/ getAdresseIPConsoleDistante(), 9999, this);
 	}
 	
 	
@@ -253,7 +263,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	 * @param msg
 	 */
 	public void affichageConsole(MsgToConsole msg) {
-			
+				
 		if (msg.getNumConsoleDest() == NUM_CONSOLE_CONSOLE) {
 
 			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
@@ -282,6 +292,8 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_MUTEX) {
 			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
 			textAreaTestMutex.append(msg.getMsg());
+			System.out.println(msg.getMsg() + " destine a la console numero : " + msg.getNumConsoleDest());
+
 
 			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
 			if (textAreaTestMutex.getLineCount() > this.tailleConsole)
@@ -307,14 +319,16 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	public void affichageConsole(ArrayList<String> messageConsole, int numProducteur, int numConsole, boolean ajouterNumMessage) {
 
 		for(String message : messageConsole) {
-			this.controleur.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, ajouterNumMessage, "Producteur numero : " + numProducteur + " cree"));
+			MsgToConsole msg = new MsgToConsole(numConsole, ajouterNumMessage, message);
+			affichageConsole(msg);
 //			affichageConsole(new MsgToConsole(numConsole, ajouteNumMessage, message));
 		}
 	}
 	
 	
 	/**
-	 * 
+	 * Methode utilisee pour afficher dans une scroll bar l'utilisation du buffer
+	 * d'affichage utilise pour la console
 	 */
 	public void affichageRemplissageMQ_Console(int remplissageMQ) {
 		
@@ -337,6 +351,8 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		textFieldFreqProd.setText(Integer.toString(FREQ_PRODUCTION));					// frequence de production des producteurs
 		textFieldMaxLigneConsole.setText(Integer.toString(MAX_MSG_CONSOLE));			// nombre max sauvegardes dans la console
 		textFieldTailleQueueConsole.setText(Integer.toString(TAILLE_MSG_Q_CONSOLE));	// taille de la MQ du thread de gestion de la console
+		textFieldAdresseIP.setText("192.168.2.16");
+
 		progressBarConsole.setForeground(Color.GREEN);									// la progressBar est en gris au début
 		progressBarMQ.setBackground(Color.WHITE);
 		progressBarMQ.setForeground(Color.GREEN);
@@ -350,7 +366,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		textAreaTestPool.append("init. zone : textAreaTestPool OK !\n");
 		textAreaAffichageEtatThread.setFont(new Font("Dialog", Font.PLAIN, 10));
 		textAreaAffichageEtatThread.append("init. zone : textAreaEtatThread OK !\n");
-	}
+		}
 	//-------------------------------------------------------------------------------------------------------------------------
 
 	
@@ -381,6 +397,10 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	
 	public int getFreqProd() {
 		return (freqProd);
+	}
+	
+	public String getAdresseIPConsoleDistante() {
+		return this.textFieldAdresseIP.getText();
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	
@@ -466,7 +486,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		JButton btnTstSemaphore = new JButton("Test Semaphore");
 		btnTstSemaphore.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				btnClicTestSemaphore(e);
+					btnClicTestSemaphore(e);
 			}
 		});
 
@@ -505,7 +525,12 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		JButton btnRazZoneTestMutex = new JButton("RAZ");
 		btnRazZoneTestMutex.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				btnClicRAZTestMutex(e);
+				try {
+					btnClicRAZTestMutex(e);
+				} catch (ClassNotFoundException | IOException e1) {
+					// TODO Bloc catch généré automatiquement
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnRazZoneTestMutex.setBounds(1161, 925, 76, 25);
@@ -590,7 +615,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		
 		JLabel lblNewLabel_3_1 = new JLabel("Test du multithreading Producteur / Consommateur");
 		lblNewLabel_3_1.setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblNewLabel_3_1.setBounds(44, 28, 640, 31);
+		lblNewLabel_3_1.setBounds(55, 15, 640, 31);
 		contentPane.add(lblNewLabel_3_1);
 		
 	
@@ -717,6 +742,14 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		textFieldNbTestSem.setBounds(941, 178, 86, 19);
 		contentPane.add(textFieldNbTestSem);
 		textFieldNbTestSem.setColumns(10);
+		
+		textFieldAdresseIP.setBounds(271, 56, 117, 19);
+		contentPane.add(textFieldAdresseIP);
+		textFieldAdresseIP.setColumns(10);
+		
+		JLabel lblAdresseIpDe = new JLabel("@ IP de la console distante");
+		lblAdresseIpDe.setBounds(26, 58, 240, 15);
+		contentPane.add(lblAdresseIpDe);
 		
 		
 	

@@ -310,7 +310,7 @@ public class ControlerTestThread implements Constantes, Controler {
          * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
          */
     	msgQ_Console = new ArrayBlockingQueue<MsgToConsole>(ihmApplication.getTailleBufferConsole());
-        console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication);
+        console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication, ihmApplication.getAdresseIPConsoleDistante());
         
         new Thread(console).start();    
     	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, AjouterNumMsg, "creation et lancement du thread de console"));

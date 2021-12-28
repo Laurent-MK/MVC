@@ -25,6 +25,8 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
     private IHM ihmApplication;
     private int numeroProducteur;
     private static int numMsg = 0;
+    private String adresseIPConsoleDistante;	// adresse IP de la console distante. Si null => pas de console distante
+    
 	
     /**
      * Constructeur
@@ -35,12 +37,18 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
      * @param msgQ
      * @param ihmApplication
      */
-    public ConsoleMK(String consumerName, int numero, int priority, ArrayBlockingQueue<MsgToConsole> msgQ, IHM ihmApplication)
+    public ConsoleMK(String consumerName,
+    		int numero,
+    		int priority,
+    		ArrayBlockingQueue<MsgToConsole> msgQ,
+    		IHM ihmApplication,
+    		String adresseIPConsoleDistante)
     {
         this.nomConsole = consumerName;
         this.queueMsg = msgQ;
         this.ihmApplication = ihmApplication;
         this.numeroProducteur = numero;
+        this.adresseIPConsoleDistante = adresseIPConsoleDistante;
        
         Thread.currentThread().setPriority(priority);
     }
