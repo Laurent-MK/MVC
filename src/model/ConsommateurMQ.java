@@ -25,6 +25,8 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
     private int numero;
     private int nbConsoRealisees = 0;
     private int numConsole = NUM_CONSOLE_CONSOLE;
+	private boolean AjouterNumMsg = AJOUTER_NUM_MESSAGE;
+
 
     public static long nbConsoTotale = 0;	// consommation totale de tous les consommateurs instancies
         
@@ -89,7 +91,7 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
 				+ "_"
 				+ ((ProduitText)x).getNumero();
 
-		consoleMK.sendMsgToConsole(new MsgToConsole(numConsole, msgAAfficher));
+		consoleMK.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, msgAAfficher));
 	}
 	
 	

@@ -304,13 +304,18 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	 * 
 	 * @param messageConsole
 	 */
-	public void affichageConsole(ArrayList<String> messageConsole) {
+	public void affichageConsole(ArrayList<String> messageConsole, int numProducteur, int numConsole, boolean ajouterNumMessage) {
 
 		for(String message : messageConsole) {
-			affichageConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, message));
+			this.controleur.getConsole().sendMsgToConsole(new MsgToConsole(numConsole, ajouterNumMessage, "Producteur numero : " + numProducteur + " cree"));
+//			affichageConsole(new MsgToConsole(numConsole, ajouteNumMessage, message));
 		}
 	}
 	
+	
+	/**
+	 * 
+	 */
 	public void affichageRemplissageMQ_Console(int remplissageMQ) {
 		
 		this.lblEtatMQ.setText(Long.toString(remplissageMQ));

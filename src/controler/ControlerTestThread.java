@@ -30,6 +30,7 @@ import utilitairesMK.MsgToConsole;
 
 public class ControlerTestThread implements Constantes, Controler {
 	private IHM_Test_Thread ihmApplication;
+	private boolean AjouterNumMsg = AJOUTER_NUM_MESSAGE;
 
     
     /**
@@ -142,7 +143,7 @@ public class ControlerTestThread implements Constantes, Controler {
     public void dmdIHMGo() throws InterruptedException {
 
     	String msg = "lancement des threads P et C";
-    	MsgToConsole msgToConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE, msg);
+    	MsgToConsole msgToConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE, AjouterNumMsg, msg);
   
     	console.sendMsgToConsole(msgToConsole);
 
@@ -250,8 +251,8 @@ public class ControlerTestThread implements Constantes, Controler {
     	int nbProducteur = ihmApplication.getNbThreadP();
         int nbConsommateur = ihmApplication.getNbThreadC();
 
-        console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, "creation des threads Producteur et consommateur"));      
-        console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, "lancement de l'IHM"));
+        console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, AjouterNumMsg, "creation des threads Producteur et consommateur"));      
+        console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, AjouterNumMsg, "lancement de l'IHM"));
 
     	/**
     	 *  construction de la liste des producteurs
@@ -312,7 +313,7 @@ public class ControlerTestThread implements Constantes, Controler {
         console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication);
         
         new Thread(console).start();    
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, "creation et lancement du thread de console"));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, AjouterNumMsg, "creation et lancement du thread de console"));
 
     	// on debloque l'IHM une fois que le thread de gestion de la console est lance
     	mutexSynchroIHM_Controleur.mutexRelease();

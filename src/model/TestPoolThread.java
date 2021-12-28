@@ -15,6 +15,8 @@ public class TestPoolThread implements Constantes, Runnable {
 
 	private ConsoleMK console;
 	private int numConsole = NUM_CONSOLE_CONSOLE;
+	private boolean AjouterNumMsg = AJOUTER_NUM_MESSAGE;
+
 	
 	/**
 	 * Constructeur
@@ -52,7 +54,7 @@ public class TestPoolThread implements Constantes, Runnable {
         		@Override
         		public void run() {
         			String msg = "debut tache " + Thread.currentThread().getName();
-					console.sendMsgToConsole(new MsgToConsole(numConsole, msg));
+					console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, msg));
 					if (VERBOSE_ON)
 						System.out.print(msg);
 
@@ -62,21 +64,21 @@ public class TestPoolThread implements Constantes, Runnable {
         					e.printStackTrace();
         					}
         			msg = "fin de tache : " + Thread.currentThread().getName();
-					console.sendMsgToConsole(new MsgToConsole(numConsole, msg));
+					console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, msg));
 					if (VERBOSE_ON)
 						System.out.print(msg);
         			}
         		});
         	}
 
-        console.sendMsgToConsole(new MsgToConsole(numConsole, "Autre traitement\n"));
+        console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, "Autre traitement\n"));
 		if (VERBOSE_ON)
 			System.out.println("Autre traitement");
 		
         executorService.shutdown();
         executorService.awaitTermination(300, TimeUnit.SECONDS);
 
-        console.sendMsgToConsole(new MsgToConsole(numConsole, "Fin thread principal\n"));
+        console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, "Fin thread principal\n"));
 		if (VERBOSE_ON)
 			System.out.println("Fin thread principal");
         }

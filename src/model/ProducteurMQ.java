@@ -25,6 +25,8 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
 	private int nbProductionRealisee = 0;
 	private static long nbProdTotale = 0;
 	private int numConsole = NUM_CONSOLE_CONSOLE;
+	private boolean AjouterNumMsg = AJOUTER_NUM_MESSAGE;
+
 	
 	
 
@@ -65,13 +67,13 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     @Override
     public void run() {
  
-		console.sendMsgToConsole(new MsgToConsole(numConsole, "Producteur numero : " + numProducteur + " cree"));
+		console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, "Producteur numero : " + numProducteur + " cree"));
 
         while(true) {
         	try {
-				this.queue.put(this.produire());	// on produit un nouvel objet et on l'envoi dans la MQ
 				nbProductionRealisee++;
 		    	ProducteurMQ.nbProdTotale++;
+				this.queue.put(this.produire());	// on produit un nouvel objet et on l'envoi dans la MQ
 
 				Thread.sleep(this.delay);		// mise en sommeil eventuelle pour freiner la production (fixe par l'IHM)
 			} catch (InterruptedException e) {
@@ -91,18 +93,22 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
      */
     public ProduitText produire() throws InterruptedException {
     	
-    	console.sendMsgToConsole(new MsgToConsole(numConsole,
-    			"#" +
-    			this.nomProducteur +
-    			"_" +
-    			this.numProducteur +
-    			" >> nouveau produit : Product " +
-    			numProducteur +
-    			"_" +
-    			++numeroProduit +
-    			"\n"));
+    	console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, 
+    											"#" +
+    											this.nomProducteur +
+    											"_" +
+    											this.numProducteur +
+    											" >> Produit : " +
+    											NOM_PRODUIT_TXT +
+    											" " +
+    											numProducteur +
+    											"_" +
+    											++numeroProduit +
+    											" / " +
+    											nbProdTotale +
+    											"\n"));
     	    	
-        return (new ProduitText("Product ", numProducteur, numeroProduit));
+        return (new ProduitText(NOM_PRODUIT_TXT, numProducteur, numeroProduit));
     }
 
     

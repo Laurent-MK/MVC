@@ -12,10 +12,11 @@ public interface Constantes {
 	public static final int 	MAX_MSG_CONSOLE = 500;		// maximum de messages stockes dans la console
 
 	public static final int 	NUM_CONSOLE_CONSOLE = 0;		// numero de la console d'affichage
-	public static final int 	NUM_CONSOLE_TEST_SEMAPHORE = 1;		// numero de la console d'affichage
+	public static final int 	NUM_CONSOLE_TEST_SEMAPHORE = 1;	// numero de la console d'affichage
 	public static final int 	NUM_CONSOLE_TEST_MUTEX = 2;		// numero de la console d'affichage
 	public static final int 	NUM_CONSOLE_TEST_POOL = 3;		// numero de la console d'affichage
-	
+	public static final boolean AJOUTER_NUM_MESSAGE = true;		// indique si l'IHM doit ajouter le numero global du message
+
 	public static final int 	NUMERO_CONSOLE = 1;			// numero du thread de console
 
 	public static final double 	SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE = 0.8;		// seuil de remlplissage (%) de la console pour passer le bargraphe en rouge
@@ -25,6 +26,7 @@ public interface Constantes {
 	public static final int 	PRIORITE_MAX_CONSOMMATEUR = 7;	// priorite max des consommateurs
 	public static final int 	PRIORITE_PRODUCTEUR = 10;		// priorite des producteurs
 	public static final int 	PRIORITE_CONSOLE = 1;			// priorite du thread de console
+	public static final String	NOM_PRODUIT_TXT = "ProductTXT";	// nom donne au produit texte à produire
 
 	public static final int 	FREQ_PRODUCTION = 100;			// frequence de production des producteurs
 	public static final int 	FREQ_POLLING_THREADS = 500;		// frequence de surveillance des threads producteur e0t consommateurs

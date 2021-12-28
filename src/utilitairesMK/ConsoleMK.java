@@ -73,9 +73,15 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 	public void consommer(Object msgConsole) throws InterruptedException {
 		String msg;
 
-		msg = "msg[" + ++numMsg + "] :  " + ((MsgToConsole)msgConsole).getMsg() + "\n";
+		++numMsg;
+		// on ajoute le numero de message si cela est demande
+		if ( ((MsgToConsole)msgConsole).isAjoutNumMsg() )
+			msg = "msg[" + numMsg + "] :  " + ((MsgToConsole)msgConsole).getMsg() + "\n";
+		else 
+			msg = ((MsgToConsole)msgConsole).getMsg() + "\n";
+			
 		((MsgToConsole)msgConsole).setMsg(msg);
-		
+
 		
 		// on a receptionné un message => on doit le passer à l'IHM pour qu'elle l'affiche dans la console systeme
 
