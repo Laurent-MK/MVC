@@ -23,7 +23,7 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     private int delay = 100;
 	private ConsoleMK console;
 	private int nbProductionRealisee = 0;
-	private static long nbProdTotale = 0;
+	public static long nbProdTotale = 0;
 	private int numConsole = NUM_CONSOLE_CONSOLE;
 	private boolean AjouterNumMsg = AJOUTER_NUM_MESSAGE;
 

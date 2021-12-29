@@ -1,5 +1,7 @@
 package view;
 
+import java.net.UnknownHostException;
+
 import utilitairesMK.MsgToConsole;
 
 public interface IHM {

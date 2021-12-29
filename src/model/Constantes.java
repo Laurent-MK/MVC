@@ -18,6 +18,8 @@ public interface Constantes {
 	public static final boolean AJOUTER_NUM_MESSAGE = true;		// indique si l'IHM doit ajouter le numero global du message
 
 	public static final int 	NUMERO_CONSOLE = 1;			// numero du thread de console
+	public static final int		NUMERO_PORT_SERVEUR_TCP = 9999;
+	public static final String	ADR_IP_SERVEUR_TCP = "192.168.1.116";
 
 	public static final double 	SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE = 0.8;		// seuil de remlplissage (%) de la console pour passer le bargraphe en rouge
 	public static final double 	SEUIL_CHGT_COULEUR_PROGRESS_BAR_MQ_CONSOLE = 0.7;	// seuil de remlplissage (%) de la console pour passer le bargraphe en rouge

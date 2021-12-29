@@ -219,7 +219,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		this.textAreaTestMutex.setText("");
 		
 		initAppli(e);
-		ClientSocket client = new ClientSocket(/*"localhost"*/ getAdresseIPConsoleDistante(), 9999, this);
+		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, this, new MsgToConsole(0, false, "message"));
 	}
 	
 	
@@ -307,7 +307,14 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			if (textAreaTestPool.getLineCount() > this.tailleConsole)
 				textAreaTestPool.setText("");
 		}
-		
+/*		
+		try {
+			ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, this, msg);
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Bloc catch généré automatiquement
+			e.printStackTrace();
+		}
+	*/	
 		}
 	
 	
@@ -351,7 +358,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		textFieldFreqProd.setText(Integer.toString(FREQ_PRODUCTION));					// frequence de production des producteurs
 		textFieldMaxLigneConsole.setText(Integer.toString(MAX_MSG_CONSOLE));			// nombre max sauvegardes dans la console
 		textFieldTailleQueueConsole.setText(Integer.toString(TAILLE_MSG_Q_CONSOLE));	// taille de la MQ du thread de gestion de la console
-		textFieldAdresseIP.setText("192.168.2.16");
+		textFieldAdresseIP.setText(ADR_IP_SERVEUR_TCP);
 
 		progressBarConsole.setForeground(Color.GREEN);									// la progressBar est en gris au dÃ©but
 		progressBarMQ.setBackground(Color.WHITE);

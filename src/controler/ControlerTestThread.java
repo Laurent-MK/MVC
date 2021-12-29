@@ -110,7 +110,7 @@ public class ControlerTestThread implements Constantes, Controler {
        	
        	listeEtatThreads.add("\n");
        	listeEtatThreads.add("=======================");
-       	listeEtatThreads.add("Threads Producteur " + "\n ---> nbProd totale = "  + "NbProd = " + this.listeProducteurMQ[0].getNbProdTotale() + "\n");       	
+       	listeEtatThreads.add("Threads Producteur " + "\n ---> nbProd totale = "  + "NbProd = " + ProducteurMQ.nbProdTotale /* this.listeProducteurMQ[0].getNbProdTotale() + "\n"*/);       	
 
         /*
          *  on passe a l'etat des threads "Producteur"
@@ -147,14 +147,14 @@ public class ControlerTestThread implements Constantes, Controler {
   
     	console.sendMsgToConsole(msgToConsole);
 
-    	// lancement des threads producteurs
-    	for (int i =  0 ; i < listThreadP.length ; i++) {
-    		listThreadP[i].start() ;
-    	}
-
     	// lancement de threads consommateurs
     	for (int i =  0 ; i < listThreadC.length ; i++) {
     		listThreadC[i].start() ;
+    	}
+
+    	// lancement des threads producteurs
+    	for (int i =  0 ; i < listThreadP.length ; i++) {
+    		listThreadP[i].start() ;
     	}
     	
     	afficheEtatThreads();	// affiche l'etat des thread producteur et consommateur
@@ -330,7 +330,7 @@ public class ControlerTestThread implements Constantes, Controler {
 				e.printStackTrace();
 			}
             if (listeConsommateurMQ != null)
-            	afficheEtatThreads();     		// n'affiche dans l'IHM l'état des threads que si ils existent 	
+            	afficheEtatThreads();     		// n'affiche dans l'IHM l'etat des threads que si ils existent 	
         }
         
     }

@@ -28,7 +28,7 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
 	private boolean AjouterNumMsg = AJOUTER_NUM_MESSAGE;
 
 
-    public static long nbConsoTotale = 0;	// consommation totale de tous les consommateurs instancies
+    private static long nbConsoTotale = 0;	// consommation totale de tous les consommateurs instancies
         
     
     /**
@@ -65,8 +65,8 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
         try {
             while (true) {
                 consommer(queue.take()); // attente de l'arrivee d'un produit dans la queue de message
-                nbConsoRealisees++;
-                ConsommateurMQ.nbConsoTotale++;	// consommation de cette instance
+                nbConsoRealisees++;				// consommation de cette instance
+                ConsommateurMQ.nbConsoTotale++;	// consommation de la classe
             }
         } catch (InterruptedException ex) {
         }

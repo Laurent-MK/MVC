@@ -19,7 +19,7 @@ public class ClientSocket implements Constantes {
 	 * @throws UnknownHostException 
 	 * @throws ClassNotFoundException 
 	 */
-	public ClientSocket(String adresseIPServeur, int numPort, IHM_Test_Thread ihmApplication)throws UnknownHostException, IOException, ClassNotFoundException {
+	public ClientSocket(String adresseIPServeur, int numPort, IHM_Test_Thread ihmApplication, MsgToConsole msg) throws UnknownHostException, IOException, ClassNotFoundException {
 
 		this.serverName = adresseIPServeur;
 		this.serverPort = numPort;
@@ -34,7 +34,8 @@ public class ClientSocket implements Constantes {
 
 		System.out.println("Client a cree les flux");
 
-		out.writeObject(new MsgToConsole(NUM_CONSOLE_TEST_MUTEX, false, "venant du client : message passe par la scoket" ));
+		out.writeObject(msg);
+//		out.writeObject(new MsgToConsole(NUM_CONSOLE_TEST_MUTEX, false, "venant du client : message passe par la scoket" ));
 		out.flush();
 
 		System.out.println("Client: donnees emises");
@@ -46,6 +47,6 @@ public class ClientSocket implements Constantes {
 		out.close();
 		socket.close();
 		
-		ihmApplication.affichageConsole(msgRecu);
+//		ihmApplication.affichageConsole(msgRecu);
 	}
 }
