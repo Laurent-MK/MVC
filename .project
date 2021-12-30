@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src_MVC_TCP</name>
+			<type>2</type>
+			<location>F:/eclipse-workspace2/MVC_TCP/src</location>
+		</link>
+	</linkedResources>
 </projectDescription>

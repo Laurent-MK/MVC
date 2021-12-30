@@ -24,13 +24,17 @@ public interface Constantes {
 	public static final double 	SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE = 0.8;		// seuil de remlplissage (%) de la console pour passer le bargraphe en rouge
 	public static final double 	SEUIL_CHGT_COULEUR_PROGRESS_BAR_MQ_CONSOLE = 0.7;	// seuil de remlplissage (%) de la console pour passer le bargraphe en rouge
 	
-	public static final int 	PRIORITE_MIN_CONSOMMATEUR = 1;	// priorite min des consommateurs
-	public static final int 	PRIORITE_MAX_CONSOMMATEUR = 7;	// priorite max des consommateurs
-	public static final int 	PRIORITE_PRODUCTEUR = 10;		// priorite des producteurs
-	public static final int 	PRIORITE_CONSOLE = 1;			// priorite du thread de console
-	public static final String	NOM_PRODUIT_TXT = "ProductTXT";	// nom donne au produit texte à produire
+	public static final int 	PRIORITE_MIN_CONSOMMATEUR = 1;		// priorite min des consommateurs
+	public static final int 	PRIORITE_MAX_CONSOMMATEUR = 5;		// priorite max des consommateurs
+	public static final int 	PRIORITE_MIN_PRODUCTEUR = 6;		// priorite min des producteurs
+	public static final int 	PRIORITE_MAX_PRODUCTEUR = 10;		// priorite max des producteurs
+	public static final int 	PRIORITE_PRODUCTEUR_DEFAUT = 10;	// priorite par defaut des producteurs
+	public static final int 	PRIORITE_CONSOLE = 1;				// priorite du thread de console
+	public static final String	NOM_PRODUIT_TXT = "ProductTXT";		// nom donne au produit texte à produire
 
 	public static final int 	FREQ_PRODUCTION = 100;			// frequence de production des producteurs
+	public static final int		AJOUT_DELAY_PROD_MIN = 0;		// temps minimum (en msec) ajoute (par calcul alleatoire) entre chaque production
+	public static final int		AJOUT_DELAY_PROD_MAX = 10;		// temps max (en msec) ajoute (par calcul alleatoire) entre chaque production
 	public static final int 	FREQ_POLLING_THREADS = 500;		// frequence de surveillance des threads producteur e0t consommateurs
 	
 	public static final int 	DEFAULT_NB_THREAD_CONS = 3;		// nbr threads consommateurs par defaut

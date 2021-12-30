@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import utilitairesMK.MsgToConsole;
 import view.IHM_Test_Thread;
 
+
 public class ClientSocket implements Constantes {
 	private int serverPort = 9999;
 	private String serverName;
@@ -39,6 +40,12 @@ public class ClientSocket implements Constantes {
 		out.flush();
 
 		System.out.println("Client: donnees emises");
+		
+		/**
+		 * envoi d'un message applicatif entre le client et le serveur
+		 */
+		out.writeObject(new MsgCS );
+		
 		 
 		MsgToConsole msgRecu = (MsgToConsole) in.readObject();
 		System.out.println("Client recoit: " + msgRecu.getMsg());
@@ -49,4 +56,10 @@ public class ClientSocket implements Constantes {
 		
 //		ihmApplication.affichageConsole(msgRecu);
 	}
+	
+	
+	public void envoiMsg() {
+		
+	}
+	
 }

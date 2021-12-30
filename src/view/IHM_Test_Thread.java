@@ -95,7 +95,6 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	private int tailleConsole;
 	private int tailleMqConsole;
 	private JTextField txtNbrThreadTestMutex;
-	private JTextField textField;
 	
 	
 	
@@ -219,7 +218,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		this.textAreaTestMutex.setText("");
 		
 		initAppli(e);
-		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, this, new MsgToConsole(0, false, "message"));
+		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, this, new MsgToConsole(0, false, "message venant du client"));
 	}
 	
 	
@@ -314,7 +313,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			// TODO Bloc catch généré automatiquement
 			e.printStackTrace();
 		}
-	*/	
+*/
 		}
 	
 	

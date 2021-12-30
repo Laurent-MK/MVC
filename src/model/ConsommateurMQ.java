@@ -28,11 +28,11 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
 	private boolean AjouterNumMsg = AJOUTER_NUM_MESSAGE;
 
 
-    private static long nbConsoTotale = 0;	// consommation totale de tous les consommateurs instancies
+    public static long nbConsoTotale = 0;	// consommation totale de tous les consommateurs instancies
         
     
     /**
-     * Constructeur : recoit le nom du consommateur, sa priorité, la queue de messages qui va recevoir les produits
+     * Constructeur : recoit le nom du consommateur, sa priorite, la queue de messages qui va recevoir les produits
      * 
      * @param nom
      * @param num

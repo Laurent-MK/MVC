@@ -1,6 +1,8 @@
 package model;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import utilitairesMK.ConsoleMK;
 import utilitairesMK.MsgToConsole;
@@ -20,14 +22,21 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
     private int numProducteur; 						// numero de producteur
     private String nomProducteur = "nom inconnu";	// nom du producteur
     private BlockingQueue<ProduitText> queue = null;
-    private int delay = 100;
+    private int delay = FREQ_PRODUCTION;
 	private ConsoleMK console;
 	private int nbProductionRealisee = 0;
-	public static long nbProdTotale = 0;
 	private int numConsole = NUM_CONSOLE_CONSOLE;
 	private boolean AjouterNumMsg = AJOUTER_NUM_MESSAGE;
 
-	
+	/**
+	 * ATTENTION, la variable de classe nbProdTotale doit etre protegee par un verrou car 
+	 * tous les threads "instanciant" cette classe auront acces en concurrence a cette variable
+	 * Si des acces concurrents se font sur une variable de classe non protegee, sa valeur devient
+	 * imprevisible 
+	 */
+	public static long nbProdTotale;	// variable de classe : nbr total de production realise par cette classe
+	public static Lock verrou = new ReentrantLock();	// verrou de protection de la variable de classe
+	/*-*/
 	
 
 	/**
@@ -56,6 +65,9 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
         this.numProducteur = numProd;
         this.console = console;
         this.numConsole = numConsole;
+        
+		int sommeil = (int) (Math.random() * ((AJOUT_DELAY_PROD_MAX - AJOUT_DELAY_PROD_MIN)+AJOUT_DELAY_PROD_MIN));
+		this.delay = delay + sommeil;
       
         Thread.currentThread().setPriority(priority);
     }
@@ -71,13 +83,11 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
 
         while(true) {
         	try {
-				nbProductionRealisee++;
-		    	ProducteurMQ.nbProdTotale++;
 				this.queue.put(this.produire());	// on produit un nouvel objet et on l'envoi dans la MQ
-
-				Thread.sleep(this.delay);		// mise en sommeil eventuelle pour freiner la production (fixe par l'IHM)
+				
+				Thread.sleep(delay);		// mise en sommeil eventuelle pour freiner la production (fixe par l'IHM)
 			} catch (InterruptedException e) {
-				// TODO Bloc catch gï¿½nï¿½rï¿½ automatiquement
+				// TODO Bloc catch genere automatiquement
 				e.printStackTrace();
 			}      	
         }
@@ -93,21 +103,49 @@ public class ProducteurMQ implements Runnable, Producteur, Constantes {
      */
     public ProduitText produire() throws InterruptedException {
     	
+		nbProductionRealisee++;	// nbr de productions realisee par cet objet (donc le thread l'abritant)
+    	numeroProduit++;
+
+		/*
+		 * morceau de code pour mettre en oeuvre un verrou sur la variable de classe nbProductionRealisee.*
+		 * dans un systeme multithreade, celle-ci est modifiee en parallele par plusieurs threads producteurs
+		 * Cela abouti à une valeur alleatoire de cette variable. L'utilisation du verrou permet d'optenir un MUTEX
+		 * qui cree une section critique dans laquelle on peut modifier la varaibel sans risque d'instabilite.
+		 * ATTENTION : cette section critique "serialise" les threads puisqu'ils vont tous devoir attendre que le verrou soit
+		 * libre pour continuer leur execution.
+		 * 
+		 * 
+		verrou.lock();
+		ProducteurMQ.nbProdTotale++;
+		verrou.unlock();
+		*/
+		
     	console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, 
-    											"#" +
-    											this.nomProducteur +
-    											"_" +
-    											this.numProducteur +
-    											" >> Produit : " +
-    											NOM_PRODUIT_TXT +
-    											" " +
-    											numProducteur +
-    											"_" +
-    											++numeroProduit +
-    											" / " +
-    											nbProdTotale +
-    											"\n"));
-    	    	
+    											"#"
+    											+ this.nomProducteur
+    											+ "_"
+    											+ this.numProducteur
+    											+ " >> Produit : "
+    											+ NOM_PRODUIT_TXT
+    											+ " "
+    											+ numProducteur
+    											+ "_"
+    											+ numeroProduit
+    											+ " / "
+    											+ nbProdTotale
+    											+ "\n"));
+  /*
+   * debug pour analyser le fonctionnement de la protection de la variable de classe 
+   * "ProducteurMQ.nbProdTotale".
+   * 
+   * 	
+    	System.out.println("Thread : "
+    				+ Thread.currentThread().getName()
+    				+ " nbProdTotale = "
+    				+ ProducteurMQ.nbProdTotale
+    				+ " nbProductionRealisee par ce thread :"
+    				+ nbProductionRealisee);
+*/   	    	
         return (new ProduitText(NOM_PRODUIT_TXT, numProducteur, numeroProduit));
     }
 

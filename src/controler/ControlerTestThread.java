@@ -79,21 +79,25 @@ public class ControlerTestThread implements Constantes, Controler {
      * demande d'affichage de l'etat des threads dans la zone prevue par l'IHM
      */
     private void afficheEtatThreads() {
-        String msg = "";	// pour la cr�ation du message
+        String msg = "";	// pour la creation du message
         // liste utilisee pour afficher l'etat des threads dans l'IHM
         ArrayList<String> listeEtatThreads = new ArrayList<>();
-    	listeEtatThreads.clear();	// effacement de la liste contenant l'�tat des threads
+//    	listeEtatThreads.clear();	// effacement de la liste contenant l'�tat des threads
 
     	/**
     	 * construction du message indiquant l'etat de vie des threads
     	 */
-       	listeEtatThreads.add("=======================");
-       	listeEtatThreads.add("Threads Consommateur " + "\n ---> nbConso totale = " + this.listeConsommateurMQ[0].getNbConsoTotale() + "\n");
+       	listeEtatThreads.add("========== CONSOMMATEURS =============\n");
+//       	listeEtatThreads.add("Threads Consommateur " + "\n ---> nbConso totale = " + ConsommateurMQ.nbConsoTotale /*this.listeConsommateurMQ[0].getNbConsoTotale()*/ + "\n");
 
     	/*
          *  on commence par l'etat des threads "Consommateur"
          */
+       	long nbConsoTotale = 0;
+       	
        	for (int i=0; i <listThreadC.length ; i++) {
+       		nbConsoTotale += listeConsommateurMQ[i].getNbConsoRealisees();
+       		
        		msg = this.listeConsommateurMQ[i].getNom()
        				+ "."
        				+ listThreadC[i].getName()
@@ -103,34 +107,40 @@ public class ControlerTestThread implements Constantes, Controler {
        				+ ".prio["
        				+ listThreadC[i].getPriority()
        				+ "].nbConso : "
-       				+ this.listeConsommateurMQ[i].getNbConsoRealisees();
+       				+ listeConsommateurMQ[i].getNbConsoRealisees();
        		
        		listeEtatThreads.add(msg);	// ajout du message dans la liste
        	}
+       
+       	listeEtatThreads.add("\n    Threads Consommateur ---> nbConso totale = " + nbConsoTotale /*ConsommateurMQ.nbConsoTotale*/ + "\n");
+
        	
        	listeEtatThreads.add("\n");
-       	listeEtatThreads.add("=======================");
-       	listeEtatThreads.add("Threads Producteur " + "\n ---> nbProd totale = "  + "NbProd = " + ProducteurMQ.nbProdTotale /* this.listeProducteurMQ[0].getNbProdTotale() + "\n"*/);       	
+       	listeEtatThreads.add("========== PRODUCTEURS =============\n");
 
         /*
          *  on passe a l'etat des threads "Producteur"
          */
        	msg = "";		// raz du message
+       	long nbProdTotale = 0;
 		
 		for (int i=0; i <listThreadP.length ; i++) {
     		
+    		nbProdTotale += listeProducteurMQ[i].getNbProdReal();
     		msg = this.listeProducteurMQ[i].getNom()
     				+ "."
     				+  listThreadP[i].getName()
-    				+ "["
-    				+ listThreadP[i].isAlive()
-    				+ "]"
-    				+ ".nbProd : "
+       				+ "]"
+       				+ ".prio["
+       				+ listThreadP[i].getPriority()
+       				+ "].nbProd : "
     				+ listeProducteurMQ[i].getNbProdReal();
-          	
+   		
     		listeEtatThreads.add(msg);	// ajout du message dans la liste
     	}
     
+		listeEtatThreads.add("\n    Threads Producteur ---> nbProd totale = "  + nbProdTotale + "\n");       	
+
     	// demande d'affichage dans l'IHM
     	this.ihmApplication.affichageEtatThreads(listeEtatThreads);
     }
@@ -262,7 +272,9 @@ public class ControlerTestThread implements Constantes, Controler {
 
     	 // creation des threads Producteurs
     	 for (int i =  0 ; i < listThreadP.length ; i++) {
-    		 listeProducteurMQ[i] = new ProducteurMQ("P"+(i+1), i+1, ihmApplication.getFreqProd(), PRIORITE_PRODUCTEUR, msgQProduit, console, NUM_CONSOLE_CONSOLE);
+     		 int priority = Thread.MIN_PRIORITY + (int) (Math.random() * ((PRIORITE_MAX_PRODUCTEUR-PRIORITE_MIN_PRODUCTEUR) + Thread.MIN_PRIORITY));   		 
+
+     		 listeProducteurMQ[i] = new ProducteurMQ("P"+(i+1), i+1, ihmApplication.getFreqProd(), priority, msgQProduit, console, NUM_CONSOLE_CONSOLE);
     		 listThreadP[i] =  new Thread(listeProducteurMQ[i]);
     	} 	
 
@@ -330,7 +342,7 @@ public class ControlerTestThread implements Constantes, Controler {
 				e.printStackTrace();
 			}
             if (listeConsommateurMQ != null)
-            	afficheEtatThreads();     		// n'affiche dans l'IHM l'etat des threads que si ils existent 	
+            	afficheEtatThreads();     		// l'etat des threads n'est affiche dans l'IHM que si ils existent 
         }
         
     }
