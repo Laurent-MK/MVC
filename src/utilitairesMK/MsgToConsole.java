@@ -10,6 +10,11 @@ import java.io.Serializable;
  */
 public class MsgToConsole implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6392917557600619944L;
+
 	private int numConsoleDest;
 	private String msg;
 	private boolean ajoutNumMsg = true;

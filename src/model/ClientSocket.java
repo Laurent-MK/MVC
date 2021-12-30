@@ -6,8 +6,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import utilitairesMK.MsgClientServeur;
 import utilitairesMK.MsgToConsole;
 import view.IHM_Test_Thread;
+
 
 
 public class ClientSocket implements Constantes {
@@ -39,14 +41,17 @@ public class ClientSocket implements Constantes {
 //		out.writeObject(new MsgToConsole(NUM_CONSOLE_TEST_MUTEX, false, "venant du client : message passe par la scoket" ));
 		out.flush();
 
-		System.out.println("Client: donnees emises");
+		System.out.println("Client: donnees MsgToConsole emises");
+
 		
 		/**
 		 * envoi d'un message applicatif entre le client et le serveur
-		 */
-		out.writeObject(new MsgCS );
-		
-		 
+		*/	
+		out.writeObject(new MsgClientServeur(666, 200, "Message de controle du systme !!!",
+				new MsgToConsole(0, false, "ceci est un objet MsgToConsole transporte dans le message client->serveur")));
+		out.flush();
+		System.out.println("Client: donnees MsgCS emises");
+			 
 		MsgToConsole msgRecu = (MsgToConsole) in.readObject();
 		System.out.println("Client recoit: " + msgRecu.getMsg());
 		
