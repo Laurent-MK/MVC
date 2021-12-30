@@ -1,8 +1,8 @@
-package model;
+package modelMVC;
 
-import controler.ControlerTestThread;
-import utilitairesMK.Mutex;
-import utilitairesMK.MsgToConsole;
+import controlerMVC.ControlerTestThread;
+import utilitairesMK_MVC.MsgToConsole;
+import utilitairesMK_MVC.Mutex;
 
 public class TestMutex implements Runnable, Constantes {
 	Mutex m;

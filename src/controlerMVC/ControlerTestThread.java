@@ -1,21 +1,21 @@
-package controler;
+package controlerMVC;
 
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import model.ConsommateurMQ;
-import model.Constantes;
-import model.ProducteurMQ;
-import model.ProduitText;
-import model.TestMutex;
-import model.TestPoolThread;
-import model.TestSemaphore;
-import utilitairesMK.ConsoleMK;
-import utilitairesMK.Mutex;
-import view.IHM_Test_Thread;
-import utilitairesMK.SemaphoreCpt;
-import utilitairesMK.MsgToConsole;
+import modelMVC.ConsommateurMQ;
+import modelMVC.Constantes;
+import modelMVC.ProducteurMQ;
+import modelMVC.ProduitText;
+import modelMVC.TestMutex;
+import modelMVC.TestPoolThread;
+import modelMVC.TestSemaphore;
+import utilitairesMK_MVC.ConsoleMK;
+import utilitairesMK_MVC.MsgToConsole;
+import utilitairesMK_MVC.Mutex;
+import utilitairesMK_MVC.SemaphoreCpt;
+import viewMVC.IHM_Test_Thread;
 
 
 

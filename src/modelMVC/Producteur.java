@@ -1,4 +1,4 @@
-package model;
+package modelMVC;
 
 public interface Producteur {
 

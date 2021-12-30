@@ -1,10 +1,10 @@
-package utilitairesMK;
+package utilitairesMK_MVC;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import model.Consommateur;
-import model.Constantes;
-import view.IHM;
+import modelMVC.Consommateur;
+import modelMVC.Constantes;
+import viewMVC.IHM;
 
 
 

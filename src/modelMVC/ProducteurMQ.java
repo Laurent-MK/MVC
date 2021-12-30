@@ -1,11 +1,11 @@
-package model;
+package modelMVC;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import utilitairesMK.ConsoleMK;
-import utilitairesMK.MsgToConsole;
+import utilitairesMK_MVC.ConsoleMK;
+import utilitairesMK_MVC.MsgToConsole;
 
 
 /**

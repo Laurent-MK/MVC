@@ -1,8 +1,8 @@
-package utilitairesMK;
+package utilitairesMK_MVC;
 
 import java.io.Serializable;
 
-import model.Constantes_SERVER_TCP;
+import modelMVC.Constantes_SERVER_TCP;
 
 
 public class MessageMK implements Constantes_SERVER_TCP, Serializable {

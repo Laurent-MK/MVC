@@ -1,4 +1,4 @@
-package model;
+package modelMVC;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -6,9 +6,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import utilitairesMK.MsgClientServeur;
-import utilitairesMK.MsgToConsole;
-import view.IHM_Test_Thread;
+import utilitairesMK_MVC.MsgClientServeur;
+import utilitairesMK_MVC.MsgToConsole;
+import viewMVC.IHM_Test_Thread;
 
 
 

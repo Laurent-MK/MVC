@@ -1,14 +1,14 @@
-package view;
+package viewMVC;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import controler.ControlerTestThread;
-import model.ClientSocket;
-import model.Constantes;
-import utilitairesMK.Mutex;
-import utilitairesMK.MsgToConsole;
+import controlerMVC.ControlerTestThread;
+import modelMVC.ClientSocket;
+import modelMVC.Constantes;
+import utilitairesMK_MVC.MsgToConsole;
+import utilitairesMK_MVC.Mutex;
 
 import javax.swing.JButton;
 import javax.swing.JTextPane;

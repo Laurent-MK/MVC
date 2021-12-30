@@ -1,8 +1,8 @@
-package model;
+package modelMVC;
 
-import controler.Controler;
-import utilitairesMK.SemaphoreMK;
-import utilitairesMK.MsgToConsole;
+import controlerMVC.Controler;
+import utilitairesMK_MVC.MsgToConsole;
+import utilitairesMK_MVC.SemaphoreMK;
 
 
 /**

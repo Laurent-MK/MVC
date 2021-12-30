@@ -1,9 +1,9 @@
-package model;
+package modelMVC;
 
 import java.util.concurrent.BlockingQueue;
 
-import utilitairesMK.ConsoleMK;
-import utilitairesMK.MsgToConsole;
+import utilitairesMK_MVC.ConsoleMK;
+import utilitairesMK_MVC.MsgToConsole;
 
 
 

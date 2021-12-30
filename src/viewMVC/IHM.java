@@ -1,8 +1,7 @@
-package view;
+package viewMVC;
 
-import java.net.UnknownHostException;
 
-import utilitairesMK.MsgToConsole;
+import utilitairesMK_MVC.MsgToConsole;
 
 public interface IHM {
 	

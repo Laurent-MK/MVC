@@ -1,13 +1,13 @@
-package model;
+package modelMVC;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import controler.Controler;
-import utilitairesMK.ConsoleMK;
-import utilitairesMK.MsgToConsole;
+import controlerMVC.Controler;
+import utilitairesMK_MVC.ConsoleMK;
+import utilitairesMK_MVC.MsgToConsole;
 
 
 
