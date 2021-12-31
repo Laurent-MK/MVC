@@ -43,6 +43,11 @@ public interface Constantes {
 	public static final boolean MUTEX_CREE_LIBRE = true;		// si true, le Mutex est cree avec un jeton dispo. Si false, le Mutex est cree avec 0 jetons dedans
 	public static final int		NB_BOUCLE_EN_ZONE_CRITIQUE = 10;	// nbr de tour de boucle dans une zone critique
 
-	public static final int 	TYPE_MESSAGE_SERVEUR = 1;
+	public static final int 	TYPE_MSG_INCONNU = -1;
+	public static final int 	TYPE_MSG_SERVEUR = 1;
+	public static final int		TYPE_MSG_CONSOLE = TYPE_MSG_SERVEUR+1;
+	public static final int		TYPE_MSG_FIN_CONNEXION = TYPE_MSG_CONSOLE+1;
+	public static final int		TYPE_MSG_CONTROLE = TYPE_MSG_FIN_CONNEXION+1;
+
 	public static final int 	NUM_MSG_NOT_USED = 0;
 }

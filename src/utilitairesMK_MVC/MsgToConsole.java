@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class MsgToConsole implements Serializable {
 	
 	/**
-	 * 
+	 * numero de serie de la classe pour verif de la compatibilite lors de la serialisation
 	 */
 	private static final long serialVersionUID = -6392917557600619944L;
 
@@ -30,6 +30,14 @@ public class MsgToConsole implements Serializable {
 		this.msg = String.copyValueOf(msg.toCharArray());
 		this.ajoutNumMsg = isAjoutNumMsg;
 	}
+	
+	public MsgToConsole(int numConsole, String msg) {
+		
+		this.numConsoleDest = numConsole;
+		this.msg = String.copyValueOf(msg.toCharArray());
+		this.ajoutNumMsg = false;
+	}
+
 	
 	
 	/**

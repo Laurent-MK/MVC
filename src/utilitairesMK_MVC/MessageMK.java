@@ -10,7 +10,7 @@ public class MessageMK implements Constantes, Serializable {
 	// Numero de version de la classe serialisable
 	private static final long serialVersionUID = -2239749627148667746L;
 	
-	private int typeMsg = TYPE_MESSAGE_SERVEUR;
+	private int typeMsg = TYPE_MSG_SERVEUR;
 	private long numMsg = NUM_MSG_NOT_USED;
 	
 	public MessageMK() {

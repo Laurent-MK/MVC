@@ -36,6 +36,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
      * @param priority
      * @param msgQ
      * @param ihmApplication
+     * @param adresseIPConsoleDistante
      */
     public ConsoleMK(String consumerName,
     		int numero,
@@ -53,6 +54,15 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
         Thread.currentThread().setPriority(priority);
     }
 
+    /**
+     * Construecteur de classe
+     * 
+     * @param consumerName
+     * @param numero
+     * @param priority
+     * @param msgQ
+     * @param ihmApplication
+     */
     public ConsoleMK(String consumerName,
     		int numero,
     		int priority,
@@ -106,10 +116,10 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 		((MsgToConsole)msgConsole).setMsg(msg);
 
 		
-		// on a receptionné un message => on doit le passer à l'IHM pour qu'elle l'affiche dans la console systeme
+		// on a receptionne un message => on doit le passer à l'IHM pour qu'elle l'affiche dans la console systeme
 
 		/**
-		 * si le mode verbeux est active, on affiche égalezment les messages dans la console système
+		 * si le mode verbeux est active, on affiche egalement les messages dans la console système
 		 * Dans le cas contraire, les messages de debug sont tous envoyés vers l'IHM
 		 */
 		if (VERBOSE_ON)
@@ -164,6 +174,13 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 	@Override
 	public int getNumero() {
 		return numeroProducteur;
+	}
+
+	/**
+	 * @return le adresseIPConsoleDistante
+	 */
+	public String getAdresseIPConsoleDistante() {
+		return adresseIPConsoleDistante;
 	}
 
 }

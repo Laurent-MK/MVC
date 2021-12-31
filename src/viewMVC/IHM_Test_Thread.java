@@ -218,7 +218,8 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		this.textAreaTestMutex.setText("");
 		
 		initAppli(e);
-		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, this, new MsgToConsole(0, false, "message venant du client"));
+		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, new MsgToConsole(0, false, "message venant du client"));
+      	new Thread(client).start();
 	}
 	
 	
@@ -278,7 +279,23 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			if (textAreaConsole.getLineCount() > this.tailleConsole) {
 				textAreaConsole.setText("");
 				progressBarConsole.setForeground(Color.GREEN);
-			}			
+			}
+			try {
+				ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), 
+											NUMERO_PORT_SERVEUR_TCP,
+											msg);
+	          	new Thread(client).start();
+
+			} catch (UnknownHostException e) {
+				// TODO Bloc catch généré automatiquement
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Bloc catch généré automatiquement
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Bloc catch généré automatiquement
+				e.printStackTrace();
+			}
 		}
 		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_SEMAPHORE) {
 			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
@@ -306,6 +323,8 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			if (textAreaTestPool.getLineCount() > this.tailleConsole)
 				textAreaTestPool.setText("");
 		}
+		
+		
 /*		
 		try {
 			ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, this, msg);
