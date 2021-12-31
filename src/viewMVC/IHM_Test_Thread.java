@@ -218,6 +218,9 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		this.textAreaTestMutex.setText("");
 		
 		initAppli(e);
+		/**
+		 * test de la focntion de déport de la console vers un PC distant
+		 */
 		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, new MsgToConsole(0, false, "message venant du client"));
       	new Thread(client).start();
 	}
@@ -281,10 +284,14 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 				progressBarConsole.setForeground(Color.GREEN);
 			}
 			try {
+				/**
+				 * envoi du message vers la console distante via une connexion sous socket TCP
+				 * On confie cet envoi a un thread afin de ne pas ralentir l'IHM.
+				 */
 				ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), 
 											NUMERO_PORT_SERVEUR_TCP,
 											msg);
-	          	new Thread(client).start();
+	          	new Thread(client).start();		// lancement du thread de gestion de l'envoi du message vers la console distante
 
 			} catch (UnknownHostException e) {
 				// TODO Bloc catch généré automatiquement
