@@ -52,7 +52,22 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
        
         Thread.currentThread().setPriority(priority);
     }
-	
+
+    public ConsoleMK(String consumerName,
+    		int numero,
+    		int priority,
+    		ArrayBlockingQueue<MsgToConsole> msgQ,
+    		IHM ihmApplication)
+    {
+        this.nomConsole = consumerName;
+        this.queueMsg = msgQ;
+        this.ihmApplication = ihmApplication;
+        this.numeroProducteur = numero;
+        this.adresseIPConsoleDistante = "locahost";
+       
+        Thread.currentThread().setPriority(priority);
+    }
+
     
     /**
      * Pour envoyer un message vers la console situee dans l'IHM.

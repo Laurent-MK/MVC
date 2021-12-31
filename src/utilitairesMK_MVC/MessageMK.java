@@ -2,10 +2,10 @@ package utilitairesMK_MVC;
 
 import java.io.Serializable;
 
-import modelMVC.Constantes_SERVER_TCP;
+import modelMVC.Constantes;
 
 
-public class MessageMK implements Constantes_SERVER_TCP, Serializable {
+public class MessageMK implements Constantes, Serializable {
 
 	// Numero de version de la classe serialisable
 	private static final long serialVersionUID = -2239749627148667746L;
