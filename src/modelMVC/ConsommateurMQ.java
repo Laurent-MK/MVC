@@ -22,7 +22,7 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
 	private String nomConsommateur = "nom inconnu";
     private final BlockingQueue<ProduitText> queue;
     private ConsoleMK consoleMK;
-    private int numero;
+    private int identifiant;
     private int nbConsoRealisees = 0;
     private int numConsole = NUM_CONSOLE_CONSOLE;
 	private boolean AjouterNumMsg = AJOUTER_NUM_MESSAGE;
@@ -47,10 +47,10 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
     		ConsoleMK consoleMK,
     		int numConsole)
     {
-        setNom(nom);
-        this.queue = q;
+		this.nomConsommateur = nom;
+		this.queue = q;
         this.consoleMK = consoleMK;
-        this.numero = num;
+        this.identifiant = num;
         this.numConsole = numConsole;
         
         Thread.currentThread().setPriority(priority);
@@ -109,7 +109,6 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
 	}
 
 	
-	
 	@Override
 	public void setNom(String nom) {
 		this.nomConsommateur = nom;
@@ -117,8 +116,8 @@ public class ConsommateurMQ implements Runnable, Consommateur, Constantes {
 
 
 	@Override
-	public int getNumero() {
-		return this.numero;
+	public int getIdentifiant() {
+		return this.identifiant;
 	}
 
 	

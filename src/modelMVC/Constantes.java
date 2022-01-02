@@ -4,7 +4,7 @@ public interface Constantes {
 	/**
 	 * Definition de toutes les constantes de l'application
 	 */
-	public static final boolean VERBOSE_ON = false;		// pour declencher les affichage dans la console systeme
+	public static final boolean VERBOSE_ON = true;		// pour declencher les affichage dans la console systeme
 	
 	public static final int 	TAILLE_MESSAGE_Q_PC = 5;	// taille de la message queue entre producteurs et consommateurs
 	public static final int 	NB_CONSOLE = 5;				// taille de la message queue entre producteurs et consommateurs
@@ -19,7 +19,10 @@ public interface Constantes {
 
 	public static final int 	NUMERO_CONSOLE = 1;			// numero du thread de console
 	public static final int		NUMERO_PORT_SERVEUR_TCP = 9999;
-	public static final String	ADR_IP_SERVEUR_TCP = "192.168.1.116";
+	public static final String	ADR_IP_SERVEUR_TCP = "192.168.2.32";
+	public static final boolean	CREATION_SOCKET_CLIENT_OK = true;
+	public static final boolean	OUVERTURE_CANAL_OK = true;
+	
 
 	public static final double 	SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE = 0.8;		// seuil de remlplissage (%) de la console pour passer le bargraphe en rouge
 	public static final double 	SEUIL_CHGT_COULEUR_PROGRESS_BAR_MQ_CONSOLE = 0.7;	// seuil de remlplissage (%) de la console pour passer le bargraphe en rouge
@@ -43,11 +46,17 @@ public interface Constantes {
 	public static final boolean MUTEX_CREE_LIBRE = true;		// si true, le Mutex est cree avec un jeton dispo. Si false, le Mutex est cree avec 0 jetons dedans
 	public static final int		NB_BOUCLE_EN_ZONE_CRITIQUE = 10;	// nbr de tour de boucle dans une zone critique
 
+	public static final int		TYPE_THREAD_ENVOI_1_MSG = 1;
+	public static final int		TYPE_THREAD_ENVOI_N_MSG = 2;
 	public static final int 	TYPE_MSG_INCONNU = -1;
 	public static final int 	TYPE_MSG_SERVEUR = 1;
 	public static final int		TYPE_MSG_CONSOLE = TYPE_MSG_SERVEUR+1;
 	public static final int		TYPE_MSG_FIN_CONNEXION = TYPE_MSG_CONSOLE+1;
 	public static final int		TYPE_MSG_CONTROLE = TYPE_MSG_FIN_CONNEXION+1;
+	public static final int		TYPE_MSG_TEST_LINK = TYPE_MSG_CONTROLE+1;
+	public static final int		TBD = TYPE_MSG_TEST_LINK+1;
+	
+	public static final String	MSG_FIN_COM = "Fin de communication";
 
-	public static final int 	NUM_MSG_NOT_USED = 0;
+	public static final int 	NUM_MSG_NOT_USED = -1;
 }

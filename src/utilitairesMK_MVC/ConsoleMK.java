@@ -172,7 +172,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 	 * obtenir le numero du thread de console
 	 */
 	@Override
-	public int getNumero() {
+	public int getIdentifiant() {
 		return numeroProducteur;
 	}
 

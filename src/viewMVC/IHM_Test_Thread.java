@@ -5,10 +5,14 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import controlerMVC.ControlerTestThread;
-import modelMVC.ClientSocket;
 import modelMVC.Constantes;
+import modelMVC.ProduitText;
+import utilitairesMK_MVC.ClientSocket;
+import utilitairesMK_MVC.MessageMK;
+import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
 import utilitairesMK_MVC.Mutex;
+import utilitairesMK_MVC.ParametrageClientTCP;
 
 import javax.swing.JButton;
 import javax.swing.JTextPane;
@@ -16,6 +20,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
@@ -28,6 +34,8 @@ import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JProgressBar;
+import javax.swing.JCheckBox;
+import javax.swing.JToggleButton;
 
 
 /**
@@ -79,7 +87,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	private final JTextField textFieldNbTestSem = new JTextField();
 	private final JTextField textFieldAdresseIP = new JTextField();
 	
-
+	private final JCheckBox chckbxConnexion = new JCheckBox("");
 
 	private final JProgressBar progressBarConsole = new JProgressBar(0, MAX_MSG_CONSOLE);
 	private final JProgressBar progressBarMQ = new JProgressBar(0, TAILLE_MSG_Q_CONSOLE);
@@ -95,6 +103,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	private int tailleConsole;
 	private int tailleMqConsole;
 	private JTextField txtNbrThreadTestMutex;
+	private boolean isConnexionPermanente = false;
 	
 	
 	
@@ -219,12 +228,39 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		
 		initAppli(e);
 		/**
-		 * test de la focntion de déport de la console vers un PC distant
+		 * test de la fonction de deport de la console vers un PC distant
 		 */
-		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, new MsgToConsole(0, false, "message venant du client"));
+		ParametrageClientTCP paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG);
+		ClientSocket client = new ClientSocket(paramClient, new MsgToConsole(0, false, "message venant du client"));
+
+//		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, new MsgToConsole(0, false, "message venant du client"));
       	new Thread(client).start();
 	}
 	
+	// clic sur le bouton de connexion avec le serveur de socket TCP
+	private void btnClicConnexion(ActionEvent e) {
+		if (chckbxConnexion.isSelected()) {
+			// la connexion doit etre permanente entre le client et le serveur
+			isConnexionPermanente = true;
+		}
+		else {
+			// la connexion ne doit exister que pour l'envoi du message entre le client et le serveur
+			isConnexionPermanente = false;
+
+		    BlockingQueue<MessageMK> msgQ = new ArrayBlockingQueue<MessageMK>(TAILLE_MESSAGE_Q_PC);
+			ParametrageClientTCP paramClient = new ParametrageClientTCP("client TCP", 0, 5, msgQ, getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG);
+			
+			// creation du message a envoyer : message de test de la liaison
+			MsgDeControle msgControle = new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, "Message de test", null);
+			// creation de la socket client
+			ClientSocket client = new ClientSocket(paramClient);
+			
+			client.sendMsgUnique(msgControle);
+
+			if (VERBOSE_ON)
+				System.out.println("Envoi d'un message -TYPE_MSG_TEST_LINK- realise par un seul appel de fonction");
+		}
+	}
 	
 	//------------------------------------------------------------------------------------------------------------
 
@@ -283,27 +319,15 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 				textAreaConsole.setText("");
 				progressBarConsole.setForeground(Color.GREEN);
 			}
-			try {
-				/**
-				 * envoi du message vers la console distante via une connexion sous socket TCP
-				 * On confie cet envoi a un thread afin de ne pas ralentir l'IHM.
-				 */
-				ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), 
-											NUMERO_PORT_SERVEUR_TCP,
-											msg);
-	          	new Thread(client).start();		// lancement du thread de gestion de l'envoi du message vers la console distante
-
-			} catch (UnknownHostException e) {
-				// TODO Bloc catch généré automatiquement
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Bloc catch généré automatiquement
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Bloc catch généré automatiquement
-				e.printStackTrace();
-			}
-		}
+			/**
+			 * envoi du message vers la console distante via une connexion sous socket TCP
+			 * On confie cet envoi a un thread afin de ne pas ralentir l'IHM.
+			 */
+/*			ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), 
+										NUMERO_PORT_SERVEUR_TCP,
+										msg);
+			new Thread(client).start();		// lancement du thread de gestion de l'envoi du message vers la console distante
+*/		}
 		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_SEMAPHORE) {
 			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
 			textAreaTestSemaphore.append(msg.getMsg());
@@ -330,17 +354,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			if (textAreaTestPool.getLineCount() > this.tailleConsole)
 				textAreaTestPool.setText("");
 		}
-		
-		
-/*		
-		try {
-			ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, this, msg);
-		} catch (ClassNotFoundException | IOException e) {
-			// TODO Bloc catch généré automatiquement
-			e.printStackTrace();
-		}
-*/
-		}
+	}
 	
 	
 	/**
@@ -463,7 +477,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		/**
 		 * Ajout d'une zone de texte
 		 */
-		txtTest.setBounds(138, 246, 144, 23);
+		txtTest.setBounds(124, 281, 144, 23);
 		contentPane.add(txtTest);
 		
 		
@@ -485,7 +499,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 				}
 			}
 		});
-		btnGo.setBounds(55, 246, 58, 23);
+		btnGo.setBounds(54, 281, 58, 23);
 		contentPane.add(btnGo);
 		
 
@@ -502,7 +516,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 				}
 			}
 		});
-		btnInitAppli.setBounds(513, 367, 108, 23);
+		btnInitAppli.setBounds(516, 380, 108, 23);
 		contentPane.add(btnInitAppli);
 
 		// ajout du bouton "Del" et d'une fonction sur le clic du bouton
@@ -512,7 +526,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 				btnClicStop(e);
 			}
 		});
-		btnDel.setBounds(302, 246, 89, 23);
+		btnDel.setBounds(291, 281, 89, 23);
 
 		// ajout d'un bouton "Test Semaphore" et d'une fonction sur le clic du bouton
 		JButton btnTstSemaphore = new JButton("Test Semaphore");
@@ -539,7 +553,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 				btnClicTestPoolThread(e);
 			}
 		});
-		btnTestPoolThread.setBounds(454, 80, 188, 25);
+		btnTestPoolThread.setBounds(461, 104, 188, 25);
 		contentPane.add(btnTestPoolThread);
 		
 
@@ -568,53 +582,61 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		btnRazZoneTestMutex.setBounds(1161, 925, 76, 25);
 		contentPane.add(btnRazZoneTestMutex);
 
-		
+		// ajout du bouton indiquant si la connexion avec le serveur de console distante
+		// doit etre permanente ou non
+		JButton btnConnexion = new JButton("Connexion");
+		btnConnexion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnClicConnexion(e);
+			}
+		});
+
 		
 		//ajout du logo
 		String ressource = getClass().getClassLoader().getResource(logo).getPath();
 		lblNewLabel.setIcon(new ImageIcon(ressource));
 		lblNewLabel.setBounds(666, -7, 117, 61);
 		contentPane.add(lblNewLabel);
-		lblZoneConsole.setBounds(23, 302, 355, 14);
+		lblZoneConsole.setBounds(25, 316, 355, 14);
 		
 		contentPane.add(lblZoneConsole); 		// description de la zone de texte
 		
-		textFieldNbProducteur.setBounds(292, 178, 86, 20);
+		textFieldNbProducteur.setBounds(295, 223, 86, 20);
 		contentPane.add(textFieldNbProducteur);
 		textFieldNbProducteur.setColumns(10);
 		
 		JLabel lblNewLabelProdcuteur = new JLabel("Nombre de producteurs");
-		lblNewLabelProdcuteur.setBounds(23, 180, 188, 14);
+		lblNewLabelProdcuteur.setBounds(26, 225, 188, 14);
 		contentPane.add(lblNewLabelProdcuteur);
 		
 		
-		textFieldNbConsommateur.setBounds(292, 204, 86, 20);
+		textFieldNbConsommateur.setBounds(295, 249, 86, 20);
 		contentPane.add(textFieldNbConsommateur);
 		textFieldNbConsommateur.setColumns(10);
 
 
 		JLabel lblNewLabelConsommateurs = new JLabel("Nombre de consommateurs");
-		lblNewLabelConsommateurs.setBounds(23, 206, 218, 14);
+		lblNewLabelConsommateurs.setBounds(26, 251, 218, 14);
 		contentPane.add(lblNewLabelConsommateurs);
 
 		contentPane.add(btnDel);
 		
 		// zone d'afichage (avec un scroll) des messages venant de l'application
 		JScrollPane scrollPaneConsole = new JScrollPane();
-		scrollPaneConsole.setBounds(27, 428, 374, 506);
+		scrollPaneConsole.setBounds(23, 444, 374, 506);
 		contentPane.add(scrollPaneConsole);
 		
 		scrollPaneConsole.setViewportView(textAreaConsole);
 		
 		JScrollPane scrollPaneEtatThread = new JScrollPane();
-		scrollPaneEtatThread.setBounds(414, 428, 297, 506);
+		scrollPaneEtatThread.setBounds(414, 444, 297, 506);
 		contentPane.add(scrollPaneEtatThread);
 		
 		scrollPaneEtatThread.setViewportView(textAreaAffichageEtatThread);
 		
 		JLabel lblNewLabel_1 = new JLabel("Etat des threads  : true = en vie / false = mort");
 		lblNewLabel_1.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblNewLabel_1.setBounds(420, 402, 272, 14);
+		lblNewLabel_1.setBounds(423, 415, 272, 14);
 		contentPane.add(lblNewLabel_1);
 		
 		JSeparator separator = new JSeparator();
@@ -674,47 +696,47 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		scrollPaneConsoleMutex.setViewportView(textAreaTestMutex);
 		progressBarConsole.setForeground(Color.GRAY);
 		progressBarConsole.setBackground(Color.WHITE);
-		progressBarConsole.setBounds(23, 354, 288, 14);
+		progressBarConsole.setBounds(25, 368, 288, 14);
 		contentPane.add(progressBarConsole);
 		
 		JLabel lblNewLabel_5 = new JLabel("Buffer console");
-		lblNewLabel_5.setBounds(22, 328, 160, 14);
+		lblNewLabel_5.setBounds(24, 342, 160, 14);
 		contentPane.add(lblNewLabel_5);
 		
 
-		lblEtatBuffer.setBounds(207, 327, 46, 17);
+		lblEtatBuffer.setBounds(209, 341, 34, 17);
 		contentPane.add(lblEtatBuffer);
 		
 		JLabel lblNewLabel_6 = new JLabel("/");
-		lblNewLabel_6.setBounds(239, 328, 27, 14);
+		lblNewLabel_6.setBounds(241, 342, 27, 14);
 		contentPane.add(lblNewLabel_6);
 		
-		lblMaxLigneConsole.setBounds(265, 328, 46, 14);
+		lblMaxLigneConsole.setBounds(267, 342, 46, 14);
 		contentPane.add(lblMaxLigneConsole);
 		
 		JLabel lblNewLabel_7 = new JLabel("Frequence de production (msec)");
-		lblNewLabel_7.setBounds(23, 90, 251, 14);
+		lblNewLabel_7.setBounds(26, 135, 251, 14);
 		contentPane.add(lblNewLabel_7);
 		
 		textFieldFreqProd.setText("500");
-		textFieldFreqProd.setBounds(292, 87, 86, 20);
+		textFieldFreqProd.setBounds(295, 132, 86, 20);
 		contentPane.add(textFieldFreqProd);
 		textFieldFreqProd.setColumns(10);
 		
 		JLabel lblNewLabel_8 = new JLabel("Taille de la console (nbr de lignes)");
-		lblNewLabel_8.setBounds(22, 122, 252, 14);
+		lblNewLabel_8.setBounds(25, 167, 252, 14);
 		contentPane.add(lblNewLabel_8);
 		
 		textFieldMaxLigneConsole.setText("100");
-		textFieldMaxLigneConsole.setBounds(292, 123, 86, 20);
+		textFieldMaxLigneConsole.setBounds(295, 168, 86, 20);
 		contentPane.add(textFieldMaxLigneConsole);
 		textFieldMaxLigneConsole.setColumns(10);
 		
 		JLabel lblTailleDeMessagequeueconsole = new JLabel("Taille de messageQueueConsole");
-		lblTailleDeMessagequeueconsole.setBounds(23, 147, 249, 15);
+		lblTailleDeMessagequeueconsole.setBounds(26, 192, 249, 15);
 		contentPane.add(lblTailleDeMessagequeueconsole);
 		
-		textFieldTailleQueueConsole.setBounds(292, 147, 86, 19);
+		textFieldTailleQueueConsole.setBounds(295, 192, 86, 19);
 		contentPane.add(textFieldTailleQueueConsole);
 		textFieldTailleQueueConsole.setColumns(10);
 		
@@ -723,25 +745,25 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		separator_1.setBounds(1051, 82, 17, 852);
 		contentPane.add(separator_1);
 		
-		progressBarMQ.setBounds(23, 404, 285, 14);
+		progressBarMQ.setBounds(25, 418, 285, 14);
 		contentPane.add(progressBarMQ);
 		
-		lblEtatMQ.setBounds(204, 380, 70, 15);
+		lblEtatMQ.setBounds(206, 394, 27, 15);
 		contentPane.add(lblEtatMQ);
 		
 		JLabel lbl_80 = new JLabel("Remplissage de la MQ ");
-		lbl_80.setBounds(23, 381, 177, 14);
+		lbl_80.setBounds(25, 395, 177, 14);
 		contentPane.add(lbl_80);
 		
 		JLabel lbl = new JLabel("/");
-		lbl.setBounds(239, 380, 14, 15);
+		lbl.setBounds(241, 394, 14, 15);
 		contentPane.add(lbl);
 		
-		lblTailleMQConsole.setBounds(265, 380, 57, 15);
+		lblTailleMQConsole.setBounds(267, 394, 57, 15);
 		contentPane.add(lblTailleMQConsole);
 		
 		JScrollPane scrollPaneTestPoolThread = new JScrollPane();
-		scrollPaneTestPoolThread.setBounds(414, 121, 278, 227);
+		scrollPaneTestPoolThread.setBounds(417, 141, 278, 227);
 		contentPane.add(scrollPaneTestPoolThread);
 		textAreaTestPool.setFont(new Font("Dialog", Font.PLAIN, 10));
 		
@@ -775,13 +797,24 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		contentPane.add(textFieldNbTestSem);
 		textFieldNbTestSem.setColumns(10);
 		
-		textFieldAdresseIP.setBounds(271, 56, 117, 19);
+		textFieldAdresseIP.setBounds(241, 64, 97, 19);
 		contentPane.add(textFieldAdresseIP);
 		textFieldAdresseIP.setColumns(10);
 		
 		JLabel lblAdresseIpDe = new JLabel("@ IP de la console distante");
-		lblAdresseIpDe.setBounds(26, 58, 240, 15);
+		lblAdresseIpDe.setBounds(25, 66, 240, 15);
 		contentPane.add(lblAdresseIpDe);
+		
+		chckbxConnexion.setBounds(414, 66, 70, 14);
+		contentPane.add(chckbxConnexion);
+		
+		btnConnexion.setBounds(506, 55, 130, 25);
+		contentPane.add(btnConnexion);
+		
+		JLabel lblConnexionPermanente = new JLabel("Connexion permanente");
+		lblConnexionPermanente.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblConnexionPermanente.setBounds(363, 43, 152, 15);
+		contentPane.add(lblConnexionPermanente);
 		
 		
 	
@@ -790,5 +823,9 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		 */
 		initIHM();
 
+	}
+
+	public boolean getIsConnexionPermanente() {
+		return isConnexionPermanente;
 	}
 }

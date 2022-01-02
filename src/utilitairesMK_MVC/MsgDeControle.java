@@ -3,25 +3,32 @@ package utilitairesMK_MVC;
 import java.io.Serializable;
 
 
-public class MsgClientServeur extends MessageMK implements Serializable {
-
+public class MsgDeControle extends MessageMK implements Serializable {
 	
 	/**
-	 * 
+	 * numero de version de classe : pour assurer la compatibilite
+	 * dans les phases de serialisation/deserialisaton
 	 */ 
 	private static final long serialVersionUID = 8860951286914925272L;
 
 	private Object obj = null;
 	private String libelleMsg = "LIBELLE NON DEFINI";
 
-	
-	public MsgClientServeur(int typeMsg, long numMsg, String libelleMsg, Object obj) {
+	/**
+	 * 
+	 * Constructeur de classe
+	 * 
+	 * @param typeMsg
+	 * @param numMsg
+	 * @param libelleMsg
+	 * @param obj
+	 */
+	public MsgDeControle(int typeMsg, long numMsg, String libelleMsg, Object obj) {
 
-		setNumMsg(numMsg);
 		setTypeMsg(typeMsg);
-		this.libelleMsg = "ok";
-		this.obj = obj;			// objet eventuel a transporter
+		setNumMsg(numMsg);
 		this.libelleMsg = libelleMsg;
+		this.obj = obj;			// objet eventuel a transporter
 	}
 
 
@@ -34,7 +41,7 @@ public class MsgClientServeur extends MessageMK implements Serializable {
 
 
 	/**
-	 * @param obj le obj à définir
+	 * @param obj le obj a definir
 	 */
 	public void setObj(Object obj) {
 		this.obj = obj;

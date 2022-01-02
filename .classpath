@@ -7,6 +7,5 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/MVC_TCP/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
