@@ -12,6 +12,7 @@ import modelMVC.TestMutex;
 import modelMVC.TestPoolThread;
 import modelMVC.TestSemaphore;
 import utilitairesMK_MVC.ClientSocket;
+import utilitairesMK_MVC.ConsoleDouble;
 import utilitairesMK_MVC.ConsoleMK;
 import utilitairesMK_MVC.MessageMK;
 import utilitairesMK_MVC.MsgDeControle;
@@ -178,12 +179,14 @@ public class ControlerTestThread implements Constantes, Controler {
 	 */   
     public void connexionToServer(String adresseIPServer, int numPortServer, int typeThreadGestion, Object msg) {
     	
-//    	ClientSocket socketClient = null;
     	ParametrageClientTCP paramClient;
     	ClientSocket c;
     	
     	switch (typeThreadGestion) {
     	
+    		/**
+    		 * l'envoi du message se fera grace a unthread qui ne servira que pour un seul envoi 
+    		 */
 	    	case TYPE_THREAD_ENVOI_1_MSG :
 	    		
 	    		paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
@@ -191,20 +194,25 @@ public class ControlerTestThread implements Constantes, Controler {
 	          	new Thread(c).start();
 	          	
 	    		break;
-	    		
+	    	
+	    	/**
+	    	 * Un thread est cree pour assurer la communication permanente avec le serveur distant. Ce thread
+	    	 * viendra se mettre en attente, sur un MQ, des messages envoyes par toute l'application.
+	    	 * 
+	    	 */
 	    	case TYPE_THREAD_ENVOI_N_MSG :
 				paramClient = new ParametrageClientTCP("client TCP", 0, 5, this.msgQToServer, adresseIPServer, numPortServer, typeThreadGestion);
-				
-				// creation du message a envoyer : message de test de la liaison
-//				msgControle = new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_N_MSG - Message de test", null);
 
 				// creation de la socket client
 				this.socketClient = new ClientSocket(paramClient);
-				System.out.println("Socketclient = " + socketClient);
-	          	new Thread(socketClient).start();
-	          	System.out.println("Socketclient = " + socketClient);
+
+				// creation et lancement du thread de gestion des messages a destination du serveur distant
+				new Thread(socketClient).start();
 				break;
 	    		
+			/**
+			 * 	l'envoi du message se fait en sequentiel directement dans cette methode
+			 */
 	    	case TYPE_THREAD_ENVOI_NO_THREAD :
 				paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
 				
@@ -217,8 +225,8 @@ public class ControlerTestThread implements Constantes, Controler {
 				MsgDeControle msgC = new MsgDeControle(TYPE_MSG_FIN_CONNEXION, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_N_MSG - Message de fin de connexion", null);
 				c.sendMsgUnique(msgC);
 				c.fermerSocketClient();
-
 				break;
+				
 	    		
 	    	default :
 	    		// mauvais type de gestion par thread
@@ -400,29 +408,25 @@ public class ControlerTestThread implements Constantes, Controler {
     	 */
     	mutexSynchroIHM_Controleur.mutexGet();
    	
-    	
-    	/* lancement du thread de gestion de la console :
-         * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
-         */
-    	msgQ_Console = new ArrayBlockingQueue<MsgToConsole>(ihmApplication.getTailleBufferConsole());
-        console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication, ihmApplication.getAdresseIPConsoleDistante());
-        
-        new Thread(console).start();    
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, AjouterNumMsg, "creation et lancement du thread de console"));
-    	
-    	
-    	
     	/**
     	 * creation et lancement du thread de gestion des envois de message vers la console distante
     	 */
     	msgQToServer = new ArrayBlockingQueue<MessageMK>(100);
-
 		connexionToServer(this.ihmApplication.getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_N_MSG, null);
 
-
 		
+    	/* lancement du thread de gestion de la console :
+         * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
+         */
+    	msgQ_Console = new ArrayBlockingQueue<MsgToConsole>(ihmApplication.getTailleBufferConsole());
+//        console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication, ihmApplication.getAdresseIPConsoleDistante());
+    	console = new ConsoleDouble("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication, ihmApplication.getAdresseIPConsoleDistante(), this.getSocketClient());
+        
+        new Thread(console).start();    
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, AjouterNumMsg, "creation et lancement du thread de console"));
+    			
 		
-		
+    	
     	// on debloque l'IHM une fois que le thread de gestion de la console est lance
     	mutexSynchroIHM_Controleur.mutexRelease();
 

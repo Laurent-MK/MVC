@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import modelMVC.Consommateur;
@@ -30,13 +29,9 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 	 * Constructeur de la classe : celle-ci se charge de se connecter au serveur de console distante
 	 * puis d'envoyer les messages vers ce processus
 	 * 
-	 * @param adresseIPServeur
-	 * @param numPort
-	 * @param msg
-	 * @throws UnknownHostException
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
+     * @param param
+     * @param MsgToConsole
+     */
 	public ClientSocket(ParametrageClientTCP param, MsgToConsole MsgToConsole) {
 		this.nomConsommateur = param.getNomConsommateur();
 		this.adresseIPServer = param.getAdresseIPServeur();
@@ -72,12 +67,25 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 	}
 	
 	
+	/**
+	 * methode pour envoyer un message vers le serveur. on distingue plusieurs format et type de messages.
+	 * Le protocole de communication avec le serveur est implemente dans cette methode
+	 * 
+	 * les messages sous forme d'objets MsgToConsole sont des msg de debug destines a la console distante
+	 * Ils sont envoyes sans traitement particulier
+	 * 
+	 * Les msg desous forme d'objets MsgDeControle sont des objets de gestion de la console distante. Ils implementent
+	 * le protocole de discussion entre un client et un serveur de console distante
+	 * 
+	 * @param obj
+	 */
 	public void sendMsgUnique(Object obj) {
 		MsgDeControle msgRecu;
 		
 
 		if (obj instanceof MsgToConsole) {
-			System.out.println("sendMsgUnique(MsgToConsole)");
+			if (VERBOSE_ON)
+				System.out.println("sendMsgUnique(MsgToConsole)");
 			sendMsg(obj);
 		}
 		else if (obj instanceof MsgDeControle)
@@ -92,7 +100,8 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 			 * tester les deux sens de la communication
 			 */
 			case TYPE_MSG_TEST_LINK :
-				System.out.println("sendMsgUnique(MsgDeControle) : TYPE_MSG_TEST_LINK");
+				if (VERBOSE_ON)
+					System.out.println("sendMsgUnique(MsgDeControle) : TYPE_MSG_TEST_LINK");
 
 				// on envoi le message de test de la liaison
 				sendMsg(obj);
@@ -101,7 +110,6 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 				msgRecu = (MsgDeControle) receiveMsg();
 				if (VERBOSE_ON)
 					System.out.println("Message : TYPE_MSG_TEST_LINK recu - Client recoit : " + msgRecu.getLibelleMsg());
-
 			break;
 
 
@@ -109,7 +117,7 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 			 * message indiquant au serveur que nous quittons le canal de communication
 			 */
 			case TYPE_MSG_FIN_CONNEXION :
-				// on envoi le message de fin de la liaison
+				// on envoi le message de fin de la liaison antre le client et le serveur
 				sendMsg(obj);
 			break;
 				
@@ -139,7 +147,7 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 	 * 
 	 * @param msg
 	 */
-	public void sendMsgUnique(MessageMK msg) {
+/*	public void sendMsgUnique(MessageMK msg) {
 		if (VERBOSE_ON)
 			System.out.println("ouverture de la socket");
 		// ouverture de la socket vers le serveur
@@ -156,11 +164,9 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 			System.out.println("Reception du message -TYPE_MSG_FIN_CONNEXION- => fermeture de la liaison avec le serveur distant");
 		
 	}
-	
+*/	
 	/**
-	 * envoyer un message vers le serveur via la socket existante. Cette methode doit etre utilisee
-	 * en prenant soin de creer la socket client, ouvrir les canaux de communication puis de les refermer lorsque la connexion
-	 * avec le serveur n'est plus necessaire. Et enfin fermer la socket client
+	 * Envoi effectif d'un message et non un objet n type vers le serveur
 	 * 
 	 * @param msg
 	 */
@@ -175,7 +181,11 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 		}
 	}
 
-	
+	/**
+	 * envoi effectif d'un objet vers le serveur
+	 * 
+	 * @param obj
+	 */
 	private void sendMsg(Object obj) {
 			
 			try {
@@ -208,9 +218,9 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 	
 	
 	/**
+	 * ouverture du canal de reception
 	 * 
-	 * @param socketClient
-	 * @return
+	 * @return ok ou ko
 	 */
 	private boolean ouvrirCanalReception() {
 		
@@ -224,8 +234,8 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 	}
 
 	/**
+	 * ouverture du canal d'emission vers le serveur
 	 * 
-	 * @param socketClient
 	 * @return
 	 */
 	private boolean ouvrirCanalEmission() {
@@ -239,7 +249,9 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 		return OUVERTURE_CANAL_OK;
 	}
 	
-	
+	/**
+	 * fermeture du canal de reception vers le serveur
+	 */
 	private void fermerCanalReception() {
 		try {
 			this.canalReception.close();
@@ -249,6 +261,9 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 		}
 	}
 
+	/**
+	 * fermeture du canal d'emission vers le serveur
+	 */
 	private void fermerCanalEmission() {
 		try {
 			this.canalEmission.close();
@@ -258,7 +273,9 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 		}
 	}
 
-	
+	/**
+	 * fermeture de la coscket client
+	 */
 	public void fermerSocketClient() {
 		try {
 			socketClient.close();
@@ -275,15 +292,16 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 	
 	
 	/**
+	 * ouverture de la socket client
 	 * 
-	 * @return
+	 * @return la socket client
 	 */
 	public Socket ouvrirSocketClient() {
 		try {
-			socketClient = new Socket(adresseIPServer, serverPort);
+			socketClient = new Socket(adresseIPServer, serverPort);	// creation de la socket
 			
-			ouvrirCanalEmission();
-			ouvrirCanalReception();
+			ouvrirCanalEmission();		// ouverture du canal d'emission
+			ouvrirCanalReception();		// ouverture du canal de recpetion
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -295,13 +313,18 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 	}
 
 	
-	
+	/**
+	 * methode utilisee pour envoyer un message au thread de gestion de la console distante
+	 * le message a envoyer est place dans la MQ du thread qui est connecte avec la console distante
+	 * 
+	 * @param msg
+	 */
 	public void sendMsgToServer(MessageMK msg) {
-		System.out.println("verif de la MQ du thread de connexion avec le serveur");
+//		System.out.println("verif de la MQ du thread de connexion avec le serveur");
 
 		if (this.queueMsgAEnvoyer.remainingCapacity() > 1 ) {
 			try {
-				System.out.println("envoi du message dans la MQ du thread de connexion avec le serveur");
+//				System.out.println("envoi du message dans la MQ du thread de connexion avec le serveur");
 				this.queueMsgAEnvoyer.put(msg);
 			} catch (InterruptedException e) {
 				// TODO Bloc catch genere automatiquement
@@ -311,43 +334,15 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 		else
     		System.out.println("MQ console distante pleine => message perdu !!! : " + Thread.currentThread().getName());
 	}
+
 
 	
-/*	
-	public void sendMsgToServer(MsgToConsole msg) {
-
-		if (this.queueMsgAEnvoyer.remainingCapacity() > 1 ) {
-			try {
-				this.queueMsgAEnvoyer.put(msg);
-			} catch (InterruptedException e) {
-				// TODO Bloc catch genere automatiquement
-				e.printStackTrace();
-			}      				
-		}
-		else
-    		System.out.println("MQ console distante pleine => message perdu !!! : " + Thread.currentThread().getName());
-	}
-
-	public void sendMsgToServer(MsgDeControle msg) {
-
-		if (this.queueMsgAEnvoyer.remainingCapacity() > 1 ) {
-			try {
-				this.queueMsgAEnvoyer.put(msg);
-			} catch (InterruptedException e) {
-				// TODO Bloc catch genere automatiquement
-				e.printStackTrace();
-			}      				
-		}
-		else
-    		System.out.println("MQ console distante pleine => message perdu !!! : " + Thread.currentThread().getName());
-	}
-*/
-
 	/**
 	 * "main()" du thread de gestion de l'envoi de message vers la console distante
 	 */
 	@Override
 	public void run() {
+		
 		ouvrirSocketClient();
 		if (VERBOSE_ON)
 			System.out.println("Client.run() => le thread : " + Thread.currentThread() + " a cree les flux");
@@ -383,9 +378,6 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 			case TYPE_THREAD_ENVOI_N_MSG :
 				System.out.println("Thread : " + Thread.currentThread() + " a boucle infinie : on entre dans la boucle");
 
-				// ouverture de la socket client
-//				this.ouvrirSocketClient();
-
 				while (true) {
 						try {
 							System.out.println("Thread : " + Thread.currentThread() + " en attente sur sa MQ");
@@ -408,10 +400,9 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 				if (VERBOSE_ON)
 					System.out.println("Client.run() : => " + Thread.currentThread() + " => fermeture de la connexion");					
 				break;
-			
+							
 				
-				
-			default :
+			default :	// a developper
 				break;
 		}		
 	}
@@ -421,7 +412,7 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 	@Override
 	public void consommer(Object msg) {
 		/**
-		 * envoi, vers le server, du message recu
+		 * envoi, vers le serveur, du message recu
 		 */		
 		sendMsgUnique(msg);
 		if (VERBOSE_ON)

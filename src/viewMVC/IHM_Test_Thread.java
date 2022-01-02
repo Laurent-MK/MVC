@@ -7,8 +7,6 @@ import javax.swing.border.EmptyBorder;
 import controlerMVC.Controler;
 import controlerMVC.ControlerTestThread;
 import modelMVC.Constantes;
-import utilitairesMK_MVC.ClientSocket;
-import utilitairesMK_MVC.MessageMK;
 import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
 import utilitairesMK_MVC.Mutex;
@@ -83,7 +81,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	private final JTextField textFieldNbTestSem = new JTextField();
 	private final JTextField textFieldAdresseIP = new JTextField();
 	
-	private final JCheckBox chckbxConnexion = new JCheckBox("");
+	public final JCheckBox chckbxConnexion = new JCheckBox("");
 
 	private final JProgressBar progressBarConsole = new JProgressBar(0, MAX_MSG_CONSOLE);
 	private final JProgressBar progressBarMQ = new JProgressBar(0, TAILLE_MSG_Q_CONSOLE);
@@ -228,19 +226,14 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		this.textAreaTestMutex.setText("");
 		
 		initAppli(e);
-		MsgToConsole msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_1_MSG - message venant du client");
-		controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
 		
-//		controleur.dmdIHMConnexionServeur(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG);
 		/**
 		 * test de la fonction de deport de la console vers un PC distant
 		 */
-/*		ParametrageClientTCP paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG);
-		ClientSocket client = new ClientSocket(paramClient, new MsgToConsole(0, false, "message venant du client"));
+		MsgToConsole msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_1_MSG - message venant du client");
+		controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
 
-//		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, new MsgToConsole(0, false, "message venant du client"));
-      	new Thread(client).start();
-*/	}
+	}
 	
 	// clic sur le bouton de connexion avec le serveur de socket TCP
 	private void btnClicConnexion(ActionEvent e) {
@@ -253,17 +246,6 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			
 			MsgDeControle msgControle = new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test", null);
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
-			
-/*			ClientSocket socketC = controleur.getSocketClient();
-
-			for (int i =0 ; i < 100; i++) {
-				System.out.println("envoi msg en boucle " + i);
-				msgConsole = new MsgToConsole(0, false, "message genere numero " + i);
-				socketC.sendMsgToServer(msgConsole);
-			}*/
-			
-//			socket.fermerSocketClient();
-			
 		}
 		else {
 			/*

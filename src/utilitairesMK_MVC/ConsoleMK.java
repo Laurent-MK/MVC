@@ -2,11 +2,9 @@ package utilitairesMK_MVC;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import controlerMVC.ControlerTestThread;
 import modelMVC.Consommateur;
 import modelMVC.Constantes;
 import viewMVC.IHM;
-import viewMVC.IHM_Test_Thread;
 
 
 
@@ -24,7 +22,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 	// proprietes
 	private String nomConsole = "nom inconnu";
     private final ArrayBlockingQueue<MsgToConsole> queueMsg;
-    private IHM ihmApplication;
+    public IHM ihmApplication;
     private int numeroProducteur;
     private static int numMsg = 0;
     private String adresseIPConsoleDistante;	// adresse IP de la console distante. Si null => pas de console distante
