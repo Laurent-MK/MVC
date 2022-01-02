@@ -48,6 +48,7 @@ public interface Constantes {
 
 	public static final int		TYPE_THREAD_ENVOI_1_MSG = 1;
 	public static final int		TYPE_THREAD_ENVOI_N_MSG = 2;
+	public static final int		TYPE_THREAD_ENVOI_NO_THREAD = 3;
 	public static final int 	TYPE_MSG_INCONNU = -1;
 	public static final int 	TYPE_MSG_SERVEUR = 1;
 	public static final int		TYPE_MSG_CONSOLE = TYPE_MSG_SERVEUR+1;
@@ -56,7 +57,12 @@ public interface Constantes {
 	public static final int		TYPE_MSG_TEST_LINK = TYPE_MSG_CONTROLE+1;
 	public static final int		TBD = TYPE_MSG_TEST_LINK+1;
 	
+	public static final int		TEST_CONNEXION_SERVEUR_OK = 1;
+	public static final int		TEST_CONNEXION_SERVEUR_KO = -1;
+	public static final int		TEST_CONNEXION_SERVEUR_BAD_PARAM = -2;
+	
 	public static final String	MSG_FIN_COM = "Fin de communication";
+	public static final String	MSG_ACQ_TEST = "ACQUITTEMENT TEST";
 
 	public static final int 	NUM_MSG_NOT_USED = -1;
 }

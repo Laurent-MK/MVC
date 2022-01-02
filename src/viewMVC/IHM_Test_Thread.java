@@ -4,15 +4,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import controlerMVC.Controler;
 import controlerMVC.ControlerTestThread;
 import modelMVC.Constantes;
-import modelMVC.ProduitText;
 import utilitairesMK_MVC.ClientSocket;
 import utilitairesMK_MVC.MessageMK;
 import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
 import utilitairesMK_MVC.Mutex;
-import utilitairesMK_MVC.ParametrageClientTCP;
 
 import javax.swing.JButton;
 import javax.swing.JTextPane;
@@ -20,8 +19,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
@@ -35,7 +32,6 @@ import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JProgressBar;
 import javax.swing.JCheckBox;
-import javax.swing.JToggleButton;
 
 
 /**
@@ -99,13 +95,18 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	private JTextField txtNbJetons;
 	private JTextField txtNbrThreadsTestSem;
 	private ControlerTestThread controleur;
+
 	private int freqProd;
 	private int tailleConsole;
 	private int tailleMqConsole;
 	private JTextField txtNbrThreadTestMutex;
 	private boolean isConnexionPermanente = false;
 	
-	
+
+	public ControlerTestThread getControleur() {
+		return controleur;
+	}
+
 	
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	/**
@@ -227,26 +228,61 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 		this.textAreaTestMutex.setText("");
 		
 		initAppli(e);
+		MsgToConsole msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_1_MSG - message venant du client");
+		controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
+		
+//		controleur.dmdIHMConnexionServeur(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG);
 		/**
 		 * test de la fonction de deport de la console vers un PC distant
 		 */
-		ParametrageClientTCP paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG);
+/*		ParametrageClientTCP paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG);
 		ClientSocket client = new ClientSocket(paramClient, new MsgToConsole(0, false, "message venant du client"));
 
 //		ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, new MsgToConsole(0, false, "message venant du client"));
       	new Thread(client).start();
-	}
+*/	}
 	
 	// clic sur le bouton de connexion avec le serveur de socket TCP
 	private void btnClicConnexion(ActionEvent e) {
 		if (chckbxConnexion.isSelected()) {
 			// la connexion doit etre permanente entre le client et le serveur
 			isConnexionPermanente = true;
+			
+			MsgToConsole msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_1_MSG - message venant du client");
+			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
+			
+			MsgDeControle msgControle = new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test", null);
+			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
+			
+/*			ClientSocket socketC = controleur.getSocketClient();
+
+			for (int i =0 ; i < 100; i++) {
+				System.out.println("envoi msg en boucle " + i);
+				msgConsole = new MsgToConsole(0, false, "message genere numero " + i);
+				socketC.sendMsgToServer(msgConsole);
+			}*/
+			
+//			socket.fermerSocketClient();
+			
 		}
 		else {
-			// la connexion ne doit exister que pour l'envoi du message entre le client et le serveur
+			/*
+			 *  la connexion ne doit exister que pour l'envoi du message entre le client et le serveur.
+			 dans ce cas, le clic sur le bouton de connexion lance un test en envoyant un message de
+			* controle vers le serveur distant
+			*/
 			isConnexionPermanente = false;
+			
+			MsgDeControle msgControle = new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test", null);
+			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
 
+			MsgToConsole msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_NO_THREAD - message venant du client");
+			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgConsole);
+
+			msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_NO_THREAD - deuxieme message venant du client et avnt fin de comm");
+			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgConsole);
+			
+/*
 		    BlockingQueue<MessageMK> msgQ = new ArrayBlockingQueue<MessageMK>(TAILLE_MESSAGE_Q_PC);
 			ParametrageClientTCP paramClient = new ParametrageClientTCP("client TCP", 0, 5, msgQ, getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG);
 			
@@ -259,7 +295,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 
 			if (VERBOSE_ON)
 				System.out.println("Envoi d'un message -TYPE_MSG_TEST_LINK- realise par un seul appel de fonction");
-		}
+*/		}
 	}
 	
 	//------------------------------------------------------------------------------------------------------------
@@ -302,7 +338,59 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	 * @param msg
 	 */
 	public void affichageConsole(MsgToConsole msg) {
-				
+
+		switch (msg.getNumConsoleDest()) {
+		
+			case NUM_CONSOLE_CONSOLE :
+					// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
+					textAreaConsole.append(msg.getMsg());
+					
+					// gestion du bargraphe de progression du remplissage de la zone d'affichage
+					lblEtatBuffer.setText(Long.toString(textAreaConsole.getLineCount()));
+					progressBarConsole.setValue(textAreaConsole.getLineCount());
+					if (progressBarConsole.getPercentComplete() > SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE)
+						progressBarConsole.setForeground(Color.RED);	// on passe le baregraphe en rouge
+	
+					// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
+					if (textAreaConsole.getLineCount() > this.tailleConsole) {
+						textAreaConsole.setText("");
+						progressBarConsole.setForeground(Color.GREEN);
+					}
+				break;
+
+			case NUM_CONSOLE_TEST_SEMAPHORE :
+					// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
+					textAreaTestSemaphore.append(msg.getMsg());
+	
+					// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
+					if (textAreaTestSemaphore.getLineCount() > this.tailleConsole)
+						textAreaTestSemaphore.setText("");
+				break;
+
+			case NUM_CONSOLE_TEST_MUTEX :
+					// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
+					textAreaTestMutex.append(msg.getMsg());
+					System.out.println(msg.getMsg() + " destine a la console numero : " + msg.getNumConsoleDest());
+	
+					// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
+					if (textAreaTestMutex.getLineCount() > this.tailleConsole)
+						textAreaTestMutex.setText("");
+				break;
+
+			case NUM_CONSOLE_TEST_POOL :
+					// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
+					textAreaTestPool.append(msg.getMsg());
+	
+					// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
+					if (textAreaTestPool.getLineCount() > this.tailleConsole)
+						textAreaTestPool.setText("");
+				break;
+
+		
+			default :
+				break;
+		}
+/*		
 		if (msg.getNumConsoleDest() == NUM_CONSOLE_CONSOLE) {
 
 			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
@@ -327,7 +415,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 										NUMERO_PORT_SERVEUR_TCP,
 										msg);
 			new Thread(client).start();		// lancement du thread de gestion de l'envoi du message vers la console distante
-*/		}
+*		}
 		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_SEMAPHORE) {
 			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
 			textAreaTestSemaphore.append(msg.getMsg());
@@ -341,7 +429,6 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			textAreaTestMutex.append(msg.getMsg());
 			System.out.println(msg.getMsg() + " destine a la console numero : " + msg.getNumConsoleDest());
 
-
 			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
 			if (textAreaTestMutex.getLineCount() > this.tailleConsole)
 				textAreaTestMutex.setText("");
@@ -354,7 +441,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			if (textAreaTestPool.getLineCount() > this.tailleConsole)
 				textAreaTestPool.setText("");
 		}
-	}
+*/	}
 	
 	
 	/**
@@ -365,9 +452,9 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	public void affichageConsole(ArrayList<String> messageConsole, int numProducteur, int numConsole, boolean ajouterNumMessage) {
 
 		for(String message : messageConsole) {
-			MsgToConsole msg = new MsgToConsole(numConsole, ajouterNumMessage, message);
-			affichageConsole(msg);
-//			affichageConsole(new MsgToConsole(numConsole, ajouteNumMessage, message));
+//			MsgToConsole msg = new MsgToConsole(numConsole, ajouterNumMessage, message);
+//			affichageConsole(msg);
+			affichageConsole(new MsgToConsole(numConsole, ajouterNumMessage, message));
 		}
 	}
 	
@@ -827,5 +914,12 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 
 	public boolean getIsConnexionPermanente() {
 		return isConnexionPermanente;
+	}
+
+
+	@Override
+	public Controler getControler() {
+		// TODO Stub de la méthode généré automatiquement
+		return null;
 	}
 }

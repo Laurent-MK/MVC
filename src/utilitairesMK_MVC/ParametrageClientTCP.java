@@ -1,6 +1,6 @@
 package utilitairesMK_MVC;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import modelMVC.Constantes;
 
@@ -8,7 +8,7 @@ public class ParametrageClientTCP implements Constantes {
 	
 	// proprietes
 	private String nomConsommateur = "nom inconnu";
-    private final BlockingQueue<MessageMK> queue;
+    private final ArrayBlockingQueue<MessageMK> queue;
     private int identifiant;
     private int priorite;
     private String adresseIPServeur;
@@ -20,7 +20,7 @@ public class ParametrageClientTCP implements Constantes {
 			String nom,
     		int identifiant,
     		int priority,
-    		BlockingQueue<MessageMK> q,
+    		ArrayBlockingQueue<MessageMK> q,
     		String adresseIPServeur,
     		int numPort,
     		int typeThreadClient)
@@ -50,7 +50,7 @@ public class ParametrageClientTCP implements Constantes {
 	}
 
 
-	public BlockingQueue<MessageMK> getQueue() {
+	public ArrayBlockingQueue<MessageMK> getQueue() {
 		return queue;
 	}
 

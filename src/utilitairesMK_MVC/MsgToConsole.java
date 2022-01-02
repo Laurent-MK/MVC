@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author Balou
  *
  */
-public class MsgToConsole implements Serializable {
+public class MsgToConsole extends MessageMK implements Serializable {
 	
 	/**
 	 * numero de serie de la classe pour verif de la compatibilite lors de la serialisation

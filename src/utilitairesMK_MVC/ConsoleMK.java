@@ -2,9 +2,11 @@ package utilitairesMK_MVC;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
+import controlerMVC.ControlerTestThread;
 import modelMVC.Consommateur;
 import modelMVC.Constantes;
 import viewMVC.IHM;
+import viewMVC.IHM_Test_Thread;
 
 
 
@@ -95,8 +97,8 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 			}
 		else {
     		System.out.println("queue de la console pleine => message perdu !!! : " + Thread.currentThread().getName());
+    		}
     	}
-    }
     
     
     /**
