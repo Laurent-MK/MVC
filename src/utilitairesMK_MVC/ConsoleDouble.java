@@ -16,7 +16,7 @@ import viewMVC.IHM_Test_Thread;
  */
 public class ConsoleDouble extends ConsoleMK {
 
-	private ClientSocket socketClient = null;
+	private ClientSocketTCP socketClient = null;
 	
     public ConsoleDouble(String consumerName,
     		int numero,
@@ -24,7 +24,7 @@ public class ConsoleDouble extends ConsoleMK {
     		ArrayBlockingQueue<MsgToConsole> msgQ,
     		IHM ihmApplication,
     		String adresseIPConsoleDistante,
-    		ClientSocket socketClient) {
+    		ClientSocketTCP socketClient) {
     	
     	super(consumerName, numero, priority, msgQ, ihmApplication, adresseIPConsoleDistante);
     	

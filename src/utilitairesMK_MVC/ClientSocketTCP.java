@@ -11,7 +11,7 @@ import modelMVC.Constantes;
 
 
 
-public class ClientSocket implements Constantes, Runnable, Consommateur {
+public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	private int serverPort = NUMERO_PORT_SERVEUR_TCP;
 	private String adresseIPServer;
 	private MsgToConsole msg;
@@ -20,7 +20,7 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 	private ObjectOutputStream canalEmission;
 	private ObjectInputStream canalReception;
 	
-    private final ArrayBlockingQueue<MessageMK> queueMsgAEnvoyer;
+    private final ArrayBlockingQueue<Object/*MessageMK*/> queueMsgAEnvoyer;
 	private String nomConsommateur = "nom inconnu";
     private int numero;
 
@@ -32,7 +32,7 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
      * @param param
      * @param MsgToConsole
      */
-	public ClientSocket(ParametrageClientTCP param, MsgToConsole MsgToConsole) {
+	public ClientSocketTCP(ParametrageClientTCP param, MsgToConsole MsgToConsole) {
 		this.nomConsommateur = param.getNomConsommateur();
 		this.adresseIPServer = param.getAdresseIPServeur();
 		this.serverPort = param.getNumPortServer();
@@ -43,7 +43,7 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 		this.msg = MsgToConsole;
 	}
 
-	public ClientSocket(ParametrageClientTCP param) {
+	public ClientSocketTCP(ParametrageClientTCP param) {
 
 		this.nomConsommateur = param.getNomConsommateur();
 		this.adresseIPServer = param.getAdresseIPServeur();
@@ -55,7 +55,7 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 		this.msg = null;
 	}
 	
-	public ClientSocket(ParametrageClientTCP param, int typeThreadClient) {
+	public ClientSocketTCP(ParametrageClientTCP param, int typeThreadClient) {
 
 		this.nomConsommateur = param.getNomConsommateur();
 		this.adresseIPServer = param.getAdresseIPServeur();
@@ -380,14 +380,23 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 
 				while (true) {
 						try {
+							int typeMsg = TYPE_MSG_INCONNU;
+
 							System.out.println("Thread : " + Thread.currentThread() + " en attente sur sa MQ");
-							MessageMK msg = this.queueMsgAEnvoyer.take();
-						
-							int typeMsg = msg.getTypeMsg();
+//							MessageMK msg = (MessageMK)this.queueMsgAEnvoyer.take();
+							Object msg = this.queueMsgAEnvoyer.take();
+							
+							if (msg instanceof MessageMK)
+								typeMsg = ((MessageMK)(msg)).getTypeMsg();
 
 							consommer(msg);
 							
 							if (typeMsg == TYPE_MSG_FIN_CONNEXION) {
+								/**
+								 *  si on recoit une demande de fin de connexion, on doit prevenir le serveur. Cela a ete
+								 *  fait sur la ligne du dessus dans "consommer(msg)" puis s'arreter la. Le thread courant
+								 *  de gestion de la connexion permanente va donc s'arreter
+								 */
 								break;
 							}
 						} 	catch (InterruptedException e) {
@@ -395,12 +404,14 @@ public class ClientSocket implements Constantes, Runnable, Consommateur {
 							e.printStackTrace();
 							}
 				}
-				// fermeture de la socket client et fin du thread
+				/**
+				 * fin du thread 
+				 * fermeture de la socket client et fin du thread
+				 */
 				this.fermerSocketClient();
 				if (VERBOSE_ON)
 					System.out.println("Client.run() : => " + Thread.currentThread() + " => fermeture de la connexion");					
 				break;
-							
 				
 			default :	// a developper
 				break;

@@ -11,7 +11,7 @@ import modelMVC.ProduitText;
 import modelMVC.TestMutex;
 import modelMVC.TestPoolThread;
 import modelMVC.TestSemaphore;
-import utilitairesMK_MVC.ClientSocket;
+import utilitairesMK_MVC.ClientSocketTCP;
 import utilitairesMK_MVC.ConsoleDouble;
 import utilitairesMK_MVC.ConsoleMK;
 import utilitairesMK_MVC.MessageMK;
@@ -47,29 +47,38 @@ public class ControlerTestThread implements Constantes, Controler {
     // queue de message utilisee par les threads producteurs et consommateurs
     private static BlockingQueue<ProduitText> msgQProduit = new ArrayBlockingQueue<ProduitText>(TAILLE_MESSAGE_Q_PC);	
     
- 
     /**
      *  proprietes pour la gestion des affichages dans la console
      */
-    private ConsoleMK console;	// l'objet pour manipuler la console
+    private ConsoleDouble console;	// l'objet pour manipuler la console
     private static ArrayBlockingQueue<MsgToConsole> msgQ_Console;	// queue de message utilisee pour les envois de messages dans la console
     
     private Mutex mutexSynchroIHM_Controleur;	// Mutex de synchronistion du Controleur et de l'IHM lors du démarrage de l'appli
     
+    /**
+     * proprietes utilisees pour la gestion des envois de messages vers la console distante
+     */
+    private ArrayBlockingQueue<Object/*MessageMK*/> msgQToServer;
+    private ClientSocketTCP socketClient;
     
-    private ArrayBlockingQueue<MessageMK> msgQToServer;
-    private ClientSocket socketClient;
     
     
-    
-    
-    public ClientSocket getSocketClient() {
+    /**
+     * les accesseurs
+     * 
+     * @return
+     */
+    public ClientSocketTCP getSocketClient() {
 		return socketClient;
 	}
 
+    public ConsoleMK getConsole() {
+    	return console;
+    }
 
+    
 	/**
-     * D�marrage de l'application
+     * Demarrage de l'application
      * 
      * @param args
      * @throws InterruptedException 
@@ -77,14 +86,9 @@ public class ControlerTestThread implements Constantes, Controler {
     public static void main(String[] args) throws InterruptedException {
 
     	new ControlerTestThread(); // lancement du controleur
-     	
         System.out.println("main() termine !!!\n");
     }
 
- 
-    public ConsoleMK getConsole() {
-    	return console;
-    }
     
     
     /**
@@ -155,32 +159,14 @@ public class ControlerTestThread implements Constantes, Controler {
     	this.ihmApplication.affichageEtatThreads(listeEtatThreads);
     }
     
-    public int dmdIHMTestConnexionToServer(String adresseIPServer, int numPortServer, int typeThreadGestion, MsgToConsole msg) {
-    	if (msg == null)
-    		return TEST_CONNEXION_SERVEUR_BAD_PARAM;
-    	else {
-    		connexionToServer(adresseIPServer, numPortServer, typeThreadGestion, (Object)msg);
-    		return TEST_CONNEXION_SERVEUR_OK;    		
-    	}
-    }
-
-    public int dmdIHMTestConnexionToServer(String adresseIPServer, int numPortServer, int typeThreadGestion, MsgDeControle msg) {
-    	if (msg == null)
-    		return TEST_CONNEXION_SERVEUR_BAD_PARAM;
-    	else {
-    		connexionToServer(adresseIPServer, numPortServer, typeThreadGestion, (Object)msg);    	
-    		return TEST_CONNEXION_SERVEUR_OK;
-    	}
-    }
-
     
 	/**
 	 * test de la fonction de deport de la console vers un PC distant
 	 */   
-    public void connexionToServer(String adresseIPServer, int numPortServer, int typeThreadGestion, Object msg) {
+    private void connexionToServer(String adresseIPServer, int numPortServer, int typeThreadGestion, Object msg) {
     	
     	ParametrageClientTCP paramClient;
-    	ClientSocket c;
+    	ClientSocketTCP c;
     	
     	switch (typeThreadGestion) {
     	
@@ -190,7 +176,7 @@ public class ControlerTestThread implements Constantes, Controler {
 	    	case TYPE_THREAD_ENVOI_1_MSG :
 	    		
 	    		paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
-	    		c = new ClientSocket(paramClient, (MsgToConsole)msg);
+	    		c = new ClientSocketTCP(paramClient, (MsgToConsole)msg);
 	          	new Thread(c).start();
 	          	
 	    		break;
@@ -204,7 +190,7 @@ public class ControlerTestThread implements Constantes, Controler {
 				paramClient = new ParametrageClientTCP("client TCP", 0, 5, this.msgQToServer, adresseIPServer, numPortServer, typeThreadGestion);
 
 				// creation de la socket client
-				this.socketClient = new ClientSocket(paramClient);
+				this.socketClient = new ClientSocketTCP(paramClient);
 
 				// creation et lancement du thread de gestion des messages a destination du serveur distant
 				new Thread(socketClient).start();
@@ -217,7 +203,7 @@ public class ControlerTestThread implements Constantes, Controler {
 				paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
 				
 				// creation de la socket client
-				c = new ClientSocket(paramClient);
+				c = new ClientSocketTCP(paramClient);
 				c.ouvrirSocketClient();
 				
 				c.sendMsgUnique(msg);
@@ -235,6 +221,34 @@ public class ControlerTestThread implements Constantes, Controler {
 	    		break;
     	}
     }
+
+
+    /**
+     * 
+     * methode appelee par l'IHM pour tester la connexion avec le serveur distant. Le test sera fait en utilisant
+     * l'une des methodes suivantes : 
+     *  - TYPE_THREAD_ENVOI_1_MSG : un thread est cree juste pour l'envoi de l'objet recu en parametre
+     *  - TYPE_THREAD_ENVOI_N_MSG : un thread est cree et reste connecte au serveur tant qu'une fin de connexion    <<==== A REVOIR car le thread est deja cree
+     *  							n'est pas demandee. Le msg passe en parametre est communique a ce thread en lui
+     *  							envoyant dans une MQ reservee à cela.
+     *  - TYPE_THREAD_ENVOI_NO_THREAD : l'envoi se fait en sequentiel dans le thread courant.
+     * 
+     * @param adresseIPServer
+     * @param numPortServer
+     * @param typeThreadGestion
+     * @param obj
+     * @return
+     */
+    public int dmdIHMTestConnexionToServer(String adresseIPServer, int numPortServer, int typeThreadGestion, Object obj) {
+    	if (obj == null)
+    		return TEST_CONNEXION_SERVEUR_BAD_PARAM;
+    	else {
+    		connexionToServer(adresseIPServer, numPortServer, typeThreadGestion, obj);
+    		return TEST_CONNEXION_SERVEUR_OK;    		
+    	}
+    }
+
+    
     
     /**
      * methode appelee sur le clic du bouton "GO"
@@ -411,7 +425,7 @@ public class ControlerTestThread implements Constantes, Controler {
     	/**
     	 * creation et lancement du thread de gestion des envois de message vers la console distante
     	 */
-    	msgQToServer = new ArrayBlockingQueue<MessageMK>(100);
+    	msgQToServer = new ArrayBlockingQueue<Object/*MessageMK*/>(100);
 		connexionToServer(this.ihmApplication.getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_N_MSG, null);
 
 		
@@ -419,17 +433,13 @@ public class ControlerTestThread implements Constantes, Controler {
          * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
          */
     	msgQ_Console = new ArrayBlockingQueue<MsgToConsole>(ihmApplication.getTailleBufferConsole());
-//        console = new ConsoleMK("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication, ihmApplication.getAdresseIPConsoleDistante());
     	console = new ConsoleDouble("Console", NUMERO_CONSOLE, PRIORITE_CONSOLE, msgQ_Console, ihmApplication, ihmApplication.getAdresseIPConsoleDistante(), this.getSocketClient());
         
         new Thread(console).start();    
     	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_CONSOLE, AjouterNumMsg, "creation et lancement du thread de console"));
-    			
-		
     	
     	// on debloque l'IHM une fois que le thread de gestion de la console est lance
     	mutexSynchroIHM_Controleur.mutexRelease();
-
 
         /***
          * boucle de surveillance des threads et affichage de leur etat dans l'IHM
