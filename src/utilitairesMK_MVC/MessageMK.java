@@ -10,18 +10,33 @@ public class MessageMK implements Constantes, Serializable {
 	// Numero de version de la classe serialisable
 	private static final long serialVersionUID = -2239749627148667746L;
 	
-	private int typeMsg = TYPE_MSG_SERVEUR;
 	private long numMsg = NUM_MSG_NOT_USED;
+	private TypeMsgCS typeMsg = TypeMsgCS.MSG_TYPE_NOT_USED;
 	
-	public MessageMK() {
-		
+	
+	/**
+	 * constructeur avec parametre
+	 * 
+	 * @param type
+	 * @param num
+	 */
+	public MessageMK(TypeMsgCS type, long num) {
+		this.typeMsg = type;
+		this.numMsg = num;
 	}
+
+	/**
+	 * constructeur sans parametre. Dans ce cas, on ne fait rien
+	 */
+	public MessageMK() {
+	}
+
 	
-	public int getTypeMsg() {
+	public TypeMsgCS getTypeMsg() {
 		return typeMsg;
 	}
 
-	public void setTypeMsg(int typeMessage) {
+	public void setTypeMsg(TypeMsgCS typeMessage) {
 		this.typeMsg = typeMessage;
 		
 	}

@@ -27,7 +27,9 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
     private static int numMsg = 0;
     private String adresseIPConsoleDistante;	// adresse IP de la console distante. Si null => pas de console distante
     
-	
+  	private boolean VERBOSE_LOCAL = VERBOSE_ON & false;
+
+    
     /**
      * Constructeur
      * 
@@ -122,7 +124,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 		 * si le mode verbeux est active, on affiche egalement les messages dans la console système
 		 * Dans le cas contraire, les messages de debug sont tous envoyés vers l'IHM
 		 */
-		if (VERBOSE_ON)
+		if (VERBOSE_LOCAL)
 			System.out.println(((MsgToConsole)msgConsole).getMsg());
 
 		// affichage dans la fenetre de l'IHM dediee aux messages de console

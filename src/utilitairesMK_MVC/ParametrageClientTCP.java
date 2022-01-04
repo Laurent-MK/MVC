@@ -8,7 +8,7 @@ public class ParametrageClientTCP implements Constantes {
 	
 	// proprietes
 	private String nomConsommateur = "nom inconnu";
-    private final ArrayBlockingQueue<Object/*MessageMK*/> queue;
+    private final ArrayBlockingQueue<Object> queue;
     private int identifiant;
     private int priorite;
     private String adresseIPServeur;
@@ -20,7 +20,7 @@ public class ParametrageClientTCP implements Constantes {
 			String nom,
     		int identifiant,
     		int priority,
-    		ArrayBlockingQueue<Object/*MessageMK*/> q,
+    		ArrayBlockingQueue<Object> q,
     		String adresseIPServeur,
     		int numPort,
     		int typeThreadClient)

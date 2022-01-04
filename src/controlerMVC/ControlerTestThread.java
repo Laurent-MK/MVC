@@ -20,6 +20,7 @@ import utilitairesMK_MVC.MsgToConsole;
 import utilitairesMK_MVC.Mutex;
 import utilitairesMK_MVC.ParametrageClientTCP;
 import utilitairesMK_MVC.SemaphoreCpt;
+import utilitairesMK_MVC.TypeMsgCS;
 import viewMVC.IHM_Test_Thread;
 
 
@@ -61,7 +62,8 @@ public class ControlerTestThread implements Constantes, Controler {
     private ArrayBlockingQueue<Object/*MessageMK*/> msgQToServer;
     private ClientSocketTCP socketClient;
     
-    
+  	private boolean VERBOSE_LOCAL = VERBOSE_ON & false;
+
     
     /**
      * les accesseurs
@@ -175,8 +177,8 @@ public class ControlerTestThread implements Constantes, Controler {
     		 */
 	    	case TYPE_THREAD_ENVOI_1_MSG :
 	    		
-	    		paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
-	    		c = new ClientSocketTCP(paramClient, (MsgToConsole)msg);
+	    		paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_1_MSG", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
+	    		c = new ClientSocketTCP(paramClient, /*(MsgToConsole)*/msg);
 	          	new Thread(c).start();
 	          	
 	    		break;
@@ -187,7 +189,7 @@ public class ControlerTestThread implements Constantes, Controler {
 	    	 * 
 	    	 */
 	    	case TYPE_THREAD_ENVOI_N_MSG :
-				paramClient = new ParametrageClientTCP("client TCP", 0, 5, this.msgQToServer, adresseIPServer, numPortServer, typeThreadGestion);
+				paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_N_MSG", 0, 5, this.msgQToServer, adresseIPServer, numPortServer, typeThreadGestion);
 
 				// creation de la socket client
 				this.socketClient = new ClientSocketTCP(paramClient);
@@ -200,7 +202,7 @@ public class ControlerTestThread implements Constantes, Controler {
 			 * 	l'envoi du message se fait en sequentiel directement dans cette methode
 			 */
 	    	case TYPE_THREAD_ENVOI_NO_THREAD :
-				paramClient = new ParametrageClientTCP("client TCP", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
+				paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_NO_THREAD", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
 				
 				// creation de la socket client
 				c = new ClientSocketTCP(paramClient);
@@ -208,7 +210,7 @@ public class ControlerTestThread implements Constantes, Controler {
 				
 				c.sendMsgUnique(msg);
 				
-				MsgDeControle msgC = new MsgDeControle(TYPE_MSG_FIN_CONNEXION, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_N_MSG - Message de fin de connexion", null);
+				MsgDeControle msgC = new MsgDeControle(TypeMsgCS.MSG_FIN_CONNEXION, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de fin de connexion", null);
 				c.sendMsgUnique(msgC);
 				c.fermerSocketClient();
 				break;
@@ -216,7 +218,7 @@ public class ControlerTestThread implements Constantes, Controler {
 	    		
 	    	default :
 	    		// mauvais type de gestion par thread
-				if (VERBOSE_ON)
+				if (VERBOSE_LOCAL)
 					System.out.println("ERREUR : connexionToServer() => mauvais type -typeThreadGestion- recu en parametre : " + typeThreadGestion);	    		
 	    		break;
     	}

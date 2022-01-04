@@ -24,11 +24,11 @@ public class MsgToConsole extends MessageMK implements Serializable {
 	 * Constructeur
 	 */
 	public MsgToConsole(int numConsole, boolean isAjoutNumMsg, String msg) {
-		
+			
 		this.numConsoleDest = numConsole;
-//		this.msg = msg;
 		this.msg = String.copyValueOf(msg.toCharArray());
 		this.ajoutNumMsg = isAjoutNumMsg;
+		super.setTypeMsg(TypeMsgCS.MSG_CONSOLE);
 	}
 	
 	public MsgToConsole(int numConsole, String msg) {
@@ -36,6 +36,7 @@ public class MsgToConsole extends MessageMK implements Serializable {
 		this.numConsoleDest = numConsole;
 		this.msg = String.copyValueOf(msg.toCharArray());
 		this.ajoutNumMsg = false;
+		super.setTypeMsg(TypeMsgCS.MSG_CONSOLE);
 	}
 
 	

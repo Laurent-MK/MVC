@@ -10,11 +10,13 @@ import modelMVC.Constantes;
 import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
 import utilitairesMK_MVC.Mutex;
+import utilitairesMK_MVC.TypeMsgCS;
 
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
@@ -27,6 +29,7 @@ import javax.swing.JTextArea;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import java.awt.Color;
+import java.awt.Dialog.ModalExclusionType;
 import java.awt.Font;
 import javax.swing.JProgressBar;
 import javax.swing.JCheckBox;
@@ -41,7 +44,7 @@ import javax.swing.JCheckBox;
  *
  */
 
-public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
+public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializable {
 
 	/**
 	 * 
@@ -99,6 +102,9 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 	private int tailleMqConsole;
 	private JTextField txtNbrThreadTestMutex;
 	private boolean isConnexionPermanente = false;
+	
+  	private boolean VERBOSE_LOCAL = VERBOSE_ON & false;
+
 	
 
 	public ControlerTestThread getControleur() {
@@ -241,10 +247,10 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			// la connexion doit etre permanente entre le client et le serveur
 			isConnexionPermanente = true;
 			
-			MsgToConsole msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_1_MSG - message venant du client");
+			MsgToConsole msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_1_MSG - message venant du client");
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
 			
-			MsgDeControle msgControle = new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test", null);
+			MsgDeControle msgControle = new MsgDeControle(TypeMsgCS.MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test", null);
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
 		}
 		else {
@@ -255,14 +261,26 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			*/
 			isConnexionPermanente = false;
 			
-			MsgDeControle msgControle = new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test", null);
+			MsgDeControle msgControle = new MsgDeControle(TypeMsgCS.MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test", null);
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
 
-			MsgToConsole msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_NO_THREAD - message venant du client");
+			MsgToConsole msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_NO_THREAD - message venant du client");
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgConsole);
 
-			msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_NO_THREAD - deuxieme message venant du client et avnt fin de comm");
-			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgConsole);
+			msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_NO_THREAD - deuxieme message venant du client et avant fin de comm");
+			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
+			
+			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, new String("ok"));
+			
+			
+			IHM_SERIALISABLE ihm = new IHM_SERIALISABLE();
+			ihm.setLocation(500, 500);
+			ihm.setVisible(true);
+			ihm.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
+			this.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
+			JOptionPane.showMessageDialog(null, "appuyer sur le bouton pour lancer le transfert\nde la fenetre et de son contenur");
+
+			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, ihm);
 			
 /*
 		    BlockingQueue<MessageMK> msgQ = new ArrayBlockingQueue<MessageMK>(TAILLE_MESSAGE_Q_PC);
@@ -275,7 +293,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM {
 			
 			client.sendMsgUnique(msgControle);
 
-			if (VERBOSE_ON)
+			if (VERBOSE_LOCAL)
 				System.out.println("Envoi d'un message -TYPE_MSG_TEST_LINK- realise par un seul appel de fonction");
 */		}
 	}

@@ -12,6 +12,7 @@ public interface Constantes {
 	public static final int 	MAX_MSG_CONSOLE = 500;		// maximum de messages stockes dans la console
 
 	public static final int 	NUM_CONSOLE_CONSOLE = 0;		// numero de la console d'affichage
+	public static final int 	NUM_CONSOLE_CONSOLE_DIST = -1;	// numero de la console d'affichage distante
 	public static final int 	NUM_CONSOLE_TEST_SEMAPHORE = 1;	// numero de la console d'affichage
 	public static final int 	NUM_CONSOLE_TEST_MUTEX = 2;		// numero de la console d'affichage
 	public static final int 	NUM_CONSOLE_TEST_POOL = 3;		// numero de la console d'affichage
@@ -19,7 +20,7 @@ public interface Constantes {
 
 	public static final int 	NUMERO_CONSOLE = 1;			// numero du thread de console
 	public static final int		NUMERO_PORT_SERVEUR_TCP = 9999;
-	public static final String	ADR_IP_SERVEUR_TCP = "192.168.2.32";
+	public static final String	ADR_IP_SERVEUR_TCP = "192.168.1.116";
 	public static final boolean	CREATION_SOCKET_CLIENT_OK = true;
 	public static final boolean	OUVERTURE_CANAL_OK = true;
 	
@@ -49,13 +50,6 @@ public interface Constantes {
 	public static final int		TYPE_THREAD_ENVOI_1_MSG = 1;
 	public static final int		TYPE_THREAD_ENVOI_N_MSG = 2;
 	public static final int		TYPE_THREAD_ENVOI_NO_THREAD = 3;
-	public static final int 	TYPE_MSG_INCONNU = -1;
-	public static final int 	TYPE_MSG_SERVEUR = 1;
-	public static final int		TYPE_MSG_CONSOLE = TYPE_MSG_SERVEUR+1;
-	public static final int		TYPE_MSG_FIN_CONNEXION = TYPE_MSG_CONSOLE+1;
-	public static final int		TYPE_MSG_CONTROLE = TYPE_MSG_FIN_CONNEXION+1;
-	public static final int		TYPE_MSG_TEST_LINK = TYPE_MSG_CONTROLE+1;
-	public static final int		TBD = TYPE_MSG_TEST_LINK+1;
 	
 	public static final int		TEST_CONNEXION_SERVEUR_OK = 1;
 	public static final int		TEST_CONNEXION_SERVEUR_KO = -1;
