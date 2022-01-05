@@ -25,9 +25,9 @@ public class MsgDeControle extends MessageMK implements Serializable {
 	 */
 	public MsgDeControle(TypeMsgCS typeMsg, long numMsg, String libelleMsg, Object obj) {
 
-		super(typeMsg, numMsg);		// appel du constructeur de la classe mere
-		this.libelleMsg = libelleMsg;
-		this.obj = obj;			// objet eventuel a transporter
+		super(typeMsg, numMsg);			// appel du constructeur de la classe mere
+		this.libelleMsg = libelleMsg;	// libelle du message
+		this.obj = obj;					// objet eventuel a transporter
 	}
 
 

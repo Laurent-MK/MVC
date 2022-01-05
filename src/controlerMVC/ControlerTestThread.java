@@ -14,7 +14,6 @@ import modelMVC.TestSemaphore;
 import utilitairesMK_MVC.ClientSocketTCP;
 import utilitairesMK_MVC.ConsoleDouble;
 import utilitairesMK_MVC.ConsoleMK;
-import utilitairesMK_MVC.MessageMK;
 import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
 import utilitairesMK_MVC.Mutex;
@@ -173,12 +172,12 @@ public class ControlerTestThread implements Constantes, Controler {
     	switch (typeThreadGestion) {
     	
     		/**
-    		 * l'envoi du message se fera grace a unthread qui ne servira que pour un seul envoi 
+    		 * l'envoi du message se fera grace a un thread qui ne servira que pour un seul envoi 
     		 */
 	    	case TYPE_THREAD_ENVOI_1_MSG :
 	    		
 	    		paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_1_MSG", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
-	    		c = new ClientSocketTCP(paramClient, /*(MsgToConsole)*/msg);
+	    		c = new ClientSocketTCP(paramClient, msg);
 	          	new Thread(c).start();
 	          	
 	    		break;
@@ -358,6 +357,7 @@ public class ControlerTestThread implements Constantes, Controler {
 			e1.printStackTrace();
 		}
     }
+    
     
     /**
      *  methode appelee lors du clic sur le bouton de creation des threads faite par l'IHM

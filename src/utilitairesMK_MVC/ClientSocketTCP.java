@@ -14,18 +14,17 @@ import modelMVC.Constantes;
 public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	private int serverPort = NUMERO_PORT_SERVEUR_TCP;
 	private String adresseIPServer;
-//	private MsgToConsole msg;
 	private Object msg;
 	private Socket socketClient;
 	private int typeThreadClient = TYPE_THREAD_ENVOI_1_MSG;
 	private ObjectOutputStream canalEmission;
 	private ObjectInputStream canalReception;
 	
-    private final ArrayBlockingQueue<Object/*MessageMK*/> queueMsgAEnvoyer;
+    private final ArrayBlockingQueue<Object> queueMsgAEnvoyer;
 	private String nomConsommateur = "nom inconnu";
     private int numero;
 
-  	private boolean VERBOSE_LOCAL = VERBOSE_ON & false;
+  	private boolean VERBOSE_LOCAL = VERBOSE_ON & true;
 
     
 	/**
@@ -36,6 +35,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
      * @param MsgToConsole
      */
 	public ClientSocketTCP(ParametrageClientTCP param, MsgToConsole MsgToConsole) {
+		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
 		this.adresseIPServer = param.getAdresseIPServeur();
 		this.serverPort = param.getNumPortServer();
@@ -47,6 +47,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	}
 
 	public ClientSocketTCP(ParametrageClientTCP param, Object obj) {
+		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
 		this.adresseIPServer = param.getAdresseIPServeur();
 		this.serverPort = param.getNumPortServer();
@@ -58,7 +59,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	}
 
 	public ClientSocketTCP(ParametrageClientTCP param) {
-
+		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
 		this.adresseIPServer = param.getAdresseIPServeur();
 		this.serverPort = param.getNumPortServer();
@@ -70,14 +71,15 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	}
 	
 	public ClientSocketTCP(ParametrageClientTCP param, int typeThreadClient) {
-
+		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
 		this.adresseIPServer = param.getAdresseIPServeur();
 		this.serverPort = param.getNumPortServer();
         this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
         this.queueMsgAEnvoyer = param.getQueue();
-		this.msg = null;
 		this.typeThreadClient = typeThreadClient;
+
+		this.msg = null;
 	}
 	
 	
@@ -97,72 +99,85 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 		MsgDeControle msgRecu;
 		
 		if (obj instanceof MsgToConsole) {
+			/**
+			 * les messages a destination de la console deportee ont envoyes sans traitement prealable
+			 */
 			if (VERBOSE_LOCAL)
-				System.out.println("sendMsgUnique(MsgToConsole)");
+				System.out.println(Thread.currentThread() + " : sendMsgUnique(MsgToConsole)");
 			sendMsg(obj);
 		}
-		else if (obj instanceof MsgDeControle)
+		else if ((obj instanceof MsgDeControle) || (obj instanceof MsgTrfObjet))
 		{
+			/**
+			 * les message "MsgDeControle" et "MsgTrfObjet" necessite un pre-traitement
+			 * avant leur envoi vers le serveur distant
+			 */
 			TypeMsgCS typeMsg = ((MessageMK) obj).getTypeMsg();
 
 			switch (typeMsg) {
-/*			
-			case TypeMessageCS.TYPE_MSG_SERVEUR :
-				break;
-	*/		
-			/**
-			 * cas particulier du message de test : le protocole prevoit que le serveur
-			 * nous retourne un message de test apres reception du notre. Cela permet de
-			 * tester les deux sens de la communication
-			 */
-			case MSG_TEST_LINK :
-				if (VERBOSE_LOCAL)
-					System.out.println("sendMsgUnique(MsgDeControle) : TYPE_MSG_TEST_LINK");
 
-				// on envoi le message de test de la liaison
-				sendMsg(obj);
+				/**
+				 * cas particulier du message de test : le protocole prevoit que le serveur
+				 * nous retourne un message de test apres reception du notre. Cela permet de
+				 * tester les deux sens de la communication
+				 */
+				case MSG_TEST_LINK :
+					if (VERBOSE_LOCAL)
+						System.out.println(Thread.currentThread() + ".sendMsgUnique(MsgDeControle) : TYPE_MSG_TEST_LINK");
+	
+					// on envoi le message de test de la liaison
+					sendMsg(obj);
+					
+					// on receptionne l'acquittement du message de test
+					msgRecu = (MsgDeControle) receiveMsg();
+					if (VERBOSE_LOCAL)
+						System.out.println(Thread.currentThread() + ".sendMsgUnique(MsgDeControle) : Message : TYPE_MSG_TEST_LINK recu - Client recoit : " + msgRecu.getLibelleMsg());
+				break;
+	
+	
+				/**
+				 * message indiquant au serveur que nous quittons le canal de communication
+				 */
+				case MSG_FIN_CONNEXION :
+					// on envoi le message de fin de la liaison antre le client et le serveur
+					sendMsg(obj);
+					if (VERBOSE_LOCAL)
+						System.out.println(Thread.currentThread() + ".sendMsgUnique(MsgDeControle) Message : MSG_FIN_CONNEXION recu => on renvoit un msg de type : MSG_FIN_CONNEXION");
+				break;
+	
 				
-				// on receptionne l'acquittement du message de test
-				msgRecu = (MsgDeControle) receiveMsg();
-				if (VERBOSE_LOCAL)
-					System.out.println("Message : TYPE_MSG_TEST_LINK recu - Client recoit : " + msgRecu.getLibelleMsg());
-			break;
-
-
-			/**
-			 * message indiquant au serveur que nous quittons le canal de communication
-			 */
-			case MSG_FIN_CONNEXION :
-				// on envoi le message de fin de la liaison antre le client et le serveur
-				sendMsg(obj);
-			break;
-
-			
-			case MSG_TRF_OBJET :
-				sendMsg(obj);
-				if (VERBOSE_LOCAL)
-					System.out.println("sendMsgUnique(obj) : type de message = MSG_TRF_OBJET");
-			break;
-
-
-			/**
-			 * le autres cas de figure : on se contente d'envoyer le message vers le serveur
-			 */
-			default :
-				sendMsg(obj);
-				if (VERBOSE_LOCAL)
-					System.out.println("sendMsgUnique(MsgDeControle) : type de message = INCONNU");
+				/**
+				 * message contenant un objet non type.
+				 */
+				case MSG_TRF_OBJET :
+					/**
+					 * traitement eventuel de ce type de transfert a realiser ici
+					 */
+					sendMsg(obj);
+					if (VERBOSE_LOCAL)
+						System.out.println(Thread.currentThread() + ".sendMsgUnique(obj) : type de message = MSG_TRF_OBJET");
 				break;
-			}
+	
+	
+				/**
+				 * le autres cas de figure : on se contente d'envoyer le message vers le serveur
+				 */
+				default :
+					// ce cas ne devrait pas arriver puisque les types sont normalement tous connus
+					sendMsg(obj);
+					if (VERBOSE_LOCAL)
+						System.out.println(Thread.currentThread() + ".sendMsgUnique(????) : type de message = INCONNU");
+					break;
+				}
 		}
 		else {
 			/**
-			 *  puisque ce n'est ni un MsgToConsole, ni un MsgDeControle, il s'agit d'un autre objet
-			 * on l'envoi sans traitement particulier
+			 *  puisque ce n'est ni un MsgToConsole, ni un MsgDeControle, ni un MsgTrfObjet,
+			 *  alors il s'agit d'un autre objet. On l'envoit sans traitement particulier
 			 */
 			sendMsg(obj);
 			if (VERBOSE_LOCAL)
-				System.out.println("sendMsgUnique(Object)");
+				System.out.println(Thread.currentThread() + ".sendMsgUnique(Object)");
 		}
 	}
 	
@@ -192,21 +207,6 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 		
 	}
 */	
-	/**
-	 * Envoi effectif d'un message et non un objet n type vers le serveur
-	 * 
-	 * @param msg
-	 */
-	private void sendMsg(MessageMK msg) {
-		
-		try {
-			canalEmission.writeObject(msg);
-			canalEmission.flush();
-		} catch (IOException e) {
-			// TODO Bloc catch généré automatiquement
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * envoi effectif d'un objet vers le serveur
@@ -335,7 +335,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 			return null;
 		}
 		if (VERBOSE_LOCAL)
-			System.out.println("Socket client: " + socketClient);		
+			System.out.println(Thread.currentThread() + ".ouvrirSocketClient() : Socket client: " + socketClient);		
 		return socketClient;
 	}
 
@@ -359,7 +359,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 			}      				
 		}
 		else
-    		System.out.println("MQ console distante pleine => message perdu !!! : " + Thread.currentThread().getName());
+    		System.out.println(Thread.currentThread() + ".sendMsgToServer(MessageMK msg) : MQ console distante pleine => message perdu !!!");
 	}
 
 
@@ -372,7 +372,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 		
 		ouvrirSocketClient();
 		if (VERBOSE_LOCAL)
-			System.out.println("Client.run() => le thread : " + Thread.currentThread() + " a cree les flux");
+			System.out.println(Thread.currentThread() + ".Client.run() => les flux sont crees");
 		
 		switch (typeThreadClient) {
 
@@ -386,7 +386,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 				// envoi du message (quelque soit le type d'objet) vers le serveur
 				sendMsgUnique(msg);
 				if (VERBOSE_LOCAL)
-					System.out.println("Client.run() : => " + Thread.currentThread() + " donnees Msg emises");
+					System.out.println(Thread.currentThread() + ".Client.run() : => donnees Msg emises");
 
 				// envoi d'un message de fin de communication avec le serveur
 				MsgDeControle msgC = new MsgDeControle(TypeMsgCS.MSG_FIN_CONNEXION, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_1_MSG - Message de fin de connexion", null);
@@ -395,23 +395,25 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 				// fermeture de la socket client et fin du thread
 				this.fermerSocketClient();
 				if (VERBOSE_LOCAL)
-					System.out.println("Client.run() : => " + Thread.currentThread() + " => fermeture de la connexion");
+					System.out.println(Thread.currentThread() + ".Client.run() : => fermeture de la connexion");
 				break;
 
 			/**
-			 * ce thread sera utilise pour envoyer bcp de messages vers le serveur distant
+			 * ce thread sera utilise pour envoyer plusieurs messages vers le serveur distant
 			 * Tant qu'il ne recoit pas l'ordre de mettre fin a la com, il reste en contact avec le serveur
+			 * A reception du message MSG_FIN_CONNEXION, le thread se termine apres avoir prevenu le serveur
+			 * de la fin de communication
 			 */
 			case TYPE_THREAD_ENVOI_N_MSG :
 				if (VERBOSE_LOCAL)
-					System.out.println("Thread : " + Thread.currentThread() + " a boucle infinie : on entre dans la boucle");
+					System.out.println(Thread.currentThread() + ".Client.run() : => a boucle infinie : on entre dans la boucle");
 
 				while (true) {
 						try {
 							TypeMsgCS typeMsg = TypeMsgCS.MSG_INCONNU;
 
 							if (VERBOSE_LOCAL)
-								System.out.println("Thread : " + Thread.currentThread() + " en attente sur sa MQ");
+								System.out.println(Thread.currentThread() + ".Client.run() : => en attente sur sa MQ");
 
 							/**
 							 * opn attend l'arrivee d'un msg dans la MQ du thread.
@@ -445,7 +447,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 				 */
 				this.fermerSocketClient();
 				if (VERBOSE_LOCAL)
-					System.out.println("Client.run() : => " + Thread.currentThread() + " => fermeture de la connexion");					
+					System.out.println(Thread.currentThread() + ".Client.run() : => fermeture de la connexion");					
 				break;
 				
 			default :	// a developper
@@ -462,7 +464,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 		 */		
 		sendMsgUnique(msg);
 		if (VERBOSE_LOCAL)
-			System.out.println("Client.run() : => " + Thread.currentThread() + " donnees Msg emises");		
+			System.out.println(Thread.currentThread() + ".Client.run() : => donnees Msg emises");		
 	}
 
 	

@@ -9,6 +9,7 @@ import controlerMVC.ControlerTestThread;
 import modelMVC.Constantes;
 import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
+import utilitairesMK_MVC.MsgTrfObjet;
 import utilitairesMK_MVC.Mutex;
 import utilitairesMK_MVC.TypeMsgCS;
 
@@ -201,33 +202,51 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 		// A FAIRE !!!
 	}
 	
-	// clic sur bouton de lancement du test des pools de thread
+	/**
+	 *  clic sur bouton de lancement du test des pools de thread
+	 * @param e
+	 */
 	private void btnClicTestPoolThread(ActionEvent e) {
 		initAppli(e);		// initialisation de l'application
 		controleur.dmdIHMLanceTestPool();
 	}
 
 	
-	// clic sur bouton de lancement du test des semaphores
+	/**
+	 *  clic sur bouton de lancement du test des semaphores
+	 * @param e
+	 */
 	private void btnClicTestSemaphore(ActionEvent e) {
 		initAppli(e);		// initialisation de l'application
 
 		controleur.dmdIHMLanceTestSem(Integer.parseInt(txtNbJetons.getText()), Integer.parseInt(this.txtNbrThreadsTestSem.getText()), Integer.parseInt(textFieldNbTestSem.getText()));
 		}
 	
-	// clic sur bouton de RAZ de la zone d'affichage du test des semaphores
+	/**
+	 *  clic sur bouton de RAZ de la zone d'affichage du test des semaphores
+	 * @param e
+	 */
 	private void btnClicRAZTestSemaphore(ActionEvent e) {
 		this.textAreaTestSemaphore.setText("");
 	}
 	
-	// clic sur bouton de lancement du test des MUTEX
+	/**
+	 *  clic sur bouton de lancement du test des MUTEX
+	 * @param e
+	 */
 	private void btnClicTestMutex(ActionEvent e) {
 		initAppli(e);		// initialisation de l'application
 		
 		controleur.dmdIHMLanceTestMutex(Integer.parseInt(textFieldNbTestMutex.getText()), Integer.parseInt(txtNbrThreadTestMutex.getText()));
 	}
 	
-	// clic sur bouton de RAZ de la zone d'affichage du test des semaphores
+	/**
+	 *  clic sur bouton de RAZ de la zone d'affichage du test des semaphores
+	 * @param e
+	 * @throws UnknownHostException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	private void btnClicRAZTestMutex(ActionEvent e) throws UnknownHostException, ClassNotFoundException, IOException  {
 		this.textAreaTestMutex.setText("");
 		
@@ -241,7 +260,10 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 
 	}
 	
-	// clic sur le bouton de connexion avec le serveur de socket TCP
+	/**
+	 *  clic sur le bouton de connexion avec le serveur de socket TCP
+	 * @param e
+	 */
 	private void btnClicConnexion(ActionEvent e) {
 		if (chckbxConnexion.isSelected()) {
 			// la connexion doit etre permanente entre le client et le serveur
@@ -267,10 +289,11 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			MsgToConsole msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_NO_THREAD - message venant du client");
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgConsole);
 
-			msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_NO_THREAD - deuxieme message venant du client et avant fin de comm");
+			msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_1_MSG - deuxieme message venant du client et avant fin de comm");
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
 			
-			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, new String("ok"));
+			MsgTrfObjet objDivers = new MsgTrfObjet(NUM_MSG_NOT_USED, new String("ok"));
+			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, objDivers);
 			
 			
 			IHM_SERIALISABLE ihm = new IHM_SERIALISABLE();
@@ -278,10 +301,12 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			ihm.setVisible(true);
 			ihm.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
 			this.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
-			JOptionPane.showMessageDialog(null, "appuyer sur le bouton pour lancer le transfert\nde la fenetre et de son contenur");
+			JOptionPane.showMessageDialog(null, "appuyer sur le bouton pour lancer le transfert\nde la fenetre et de son contenu");
+			
+			ihm.setVisible(false);
 
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, ihm);
-			
+
 /*
 		    BlockingQueue<MessageMK> msgQ = new ArrayBlockingQueue<MessageMK>(TAILLE_MESSAGE_Q_PC);
 			ParametrageClientTCP paramClient = new ParametrageClientTCP("client TCP", 0, 5, msgQ, getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG);
@@ -385,75 +410,23 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 					if (textAreaTestPool.getLineCount() > this.tailleConsole)
 						textAreaTestPool.setText("");
 				break;
-
 		
 			default :
+				// a developper
 				break;
 		}
-/*		
-		if (msg.getNumConsoleDest() == NUM_CONSOLE_CONSOLE) {
-
-			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
-			textAreaConsole.append(msg.getMsg());
-			
-			// gestion du bargraphe de progression du remplissage de la zone d'affichage
-			lblEtatBuffer.setText(Long.toString(textAreaConsole.getLineCount()));
-			progressBarConsole.setValue(textAreaConsole.getLineCount());
-			if (progressBarConsole.getPercentComplete() > SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE)
-				progressBarConsole.setForeground(Color.RED);	// on passe le baregraphe en rouge
-
-			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
-			if (textAreaConsole.getLineCount() > this.tailleConsole) {
-				textAreaConsole.setText("");
-				progressBarConsole.setForeground(Color.GREEN);
-			}
-			/**
-			 * envoi du message vers la console distante via une connexion sous socket TCP
-			 * On confie cet envoi a un thread afin de ne pas ralentir l'IHM.
-			 */
-/*			ClientSocket client = new ClientSocket(getAdresseIPConsoleDistante(), 
-										NUMERO_PORT_SERVEUR_TCP,
-										msg);
-			new Thread(client).start();		// lancement du thread de gestion de l'envoi du message vers la console distante
-*		}
-		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_SEMAPHORE) {
-			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
-			textAreaTestSemaphore.append(msg.getMsg());
-
-			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
-			if (textAreaTestSemaphore.getLineCount() > this.tailleConsole)
-				textAreaTestSemaphore.setText("");	
-		}
-		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_MUTEX) {
-			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
-			textAreaTestMutex.append(msg.getMsg());
-			System.out.println(msg.getMsg() + " destine a la console numero : " + msg.getNumConsoleDest());
-
-			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
-			if (textAreaTestMutex.getLineCount() > this.tailleConsole)
-				textAreaTestMutex.setText("");
-		}
-		else if (msg.getNumConsoleDest() == NUM_CONSOLE_TEST_POOL) {
-			// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
-			textAreaTestPool.append(msg.getMsg());
-
-			// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
-			if (textAreaTestPool.getLineCount() > this.tailleConsole)
-				textAreaTestPool.setText("");
-		}
-*/	}
+	}
 	
 	
 	/**
-	 * remplir la zone d'affichage de la console avec une liste de messages recue en paramètre
+	 * remplir la zone d'affichage de la console avec une liste de messages recue en parametre
 	 * 
 	 * @param messageConsole
 	 */
 	public void affichageConsole(ArrayList<String> messageConsole, int numProducteur, int numConsole, boolean ajouterNumMessage) {
 
 		for(String message : messageConsole) {
-//			MsgToConsole msg = new MsgToConsole(numConsole, ajouterNumMessage, message);
-//			affichageConsole(msg);
+			// on affiche chacun des message contenu dans la ArrayList
 			affichageConsole(new MsgToConsole(numConsole, ajouterNumMessage, message));
 		}
 	}
@@ -475,8 +448,10 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			progressBarMQ.setForeground(Color.GREEN);
 	}
 	
+	
+	
 	/**
-	 * pour initialiser à des valeurs par defaut des champs de saisie de l'IHM
+	 * pour initialiser a des valeurs par defaut des champs de saisie de l'IHM
 	 */
 	public void initIHM() {
 		textFieldNbProducteur.setText(Integer.toString(DEFAULT_NB_THREAD_PROD)); 		// nbr de producteurs a creer
@@ -505,7 +480,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 	
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	/**
-	 * ============================ methodes d'accès aux proprietes de cette classe =======================================
+	 * ============================ methodes d'acces aux proprietes de cette classe =======================================
 	 */
 	
 	/**
@@ -544,7 +519,8 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 	
 	
 	/**======================================== IHM ===============================================
-	 * Create the frame.
+	 * Creation de la fenetre
+	 * 
 	 * @param sem 
 	 */
 	public IHM_Test_Thread(ControlerTestThread controleur, Mutex sem) {
@@ -570,7 +546,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 		
 		/**
 		 * ------------------------------------------------------------------------------
-		 * Gestion des clics sur les différents boutons de l'IHM
+		 * Gestion des clics sur les differents boutons de l'IHM
 		 */
 		
 		// ajout d'un bouton "Go" et d'une fonction sur le clic du bouton
@@ -903,13 +879,11 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 		lblConnexionPermanente.setBounds(363, 43, 152, 15);
 		contentPane.add(lblConnexionPermanente);
 		
-		
 	
 		/**
 		 * initialisation des variables de l'IHM
 		 */
 		initIHM();
-
 	}
 
 	public boolean getIsConnexionPermanente() {

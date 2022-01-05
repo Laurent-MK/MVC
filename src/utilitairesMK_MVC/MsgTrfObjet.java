@@ -20,7 +20,7 @@ public class MsgTrfObjet  extends MessageMK implements Serializable  {
 
 
 	/**
-	 * @return le obj
+	 * @return le objATransporter
 	 */
 	public Object getObj() {
 		return objATransporter;
