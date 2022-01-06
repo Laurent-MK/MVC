@@ -283,7 +283,8 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			*/
 			isConnexionPermanente = false;
 			
-			MsgDeControle msgControle = new MsgDeControle(TypeMsgCS.MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test", null);
+			MsgDeControle msgControle = new MsgDeControle(TypeMsgCS.MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test",
+												new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "msg de test niveau 2"));
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
 
 			MsgToConsole msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_NO_THREAD - message venant du client");
