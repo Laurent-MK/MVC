@@ -295,7 +295,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			
 			MsgTrfObjet objDivers = new MsgTrfObjet(NUM_MSG_NOT_USED, new String("ok"));
 			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, objDivers);
-			
+		
 			
 			IHM_SERIALISABLE ihm = new IHM_SERIALISABLE();
 			ihm.setLocation(500, 500);
