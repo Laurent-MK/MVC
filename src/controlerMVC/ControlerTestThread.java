@@ -58,7 +58,7 @@ public class ControlerTestThread implements Constantes, Controler {
     /**
      * proprietes utilisees pour la gestion des envois de messages vers la console distante
      */
-    private ArrayBlockingQueue<Object/*MessageMK*/> msgQToServer;
+    private ArrayBlockingQueue<Object> msgQToServer;
     private ClientSocketTCP socketClient;
     
   	private boolean VERBOSE_LOCAL = VERBOSE_ON & false;
@@ -163,8 +163,23 @@ public class ControlerTestThread implements Constantes, Controler {
     
 	/**
 	 * test de la fonction de deport de la console vers un PC distant
-	 */   
-    private void connexionToServer(String adresseIPServer, int numPortServer, int typeThreadGestion, Object msg) {
+	 * On recoit en parametre l'@ IP du serveur ainsi que son numero de port.
+	 * La parametre obj est un objet a envoyer au serveur TCP. ATTENTIOn, si l'option TYPE_THREAD_ENVOI_N_MSG
+	 * est retenue pour le typeThreadGestion, obj doit être null car dans ce cas, nous allons nous contenter de creer
+	 * un thread qui va se mettre en attente de messages sur une MQ dediee a l'envoi d'objets vers le serveur distant.
+	 * 
+	 * Le parametre typeThreadGestion se comprend de la maniere suivante :
+     *  - TYPE_THREAD_ENVOI_1_MSG : un thread est cree juste pour l'envoi de l'objet recu en parametre
+     *  - TYPE_THREAD_ENVOI_N_MSG : un thread est cree et reste connecte au serveur tant qu'une fin de connexion
+     *  							n'est pas demandee. Dans ce type de com, la MQ doit être passee en parametre au thread
+     * 								de gestion de la com avec le serveur distant
+     *  - TYPE_THREAD_ENVOI_NO_THREAD : l'envoi se fait en sequentiel dans le thread courant.     * 
+     * @param adresseIPServer
+     * @param numPortServer
+     * @param typeThreadGestion
+     * @param obj
+     */
+    private void sendToServerTCP(String adresseIPServer, int numPortServer, int typeThreadGestion, Object obj) {
     	
     	ParametrageClientTCP paramClient;
     	ClientSocketTCP c;
@@ -176,15 +191,15 @@ public class ControlerTestThread implements Constantes, Controler {
     		 */
 	    	case TYPE_THREAD_ENVOI_1_MSG :
 	    		
-	    		paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_1_MSG", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
-	    		c = new ClientSocketTCP(paramClient, msg);
+	    		paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_1_MSG", 0, 5, NO_MESSAGE_QUEUE, adresseIPServer, numPortServer, typeThreadGestion);
+	    		c = new ClientSocketTCP(paramClient, obj);
 	          	new Thread(c).start();
 	          	
 	    		break;
 	    	
 	    	/**
 	    	 * Un thread est cree pour assurer la communication permanente avec le serveur distant. Ce thread
-	    	 * viendra se mettre en attente, sur un MQ, des messages envoyes par toute l'application.
+	    	 * viendra se mettre en attente, sur une MQ. Les messages pourront ensuite etre envoyes par toute l'application.
 	    	 * 
 	    	 */
 	    	case TYPE_THREAD_ENVOI_N_MSG :
@@ -201,13 +216,13 @@ public class ControlerTestThread implements Constantes, Controler {
 			 * 	l'envoi du message se fait en sequentiel directement dans cette methode
 			 */
 	    	case TYPE_THREAD_ENVOI_NO_THREAD :
-				paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_NO_THREAD", 0, 5, null, adresseIPServer, numPortServer, typeThreadGestion);
+				paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_NO_THREAD", 0, 5, NO_MESSAGE_QUEUE, adresseIPServer, numPortServer, typeThreadGestion);
 				
 				// creation de la socket client
 				c = new ClientSocketTCP(paramClient);
 				c.ouvrirSocketClient();
 				
-				c.sendMsgUnique(msg);
+				c.sendMsgUnique(obj);
 				
 				MsgDeControle msgC = new MsgDeControle(TypeMsgCS.MSG_FIN_CONNEXION, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de fin de connexion", null);
 				c.sendMsgUnique(msgC);
@@ -240,12 +255,12 @@ public class ControlerTestThread implements Constantes, Controler {
      * @param obj
      * @return
      */
-    public int dmdIHMTestConnexionToServer(String adresseIPServer, int numPortServer, int typeThreadGestion, Object obj) {
+    public int dmdIHMEnvoiVersServeurTCP(String adresseIPServer, int numPortServer, int typeThreadGestion, Object obj) {
     	if (obj == null)
-    		return TEST_CONNEXION_SERVEUR_BAD_PARAM;
+    		return CONNEXION_SERVEUR_BAD_PARAM;
     	else {
-    		connexionToServer(adresseIPServer, numPortServer, typeThreadGestion, obj);
-    		return TEST_CONNEXION_SERVEUR_OK;    		
+    		sendToServerTCP(adresseIPServer, numPortServer, typeThreadGestion, obj);
+    		return CONNEXION_SERVEUR_OK;
     	}
     }
 
@@ -427,8 +442,10 @@ public class ControlerTestThread implements Constantes, Controler {
     	/**
     	 * creation et lancement du thread de gestion des envois de message vers la console distante
     	 */
-    	msgQToServer = new ArrayBlockingQueue<Object/*MessageMK*/>(100);
-		connexionToServer(this.ihmApplication.getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_N_MSG, null);
+    	msgQToServer = new ArrayBlockingQueue<Object>(TAILLE_MQ_THREAD_CLIENT);
+    	
+    	//A REFAIRE pour creer le thread a part en appelant une fct
+		sendToServerTCP(this.ihmApplication.getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_N_MSG, null);
 
 		
     	/* lancement du thread de gestion de la console :

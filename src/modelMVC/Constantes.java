@@ -1,5 +1,7 @@
 package modelMVC;
 
+import java.util.concurrent.ArrayBlockingQueue;
+
 public interface Constantes {
 	/**
 	 * Definition de toutes les constantes de l'application
@@ -23,6 +25,8 @@ public interface Constantes {
 	public static final String	ADR_IP_SERVEUR_TCP = "192.168.1.116";
 	public static final boolean	CREATION_SOCKET_CLIENT_OK = true;
 	public static final boolean	OUVERTURE_CANAL_OK = true;
+	public static final ArrayBlockingQueue<Object>  NO_MESSAGE_QUEUE = null;
+	public static final int		TAILLE_MQ_THREAD_CLIENT = 100;
 	
 
 	public static final double 	SEUIL_CHGT_COULEUR_PROGRESS_BAR_CONSOLE = 0.8;		// seuil de remlplissage (%) de la console pour passer le bargraphe en rouge
@@ -51,9 +55,9 @@ public interface Constantes {
 	public static final int		TYPE_THREAD_ENVOI_N_MSG = 2;
 	public static final int		TYPE_THREAD_ENVOI_NO_THREAD = 3;
 	
-	public static final int		TEST_CONNEXION_SERVEUR_OK = 1;
+	public static final int		CONNEXION_SERVEUR_OK = 1;
 	public static final int		TEST_CONNEXION_SERVEUR_KO = -1;
-	public static final int		TEST_CONNEXION_SERVEUR_BAD_PARAM = -2;
+	public static final int		CONNEXION_SERVEUR_BAD_PARAM = -2;
 	
 	public static final String	MSG_FIN_COM = "Fin de communication";
 	public static final String	MSG_ACQ_TEST = "ACQUITTEMENT TEST";

@@ -256,7 +256,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 		 * test de la fonction de deport de la console vers un PC distant
 		 */
 		MsgToConsole msgConsole = new MsgToConsole(0, false, "TYPE_THREAD_ENVOI_1_MSG - message venant du client");
-		controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
+		controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
 
 	}
 	
@@ -270,10 +270,10 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			isConnexionPermanente = true;
 			
 			MsgToConsole msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_1_MSG - message venant du client");
-			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
+			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
 			
 			MsgDeControle msgControle = new MsgDeControle(TypeMsgCS.MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test", null);
-			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
+			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
 		}
 		else {
 			/*
@@ -285,16 +285,16 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			
 			MsgDeControle msgControle = new MsgDeControle(TypeMsgCS.MSG_TEST_LINK, NUM_MSG_NOT_USED, "TYPE_THREAD_ENVOI_NO_THREAD - Message de test",
 												new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "msg de test niveau 2"));
-			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
+			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgControle);
 
 			MsgToConsole msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_NO_THREAD - message venant du client");
-			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgConsole);
+			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, msgConsole);
 
 			msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_1_MSG - deuxieme message venant du client et avant fin de comm");
-			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
+			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, msgConsole);
 			
 			MsgTrfObjet objDivers = new MsgTrfObjet(NUM_MSG_NOT_USED, new String("ok"));
-			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, objDivers);
+			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_NO_THREAD, objDivers);
 		
 			
 			IHM_SERIALISABLE ihm = new IHM_SERIALISABLE();
@@ -306,7 +306,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			
 			ihm.setVisible(false);
 
-			controleur.dmdIHMTestConnexionToServer(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, ihm);
+			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, ihm);
 
 /*
 		    BlockingQueue<MessageMK> msgQ = new ArrayBlockingQueue<MessageMK>(TAILLE_MESSAGE_Q_PC);
