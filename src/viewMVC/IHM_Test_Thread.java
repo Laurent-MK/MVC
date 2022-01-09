@@ -11,6 +11,7 @@ import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
 import utilitairesMK_MVC.MsgTrfObjet;
 import utilitairesMK_MVC.Mutex;
+import utilitairesMK_MVC.SocketClientTCP;
 import utilitairesMK_MVC.TypeMsgCS;
 
 import javax.swing.JButton;
@@ -306,7 +307,9 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			
 			ihm.setVisible(false);
 
-			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, ihm);
+			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_N_MSG, ihm);
+
+//			controleur.dmdIHMEnvoiVersServeurTCP(getAdresseIPConsoleDistante(), NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_1_MSG, ihm);
 
 /*
 		    BlockingQueue<MessageMK> msgQ = new ArrayBlockingQueue<MessageMK>(TAILLE_MESSAGE_Q_PC);

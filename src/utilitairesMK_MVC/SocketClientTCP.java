@@ -11,7 +11,7 @@ import modelMVC.Constantes;
 
 
 
-public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
+public class SocketClientTCP implements Constantes, Runnable, Consommateur {
 	private int serverPort = NUMERO_PORT_SERVEUR_TCP;
 	private String adresseIPServer;
 	private Object msg;
@@ -22,7 +22,8 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	
     private final ArrayBlockingQueue<Object> queueMsgAEnvoyer;
 	private String nomConsommateur = "nom inconnu";
-    private int numero;
+    private int identifiant;
+    private int priorite;
 
   	private boolean VERBOSE_LOCAL = VERBOSE_ON & true;
 
@@ -34,50 +35,58 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
      * @param param
      * @param MsgToConsole
      */
-	public ClientSocketTCP(ParametrageClientTCP param, MsgToConsole MsgToConsole) {
+	public SocketClientTCP(ParametrageClientTCP param, MsgToConsole MsgToConsole) {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
-		this.adresseIPServer = param.getAdresseIPServeur();
-		this.serverPort = param.getNumPortServer();
-        this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
+        this.identifiant = param.getIdentifiant();
+        this.priorite = param.getPriorite();
         this.queueMsgAEnvoyer = param.getQueue();
+		this.adresseIPServer = param.getAdresseIPServeur();
+        this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
+		this.serverPort = param.getNumPortServer();
         this.typeThreadClient = param.getTypeThreadClient();
 
 		this.msg = MsgToConsole;
 	}
 
-	public ClientSocketTCP(ParametrageClientTCP param, Object obj) {
+	public SocketClientTCP(ParametrageClientTCP param, Object obj) {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
-		this.adresseIPServer = param.getAdresseIPServeur();
-		this.serverPort = param.getNumPortServer();
-        this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
+        this.identifiant = param.getIdentifiant();
+        this.priorite = param.getPriorite();
         this.queueMsgAEnvoyer = param.getQueue();
+		this.adresseIPServer = param.getAdresseIPServeur();
+        this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
+		this.serverPort = param.getNumPortServer();
         this.typeThreadClient = param.getTypeThreadClient();
 
 		this.msg = obj;
 	}
 
-	public ClientSocketTCP(ParametrageClientTCP param) {
+	public SocketClientTCP(ParametrageClientTCP param) {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
-		this.adresseIPServer = param.getAdresseIPServeur();
-		this.serverPort = param.getNumPortServer();
-        this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
+        this.identifiant = param.getIdentifiant();
+        this.priorite = param.getPriorite();
         this.queueMsgAEnvoyer = param.getQueue();
+		this.adresseIPServer = param.getAdresseIPServeur();
+        this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
+		this.serverPort = param.getNumPortServer();
         this.typeThreadClient = param.getTypeThreadClient();
 
 		this.msg = null;
 	}
 	
-	public ClientSocketTCP(ParametrageClientTCP param, int typeThreadClient) {
+	public SocketClientTCP(ParametrageClientTCP param, int typeThreadClient) {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
-		this.adresseIPServer = param.getAdresseIPServeur();
-		this.serverPort = param.getNumPortServer();
-        this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
+        this.identifiant = param.getIdentifiant();
+        this.priorite = param.getPriorite();
         this.queueMsgAEnvoyer = param.getQueue();
-		this.typeThreadClient = typeThreadClient;
+		this.adresseIPServer = param.getAdresseIPServeur();
+        this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
+		this.serverPort = param.getNumPortServer();
+        this.typeThreadClient = param.getTypeThreadClient();
 
 		this.msg = null;
 	}
@@ -144,7 +153,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 					if (VERBOSE_LOCAL)
 						System.out.println(Thread.currentThread() + ".sendMsgUnique(MsgDeControle) Message : MSG_FIN_CONNEXION recu => on renvoit un msg de type : MSG_FIN_CONNEXION");
 				break;
-	
+
 				
 				/**
 				 * message contenant un objet non type.
@@ -174,6 +183,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 			/**
 			 *  puisque ce n'est ni un MsgToConsole, ni un MsgDeControle, ni un MsgTrfObjet,
 			 *  alors il s'agit d'un autre objet. On l'envoit sans traitement particulier
+			 *  Une IHM serializable passe dans ce cas de figure
 			 */
 			sendMsg(obj);
 			if (VERBOSE_LOCAL)
@@ -346,7 +356,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	 * 
 	 * @param msg
 	 */
-	public void sendMsgToServer(MessageMK msg) {
+	public void sendMsgToServerViaMQ(/*MessageMK*/ Object msg) {
 //		System.out.println("verif de la MQ du thread de connexion avec le serveur");
 
 		if (this.queueMsgAEnvoyer.remainingCapacity() > 1 ) {
@@ -362,13 +372,40 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
     		System.out.println(Thread.currentThread() + ".sendMsgToServer(MessageMK msg) : MQ console distante pleine => message perdu !!!");
 	}
 
+	/**
+	 * methode static de classe. Elle est docn appelable sans instanciation de cette classe.
+	 * 
+	 * methode utilisee pour envoyer un message vers un serveur distant mais en passant par l'intermediaire
+	 * d'un thread dedie a la gestion de la connexion avec ce serveur disant. La MQ a utiliser est passee en
+	 * parametre de cette methode
+	 * 
+	 * @param obj
+	 * @param mq
+	 */
+	public static void sendMsgToServerViaMQ(Object obj, ArrayBlockingQueue<Object> mq)
+	{
+		if (mq.remainingCapacity() > 1 ) {
+//			System.out.println("envoi du message dans la MQ du thread de connexion avec le serveur");
+			try {
+				mq.put(obj);
+			} catch (InterruptedException e) {
+				// TODO Bloc catch genere automatiquement
+				e.printStackTrace();
+			}      				
+		}
+		else
+    		System.out.println(Thread.currentThread() + ".sendMsgToServer(MessageMK msg) : MQ console distante pleine => message perdu !!!");
+	}
 
+	
 	
 	/**
 	 * "main()" du thread de gestion de l'envoi de message vers la console distante
 	 */
 	@Override
 	public void run() {
+		
+		Thread.currentThread().setPriority(priorite);
 		
 		ouvrirSocketClient();
 		if (VERBOSE_LOCAL)
@@ -426,6 +463,9 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 								typeMsg = ((MessageMK)(msg)).getTypeMsg();
 
 							consommer(msg);
+
+							if (VERBOSE_LOCAL)
+								System.out.println(Thread.currentThread() + ".Client.run() : => donnees Msg emises");		
 							
 							if (typeMsg == TypeMsgCS.MSG_FIN_CONNEXION) {
 								/**
@@ -463,8 +503,6 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 		 * envoi, vers le serveur, du message recu
 		 */		
 		sendMsgUnique(msg);
-		if (VERBOSE_LOCAL)
-			System.out.println(Thread.currentThread() + ".Client.run() : => donnees Msg emises");		
 	}
 
 	
@@ -481,7 +519,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 
 	@Override
 	public int getIdentifiant() {
-		return  numero;
+		return  identifiant;
 	}
 
 }
