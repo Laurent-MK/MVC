@@ -399,7 +399,8 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			case NUM_CONSOLE_TEST_MUTEX :
 					// on ajoute a la liste d'affichage (un widget "textArea") le message recu en parametre
 					textAreaTestMutex.append(msg.getMsg());
-					System.out.println(msg.getMsg() + " destine a la console numero : " + msg.getNumConsoleDest());
+					if (VERBOSE_LOCAL)
+						System.out.println(msg.getMsg() + " destine a la console numero : " + msg.getNumConsoleDest());
 	
 					// si on arrive au nbr max de messages stockes dans la textArea, on l'efface (pas de conso memoire inutile)
 					if (textAreaTestMutex.getLineCount() > this.tailleConsole)

@@ -470,7 +470,7 @@ public class ControlerTestThread implements Constantes, Controler {
 		
 		ParametrageClientTCP paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_N_MSG", // nom du client
 																	0,							// identifiant du client
-																	5,							// priorite du thread utilise pour les envois
+																	PRIORITE_THREAD_ENVOI_TCP,	// priorite du thread utilise pour les envois
 																	msgQToServer,				// MQ a utiliser pour adresser les msg a envoyer
 																	adresseIPServer,			// @ IP du serveur
 																	NUMERO_PORT_SERVEUR_TCP,	// numero de port d'ecoute du serveur
@@ -480,9 +480,10 @@ public class ControlerTestThread implements Constantes, Controler {
 		this.socketClient = new SocketClientTCP(paramClient);
 		// creation et lancement du thread de gestion des messages a destination du serveur distant
     	threadEnvoiVersServeurDistant = new Thread(socketClient);
+    	threadEnvoiVersServeurDistant.setPriority(paramClient.getPriorite());
     	threadEnvoiVersServeurDistant.start();
-
-		MsgToConsole msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_N_MSG - init du client faite !!!!!!!!!!!!!!");
+    	// on envoit un msg vers la console distante pour indiquer que le thread d'envoi est OK
+		MsgToConsole msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_N_MSG - init du thread permanent du client faite !!!!!!!!!!!!!!");
 		SocketClientTCP.sendMsgToServerViaMQ(msgConsole, msgQToServer);
 
     	

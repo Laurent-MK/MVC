@@ -22,8 +22,8 @@ public interface Constantes {
 
 	public static final int 	NUMERO_CONSOLE = 1;			// numero du thread de console
 	public static final int		NUMERO_PORT_SERVEUR_TCP = 9999;
-//	public static final String	ADR_IP_SERVEUR_TCP = "192.168.1.116";
-	public static final String	ADR_IP_SERVEUR_TCP = "192.168.2.32";
+	public static final String	ADR_IP_SERVEUR_TCP = "192.168.1.116";
+//	public static final String	ADR_IP_SERVEUR_TCP = "192.168.2.32";
 	public static final boolean	CREATION_SOCKET_CLIENT_OK = true;
 	public static final boolean	OUVERTURE_CANAL_OK = true;
 	public static final ArrayBlockingQueue<Object>  NO_MESSAGE_QUEUE = null;
@@ -39,6 +39,7 @@ public interface Constantes {
 	public static final int 	PRIORITE_MAX_PRODUCTEUR = 10;		// priorite max des producteurs
 	public static final int 	PRIORITE_PRODUCTEUR_DEFAUT = 10;	// priorite par defaut des producteurs
 	public static final int 	PRIORITE_CONSOLE = 1;				// priorite du thread de console
+	public static final int		PRIORITE_THREAD_ENVOI_TCP = 6;		// priorite du thread gerant les envois vers le serveur de console distante
 	public static final String	NOM_PRODUIT_TXT = "ProductTXT";		// nom donne au produit texte à produire
 
 	public static final int 	FREQ_PRODUCTION = 100;			// frequence de production des producteurs

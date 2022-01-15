@@ -47,40 +47,46 @@ public class TestPoolThread implements Constantes, Runnable {
      * @throws InterruptedException
      */
     private void goTestPoolThread() throws InterruptedException {
-        ExecutorService executorService = new ThreadPoolExecutor(5, 10, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		if (VERBOSE_ON)
+			System.out.println(Thread.currentThread() + " : début du test d'un pool de threads");
+
+		ExecutorService executorService = new ThreadPoolExecutor(5, 10, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
         for (int i = 0; i < 50; i++) {
+			if (VERBOSE_ON)
+				System.out.println(Thread.currentThread().getName() + " : i = " + (i+1));
+        	
         	executorService.submit(new Runnable() {
         		@Override
-        		public void run() {
-        			String msg = "debut tache " + Thread.currentThread().getName();
+        		public void run() {        			
+        			String msg =  Thread.currentThread().getName() + " : debut tache";
 					console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, msg));
 					if (VERBOSE_ON)
-						System.out.print(msg);
+						System.out.println(msg);
 
         			try {
         				Thread.sleep(500);
         				} catch (InterruptedException e) {
         					e.printStackTrace();
         					}
-        			msg = "fin de tache : " + Thread.currentThread().getName();
+        			msg = Thread.currentThread().getName() + " : fin de tache";
 					console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, msg));
 					if (VERBOSE_ON)
-						System.out.print(msg);
+						System.out.println(msg);
         			}
         		});
         	}
 
-        console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, "Autre traitement\n"));
+        console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, Thread.currentThread() + " : Autre traitement\n"));
 		if (VERBOSE_ON)
-			System.out.println("Autre traitement");
+			System.out.println(Thread.currentThread() + " : Autre traitement");
 		
         executorService.shutdown();
         executorService.awaitTermination(300, TimeUnit.SECONDS);
 
         console.sendMsgToConsole(new MsgToConsole(numConsole, AjouterNumMsg, "Fin thread principal\n"));
 		if (VERBOSE_ON)
-			System.out.println("Fin thread principal");
+			System.out.println(Thread.currentThread() + " : fin du test d'un pool de threads");
         }
 
 }
