@@ -2,9 +2,8 @@ package utilitairesMK_MVC;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import modelMVC.Constantes;
 
-public class ParametrageClientTCP implements Constantes {
+public class ParametrageClientTCP {
 	
 	// proprietes
 	private String nomConsommateur = "nom inconnu";

@@ -14,6 +14,8 @@ import modelMVC.Constantes;
 public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	private int serverPort = NUMERO_PORT_SERVEUR_TCP;
 	private String adresseIPServer;
+    private int identifiant;
+    private int priorite;
 	private Object msg;
 	private Socket socketClient;
 	private int typeThreadClient = TYPE_THREAD_ENVOI_1_MSG;
@@ -30,6 +32,11 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	/**
 	 * Constructeur de la classe : celle-ci se charge de se connecter au serveur de console distante
 	 * puis d'envoyer les messages vers ce processus
+	 * On recoit dans le parametre "param" tous les parametres necessaire à la creation d'une socket TCP
+	 * 	- nom du consommateur : 
+	 * 	- adresse IP du serveur TCP : 
+	 * 	- numero de port d'ecoute du serveur
+	 * 	- 
 	 * 
      * @param param
      * @param MsgToConsole
@@ -37,10 +44,12 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	public ClientSocketTCP(ParametrageClientTCP param, MsgToConsole MsgToConsole) {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
-		this.adresseIPServer = param.getAdresseIPServeur();
+        this.queueMsgAEnvoyer = param.getQueue();
+//		this.adresseIPServer = param.getAdresseIPServeur();
+		this.identifiant = param.getIdentifiant();
+		this.priorite = param.getPriorite();
 		this.serverPort = param.getNumPortServer();
         this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
-        this.queueMsgAEnvoyer = param.getQueue();
         this.typeThreadClient = param.getTypeThreadClient();
 
 		this.msg = MsgToConsole;
@@ -49,10 +58,12 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	public ClientSocketTCP(ParametrageClientTCP param, Object obj) {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
-		this.adresseIPServer = param.getAdresseIPServeur();
+        this.queueMsgAEnvoyer = param.getQueue();
+//		this.adresseIPServer = param.getAdresseIPServeur();
+		this.identifiant = param.getIdentifiant();
+		this.priorite = param.getPriorite();
 		this.serverPort = param.getNumPortServer();
         this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
-        this.queueMsgAEnvoyer = param.getQueue();
         this.typeThreadClient = param.getTypeThreadClient();
 
 		this.msg = obj;
@@ -61,10 +72,12 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	public ClientSocketTCP(ParametrageClientTCP param) {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
-		this.adresseIPServer = param.getAdresseIPServeur();
+        this.queueMsgAEnvoyer = param.getQueue();
+//		this.adresseIPServer = param.getAdresseIPServeur();
+		this.identifiant = param.getIdentifiant();
+		this.priorite = param.getPriorite();
 		this.serverPort = param.getNumPortServer();
         this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
-        this.queueMsgAEnvoyer = param.getQueue();
         this.typeThreadClient = param.getTypeThreadClient();
 
 		this.msg = null;
@@ -73,11 +86,13 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 	public ClientSocketTCP(ParametrageClientTCP param, int typeThreadClient) {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
-		this.adresseIPServer = param.getAdresseIPServeur();
+        this.queueMsgAEnvoyer = param.getQueue();
+//		this.adresseIPServer = param.getAdresseIPServeur();
+		this.identifiant = param.getIdentifiant();
+		this.priorite = param.getPriorite();
 		this.serverPort = param.getNumPortServer();
         this.adresseIPServer = String.copyValueOf(param.getAdresseIPServeur().toCharArray());
-        this.queueMsgAEnvoyer = param.getQueue();
-		this.typeThreadClient = typeThreadClient;
+        this.typeThreadClient = param.getTypeThreadClient();
 
 		this.msg = null;
 	}
@@ -416,7 +431,7 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 								System.out.println(Thread.currentThread() + ".Client.run() : => en attente sur sa MQ");
 
 							/**
-							 * opn attend l'arrivee d'un msg dans la MQ du thread.
+							 * on attend l'arrivee d'un msg dans la MQ du thread.
 							 * Des son arrivee, on le recupere et on le traite
 							 * Le thread est mis en sommeil tant qu'il n'y a pas de msg a traiter
 							 */
