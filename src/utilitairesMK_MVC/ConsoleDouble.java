@@ -16,19 +16,22 @@ import viewMVC.IHM_Test_Thread;
  */
 public class ConsoleDouble extends ConsoleMK {
 
-	private ClientSocketTCP socketClient = null;
+//	private SocketClientTCP socketClient = null;
+	private ArrayBlockingQueue<Object> msgQVersServeur = null;
 	
     public ConsoleDouble(String consumerName,
     		int numero,
     		int priority,
-    		ArrayBlockingQueue<MsgToConsole> msgQ,
+    		ArrayBlockingQueue<MsgToConsole> msgQConsole,
     		IHM ihmApplication,
     		String adresseIPConsoleDistante,
-    		ClientSocketTCP socketClient) {
+    		SocketClientTCP socketClient,
+    		ArrayBlockingQueue<Object> msgQVersServeur) {
     	
-    	super(consumerName, numero, priority, msgQ, ihmApplication, adresseIPConsoleDistante);
+    	super(consumerName, numero, priority, msgQConsole, ihmApplication, adresseIPConsoleDistante);
     	
-    	this.socketClient = socketClient;
+//    	this.socketClient = socketClient;
+    	this.msgQVersServeur = msgQVersServeur;
     	
     }
 
@@ -50,7 +53,8 @@ public class ConsoleDouble extends ConsoleMK {
     	 *  vers la console distante. C'est ce thread qui va effectivement envoyer le message vers le serveur
     	 */
     	if (((IHM_Test_Thread)(super.ihmApplication)).chckbxConnexion.isSelected())
-    		socketClient.sendMsgToServer(msg);  		    	
+    		SocketClientTCP.sendMsgToServerViaMQ(msg, msgQVersServeur);
+//    		socketClient.sendMsgToServerViaMQ(msg);	
     	}
 
 	

@@ -22,7 +22,8 @@ public interface Constantes {
 
 	public static final int 	NUMERO_CONSOLE = 1;			// numero du thread de console
 	public static final int		NUMERO_PORT_SERVEUR_TCP = 9999;
-	public static final String	ADR_IP_SERVEUR_TCP = "192.168.1.116";
+//	public static final String	ADR_IP_SERVEUR_TCP = "192.168.1.116";
+	public static final String	ADR_IP_SERVEUR_TCP = "192.168.2.32";
 	public static final boolean	CREATION_SOCKET_CLIENT_OK = true;
 	public static final boolean	OUVERTURE_CANAL_OK = true;
 	public static final ArrayBlockingQueue<Object>  NO_MESSAGE_QUEUE = null;

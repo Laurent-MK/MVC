@@ -7,9 +7,9 @@ public class ParametrageClientTCP {
 	
 	// proprietes
 	private String nomConsommateur = "nom inconnu";
-    private final ArrayBlockingQueue<Object> queue;
     private int identifiant;
     private int priorite;
+    private final ArrayBlockingQueue<Object> queue;
     private String adresseIPServeur;
     private int numPortServer; 
     private int typeThreadClient;
@@ -25,11 +25,11 @@ public class ParametrageClientTCP {
     		int typeThreadClient)
     {
 		this.nomConsommateur = nom;
-		this.queue = q;
         this.identifiant = identifiant;
         this.priorite = priority;
-        this.numPortServer = numPort;
+		this.queue = q;
         this.adresseIPServeur = String.copyValueOf(adresseIPServeur.toCharArray());
+        this.numPortServer = numPort;
         this.typeThreadClient = typeThreadClient;
     }
 
