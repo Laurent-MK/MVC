@@ -548,7 +548,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 		txtTest.setBounds(124, 281, 144, 23);
 		contentPane.add(txtTest);
 		
-		
+
 		/**
 		 * ------------------------------------------------------------------------------
 		 * Gestion des clics sur les differents boutons de l'IHM
@@ -607,13 +607,15 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 		// ajout du bouton "Test Mutex" et d'une fonction sur le clic du bouton
 		btnTstSemaphore.setBounds(814, 222, 160, 23);
 		contentPane.add(btnTstSemaphore);
-		JButton btnTstMutex = new JButton("Test Mutex");	
-		btnTstMutex.addActionListener(new ActionListener() {
+		JButton btnTstMutex = new JButton("Test Mutex");
+		btnTstMutex.addActionListener(this::btnClicTestMutex); // utilisation d'une reference sur methode (valable a partir de JAVA 8)
+				
+/*		btnTstMutex.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnClicTestMutex(e);
 			}
 		});
-		
+*/		
 		// ajout d'un bouton de lancement du test de creation d'un pool de threads
 		JButton btnTestPoolThread = new JButton("Test pool de Threads");
 		btnTestPoolThread.addActionListener(new ActionListener() {
