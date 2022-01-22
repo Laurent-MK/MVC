@@ -350,30 +350,30 @@ public class SocketClientTCP implements Constantes, Runnable, Consommateur {
 	}
 
 	
-	/**
-	 * methode utilisee pour envoyer un message au thread de gestion de la console distante
-	 * le message a envoyer est place dans la MQ du thread qui est connecte avec la console distante
-	 * 
-	 * @param msg
-	 */
-	public void sendMsgToServerViaMQ(/*MessageMK*/ Object msg) {
-//		System.out.println("verif de la MQ du thread de connexion avec le serveur");
+//	/**
+//	 * methode utilisee pour envoyer un message au thread de gestion de la console distante
+//	 * le message a envoyer est place dans la MQ du thread qui est connecte avec la console distante via une socket
+//	 * 
+//	 * @param msg
+//	 */
+//	public void sendMsgToServerViaMQ(Object msg) {
+////		System.out.println("verif de la MQ du thread de connexion avec le serveur");
+//
+//		if (this.queueMsgAEnvoyer.remainingCapacity() > 1 ) {
+//			try {
+////				System.out.println("envoi du message dans la MQ du thread de connexion avec le serveur");
+//				this.queueMsgAEnvoyer.put(msg);
+//			} catch (InterruptedException e) {
+//				// TODO Bloc catch genere automatiquement
+//				e.printStackTrace();
+//			}      				
+//		}
+//		else
+//    		System.out.println(Thread.currentThread() + ".sendMsgToServer(MessageMK msg) : MQ console distante pleine => message perdu !!!");
+//	}
 
-		if (this.queueMsgAEnvoyer.remainingCapacity() > 1 ) {
-			try {
-//				System.out.println("envoi du message dans la MQ du thread de connexion avec le serveur");
-				this.queueMsgAEnvoyer.put(msg);
-			} catch (InterruptedException e) {
-				// TODO Bloc catch genere automatiquement
-				e.printStackTrace();
-			}      				
-		}
-		else
-    		System.out.println(Thread.currentThread() + ".sendMsgToServer(MessageMK msg) : MQ console distante pleine => message perdu !!!");
-	}
-
 	/**
-	 * methode static de classe. Elle est docn appelable sans instanciation de cette classe.
+	 * methode static de classe. Elle est donc appelable sans instantiation de cette classe.
 	 * 
 	 * methode utilisee pour envoyer un message vers un serveur distant mais en passant par l'intermediaire
 	 * d'un thread dedie a la gestion de la connexion avec ce serveur disant. La MQ a utiliser est passee en
@@ -387,7 +387,7 @@ public class SocketClientTCP implements Constantes, Runnable, Consommateur {
 		if (mq.remainingCapacity() > 1 ) {
 //			System.out.println("envoi du message dans la MQ du thread de connexion avec le serveur");
 			try {
-				mq.put(obj);
+				mq.put(obj);	// on place le msg dans la MQ du thread de gestion de la socket vers le seveur distant
 			} catch (InterruptedException e) {
 				// TODO Bloc catch genere automatiquement
 				e.printStackTrace();

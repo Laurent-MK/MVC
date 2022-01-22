@@ -60,7 +60,6 @@ public class ControlerTestThread implements Constantes, Controler {
      */
     private ArrayBlockingQueue<Object> msgQToServer = null;
     private Thread threadEnvoiVersServeurDistant = null;
-    private SocketClientTCP socketClient = null;
     
   	private boolean VERBOSE_LOCAL = VERBOSE_ON & false;
 
@@ -70,10 +69,6 @@ public class ControlerTestThread implements Constantes, Controler {
      * 
      * @return
      */
-    public SocketClientTCP getSocketClient() {
-		return socketClient;
-	}
-
     public ConsoleMK getConsole() {
     	return console;
     }
@@ -117,12 +112,8 @@ public class ControlerTestThread implements Constantes, Controler {
        		msg = this.listeConsommateurMQ[i].getNom()
        				+ "."
        				+ listThreadC[i].getName()
-       				+ "["
-       				+ listThreadC[i].isAlive()
-       				+ "]"
-       				+ ".prio["
-       				+ listThreadC[i].getPriority()
-       				+ "].nbConso : "
+       				+ "[" + listThreadC[i].isAlive() + "]"
+       				+ ".prio[" + listThreadC[i].getPriority() + "].nbConso : "
        				+ listeConsommateurMQ[i].getNbConsoRealisees();
        		
        		listeEtatThreads.add(msg);	// ajout du message dans la liste
@@ -146,10 +137,8 @@ public class ControlerTestThread implements Constantes, Controler {
     		msg = this.listeProducteurMQ[i].getNom()
     				+ "."
     				+  listThreadP[i].getName()
-       				+ "]"
-       				+ ".prio["
-       				+ listThreadP[i].getPriority()
-       				+ "].nbProd : "
+    				+ "[" + listThreadP[i].isAlive() + "]"
+       				+ ".prio[" + listThreadP[i].getPriority() + "].nbProd : "
     				+ listeProducteurMQ[i].getNbProdReal();
    		
     		listeEtatThreads.add(msg);	// ajout du message dans la liste
@@ -477,7 +466,7 @@ public class ControlerTestThread implements Constantes, Controler {
 																	TYPE_THREAD_ENVOI_N_MSG);	// thread permanent
 
 		// creation de la socket client. Elle permet d'envoyer des messages vers le serveur distant
-		this.socketClient = new SocketClientTCP(paramClient);
+	    SocketClientTCP socketClient = new SocketClientTCP(paramClient);
 		// creation et lancement du thread de gestion des messages a destination du serveur distant
     	threadEnvoiVersServeurDistant = new Thread(socketClient);
     	threadEnvoiVersServeurDistant.setPriority(paramClient.getPriorite());
@@ -487,9 +476,11 @@ public class ControlerTestThread implements Constantes, Controler {
 		SocketClientTCP.sendMsgToServerViaMQ(msgConsole, msgQToServer);
 
     	
-		
+
     	/* lancement du thread de gestion de la console :
          * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
+         * la console double permet d'afficher les messages de debug dans la console de l'IHM locale
+         * mais également d'envoyer les memes msg vers la console TCP distante
          */
     	msgQ_Console = new ArrayBlockingQueue<MsgToConsole>(ihmApplication.getTailleBufferConsole());
     	console = new ConsoleDouble("Console",
@@ -498,8 +489,6 @@ public class ControlerTestThread implements Constantes, Controler {
     								msgQ_Console,
     								ihmApplication,
     								adresseIPServer,
-    								socketClient,
-//    								this.getSocketClient(),
     								msgQToServer);
         
     	new Thread(console).start();    

@@ -45,7 +45,6 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
         this.queueMsgAEnvoyer = param.getQueue();
-//		this.adresseIPServer = param.getAdresseIPServeur();
 		this.identifiant = param.getIdentifiant();
 		this.priorite = param.getPriorite();
 		this.serverPort = param.getNumPortServer();
@@ -59,7 +58,6 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
         this.queueMsgAEnvoyer = param.getQueue();
-//		this.adresseIPServer = param.getAdresseIPServeur();
 		this.identifiant = param.getIdentifiant();
 		this.priorite = param.getPriorite();
 		this.serverPort = param.getNumPortServer();
@@ -73,7 +71,6 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
         this.queueMsgAEnvoyer = param.getQueue();
-//		this.adresseIPServer = param.getAdresseIPServeur();
 		this.identifiant = param.getIdentifiant();
 		this.priorite = param.getPriorite();
 		this.serverPort = param.getNumPortServer();
@@ -87,7 +84,6 @@ public class ClientSocketTCP implements Constantes, Runnable, Consommateur {
 		// on recupere le parametrage passe en parametre
 		this.nomConsommateur = param.getNomConsommateur();
         this.queueMsgAEnvoyer = param.getQueue();
-//		this.adresseIPServer = param.getAdresseIPServeur();
 		this.identifiant = param.getIdentifiant();
 		this.priorite = param.getPriorite();
 		this.serverPort = param.getNumPortServer();

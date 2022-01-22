@@ -16,23 +16,30 @@ import viewMVC.IHM_Test_Thread;
  */
 public class ConsoleDouble extends ConsoleMK {
 
-//	private SocketClientTCP socketClient = null;
 	private ArrayBlockingQueue<Object> msgQVersServeur = null;
 	
+	/**
+	 * Constructeur de la classe
+	 * 
+	 * @param consumerName
+	 * @param numero
+	 * @param priority
+	 * @param msgQConsole
+	 * @param ihmApplication
+	 * @param adresseIPConsoleDistante
+	 * @param msgQVersServeur
+	 */
     public ConsoleDouble(String consumerName,
     		int numero,
     		int priority,
     		ArrayBlockingQueue<MsgToConsole> msgQConsole,
     		IHM ihmApplication,
     		String adresseIPConsoleDistante,
-    		SocketClientTCP socketClient,
     		ArrayBlockingQueue<Object> msgQVersServeur) {
     	
     	super(consumerName, numero, priority, msgQConsole, ihmApplication, adresseIPConsoleDistante);
     	
-//    	this.socketClient = socketClient;
-    	this.msgQVersServeur = msgQVersServeur;
-    	
+    	this.msgQVersServeur = msgQVersServeur;	// MQ du client TCP qui va envoyer via une socket les msg de console distante
     }
 
     
@@ -54,7 +61,6 @@ public class ConsoleDouble extends ConsoleMK {
     	 */
     	if (((IHM_Test_Thread)(super.ihmApplication)).chckbxConnexion.isSelected())
     		SocketClientTCP.sendMsgToServerViaMQ(msg, msgQVersServeur);
-//    		socketClient.sendMsgToServerViaMQ(msg);	
     	}
 
 	

@@ -11,7 +11,6 @@ import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
 import utilitairesMK_MVC.MsgTrfObjet;
 import utilitairesMK_MVC.Mutex;
-import utilitairesMK_MVC.SocketClientTCP;
 import utilitairesMK_MVC.TypeMsgCS;
 
 import javax.swing.JButton;
@@ -616,6 +615,7 @@ public class IHM_Test_Thread extends JFrame implements Constantes, IHM, Serializ
 			}
 		});
 */		
+		
 		// ajout d'un bouton de lancement du test de creation d'un pool de threads
 		JButton btnTestPoolThread = new JButton("Test pool de Threads");
 		btnTestPoolThread.addActionListener(new ActionListener() {
