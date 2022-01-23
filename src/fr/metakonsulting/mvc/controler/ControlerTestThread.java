@@ -443,13 +443,11 @@ public class ControlerTestThread implements Constantes, Controler {
     	
     	/**
     	 * creation et lancement du thread de gestion des envois de message vers la console distante
+    	 * Ce thread est en attente de msg dans une MQ. Il recupere le msg puis l'envoit vers le serveur distant
     	 */
     	msgQToServer = new ArrayBlockingQueue<Object>(TAILLE_MQ_THREAD_CLIENT);
     	String adresseIPServer = this.ihmApplication.getAdresseIPConsoleDistante();
-    	
-    	//A REFAIRE pour creer le thread a part en appelant une fct
-//		sendToServerTCP(adresseIPServer, NUMERO_PORT_SERVEUR_TCP, TYPE_THREAD_ENVOI_N_MSG, null);
-		
+    		
 		ParametrageClientTCP paramClient = new ParametrageClientTCP("client TCP : TYPE_THREAD_ENVOI_N_MSG", // nom du client
 																	0,							// identifiant du client
 																	PRIORITE_THREAD_ENVOI_TCP,	// priorite du thread utilise pour les envois
@@ -464,7 +462,7 @@ public class ControlerTestThread implements Constantes, Controler {
     	threadEnvoiVersServeurDistant = new Thread(socketClient);
     	threadEnvoiVersServeurDistant.setPriority(paramClient.getPriorite());
     	threadEnvoiVersServeurDistant.start();
-    	// on envoit un msg vers la console distante pour indiquer que le thread d'envoi est OK
+    	// on envoie un msg vers la console distante pour indiquer que le thread d'envoi est OK
 		MsgToConsole msgConsole = new MsgToConsole(NUM_CONSOLE_CONSOLE_DIST, false, "TYPE_THREAD_ENVOI_N_MSG - init du thread permanent du client faite !!!!!!!!!!!!!!");
 		SocketClientTCP.sendMsgToServerViaMQ(msgConsole, msgQToServer);
 
@@ -473,10 +471,10 @@ public class ControlerTestThread implements Constantes, Controler {
     	/* lancement du thread de gestion de la console :
          * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
          * la console double permet d'afficher les messages de debug dans la console de l'IHM locale
-         * mais �galement d'envoyer les memes msg vers la console TCP distante
+         * mais egalement d'envoyer les memes msg vers la console TCP distante
          */
     	msgQ_Console = new ArrayBlockingQueue<MsgToConsole>(ihmApplication.getTailleBufferConsole());
-    	console = new ConsoleDouble("Console",
+    	console = new ConsoleDouble("Console_Double",
     								NUMERO_CONSOLE,
     								PRIORITE_CONSOLE,
     								msgQ_Console,
